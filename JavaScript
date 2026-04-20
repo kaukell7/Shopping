@@ -1,11 +1,20 @@
-const products = [
-    { 
-        id: 1, 
-        name: "Nike Red Sports", 
-        originalPrice: "55,000 MMK", 
-        discountPrice: "45,000 MMK", 
-        category: "boy", 
-        img: "https://images.unsplash.com/photo-1542291026-7eec264c27ff" 
-    },
-    // တခြားပစ္စည်းတွေကိုလည်း ဒီပုံစံအတိုင်း ထည့်ပါ
-];
+function submitOrder() {
+    const name = document.getElementById('userName').value;
+    const phone = document.getElementById('userPhone').value;
+    const qty = document.getElementById('userQty').value;
+
+    if(!name || !phone) { 
+        alert("နာမည်နှင့် ဖုန်းနံပါတ် ဖြည့်ပေးပါ"); 
+        return; 
+    }
+
+    // မှာယူမှု အောင်မြင်ကြောင်း ပြသသည့် Message
+    alert(`ကျေးဇူးတင်ပါတယ် ${name}!\n\n${selectedProduct} (${qty}) ရံ အတွက် အော်ဒါရရှိပါပြီ။\nဖုန်းနံပါတ် ${phone} သို့ ပြန်လည်ဆက်သွယ်ပေးပါမည်။`);
+
+    // Modal ပိတ်ပြီး Form ကို Reset လုပ်ခြင်း
+    closeModal('orderModal');
+    document.getElementById('userName').value = "";
+    document.getElementById('userPhone').value = "";
+    document.getElementById('userQty').value = "1";
+    document.getElementById('userRemark').value = "";
+}
