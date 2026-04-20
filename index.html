@@ -9,37 +9,34 @@
         body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; padding: 40px 20px; }
         
         .header { text-align: center; margin-bottom: 40px; }
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; max-width: 1200px; margin: 0 auto; }
+        
+        /* Product Grid ကို သေချာ ပြန်ပြင်ထားပါတယ် */
+        .product-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+            gap: 25px; 
+            max-width: 1100px; 
+            margin: 0 auto; 
+        }
 
-        .card { background: white; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); overflow: hidden; text-align: center; }
-        .card img { width: 100%; height: 250px; object-fit: cover; }
-        .content { padding: 20px; }
-        .price { color: #ff4757; font-weight: bold; margin: 10px 0; }
+        .card { background: white; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); overflow: hidden; text-align: center; display: flex; flex-direction: column; }
+        .card img { width: 100%; height: 200px; object-fit: cover; }
+        .content { padding: 15px; }
+        .title { font-size: 18px; font-weight: bold; margin-bottom: 8px; }
+        .price { color: #ff4757; font-weight: bold; margin-bottom: 15px; }
 
         .buy-btn { 
-            background-color: #2f3542; color: white; border: none; padding: 12px; 
+            background-color: #2f3542; color: white; border: none; padding: 10px; 
             border-radius: 8px; cursor: pointer; width: 100%; font-weight: 600; 
         }
 
-        /* Modal (Popup) Style */
-        .modal {
-            display: none; position: fixed; z-index: 1; left: 0; top: 0;
-            width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);
-        }
-        .modal-content {
-            background-color: white; margin: 10% auto; padding: 25px;
-            border-radius: 15px; width: 90%; max-width: 400px; position: relative;
-        }
+        /* Modal Styles */
+        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); }
+        .modal-content { background-color: white; margin: 10% auto; padding: 25px; border-radius: 15px; width: 90%; max-width: 400px; position: relative; }
         .close { position: absolute; right: 20px; top: 10px; font-size: 25px; cursor: pointer; }
         
-        input, textarea {
-            width: 100%; padding: 12px; margin: 10px 0;
-            border: 1px solid #ddd; border-radius: 8px; font-family: inherit;
-        }
-        .submit-btn {
-            background-color: #2ecc71; color: white; border: none;
-            padding: 12px; width: 100%; border-radius: 8px; cursor: pointer; font-weight: bold;
-        }
+        input, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; font-family: inherit; }
+        .submit-btn { background-color: #2ecc71; color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -50,70 +47,71 @@
 
     <div class="product-grid">
         <div class="card">
-            <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff" alt="Shoe 1">
+            <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff" alt="Nike Red">
             <div class="content">
-                <h3 id="p1-name">Nike Red Sports</h3>
+                <div class="title">Nike Red Sports</div>
                 <p class="price">45,000 MMK</p>
                 <button class="buy-btn" onclick="openModal('Nike Red Sports')">ဝယ်ယူမည်</button>
             </div>
         </div>
-        
+
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a" alt="Adidas">
+            <div class="content">
+                <div class="title">Adidas Street Wear</div>
+                <p class="price">52,000 MMK</p>
+                <button class="buy-btn" onclick="openModal('Adidas Street Wear')">ဝယ်ယူမည်</button>
+            </div>
         </div>
+
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77" alt="Vans">
+            <div class="content">
+                <div class="title">Vans Classic</div>
+                <p class="price">38,500 MMK</p>
+                <button class="buy-btn" onclick="openModal('Vans Classic')">ဝယ်ယူမည်</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1584735175315-9d5df23860e6" alt="Puma">
+            <div class="content">
+                <div class="title">Puma Running</div>
+                <p class="price">48,000 MMK</p>
+                <button class="buy-btn" onclick="openModal('Puma Running')">ဝယ်ယူမည်</button>
+            </div>
+        </div>
+    </div>
 
     <div id="orderModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
-            <h2 id="modalProductName">အော်ဒါတင်ရန်</h2>
+            <h2 id="modalProductName">မှာယူမည်</h2>
             <hr style="margin: 15px 0; border: 0.5px solid #eee;">
-            
             <input type="text" id="userName" placeholder="သင့်နာမည်">
             <input type="text" id="userPhone" placeholder="ဖုန်းနံပါတ်">
             <textarea id="userRemark" rows="4" placeholder="မှတ်ချက် (အရွယ်အစား၊ အရောင် စသည်ဖြင့်...)"></textarea>
-            
             <button class="submit-btn" onclick="submitOrder()">အော်ဒါအတည်ပြုမည်</button>
         </div>
     </div>
 
     <script>
         let selectedProduct = "";
-
-        function openModal(productName) {
-            selectedProduct = productName;
-            document.getElementById('modalProductName').innerText = productName + " မှာယူမည်";
+        function openModal(name) {
+            selectedProduct = name;
+            document.getElementById('modalProductName').innerText = name + " မှာယူမည်";
             document.getElementById('orderModal').style.display = "block";
         }
-
-        function closeModal() {
-            document.getElementById('orderModal').style.display = "none";
-        }
-
+        function closeModal() { document.getElementById('orderModal').style.display = "none"; }
         function submitOrder() {
             const name = document.getElementById('userName').value;
             const phone = document.getElementById('userPhone').value;
             const remark = document.getElementById('userRemark').value;
-
-            if(name === "" || phone === "") {
-                alert("နာမည်နှင့် ဖုန်းနံပါတ် ဖြည့်ပေးပါခင်ဗျာ");
-                return;
-            }
-
-            // အခုလောလောဆယ် Order တင်လိုက်ကြောင်း Alert ပြပေးပါလိမ့်မယ်
-            alert(`ကျေးဇူးတင်ပါတယ် ${name} ခင်ဗျာ!\n\n${selectedProduct} အတွက် အော်ဒါရရှိပါပြီ။\nမှတ်ချက်: ${remark}`);
-            
+            if(!name || !phone) { alert("နာမည်နှင့် ဖုန်းနံပါတ် ဖြည့်ပေးပါ"); return; }
+            alert(`ကျေးဇူးတင်ပါတယ် ${name}!\n${selectedProduct} အတွက် အော်ဒါရရှိပါပြီ။\nမှတ်ချက်: ${remark}`);
             closeModal();
-            // Input တွေကို ပြန်ရှင်းထုတ်ပေးခြင်း
-            document.getElementById('userName').value = "";
-            document.getElementById('userPhone').value = "";
-            document.getElementById('userRemark').value = "";
         }
-
-        // Modal အပြင်ဘက်ကို နှိပ်ရင် ပိတ်သွားစေရန်
-        window.onclick = function(event) {
-            if (event.target == document.getElementById('orderModal')) {
-                closeModal();
-            }
-        }
+        window.onclick = function(e) { if(e.target == document.getElementById('orderModal')) closeModal(); }
     </script>
-
 </body>
 </html>
