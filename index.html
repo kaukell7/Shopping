@@ -7,33 +7,25 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; padding: 40px 20px; }
-        
         .header { text-align: center; margin-bottom: 40px; }
-        
-        .product-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
-            gap: 25px; 
-            max-width: 1100px; 
-            margin: 0 auto; 
-        }
-
-        .card { background: white; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); overflow: hidden; text-align: center; display: flex; flex-direction: column; cursor: pointer; }
-        .card img { width: 100%; height: 200px; object-fit: cover; }
-        .content { padding: 15px; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; max-width: 1100px; margin: 0 auto; }
+        .card { background: white; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); overflow: hidden; text-align: center; display: flex; flex-direction: column; }
+        .card img { width: 100%; height: 200px; object-fit: cover; cursor: zoom-in; }
+        .content { padding: 15px; cursor: pointer; }
         .title { font-size: 18px; font-weight: bold; margin-bottom: 8px; }
         .price { color: #ff4757; font-weight: bold; margin-bottom: 15px; }
+        .buy-btn { background-color: #2f3542; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: 600; }
 
-        .buy-btn { 
-            background-color: #2f3542; color: white; border: none; padding: 10px; 
-            border-radius: 8px; cursor: pointer; width: 100%; font-weight: 600; 
-        }
+        /* Modal အားလုံးအတွက် အခြေခံ Style */
+        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); }
+        .modal-content { background-color: white; margin: 5% auto; padding: 25px; border-radius: 15px; width: 90%; max-width: 450px; position: relative; }
+        .close { position: absolute; right: 20px; top: 10px; font-size: 30px; cursor: pointer; color: #333; z-index: 101; }
 
-        /* Modal Styles */
-        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); }
-        .modal-content { background-color: white; margin: 10% auto; padding: 25px; border-radius: 15px; width: 90%; max-width: 400px; position: relative; }
-        .close { position: absolute; right: 20px; top: 10px; font-size: 25px; cursor: pointer; }
-        
+        /* ပုံသီးသန့်ကြည့်မည့် Modal (Full Image) */
+        #imageModal .modal-content { background: transparent; box-shadow: none; max-width: 800px; text-align: center; }
+        #fullImage { width: 100%; max-height: 80vh; object-fit: contain; border-radius: 5px; }
+        #imageModal .close { color: white; top: -40px; right: 0; }
+
         input, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; font-family: inherit; }
         .submit-btn { background-color: #2ecc71; color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 10px; }
     </style>
@@ -45,64 +37,51 @@
     </div>
 
     <div class="product-grid">
-        <div class="card" onclick="showProductDetails('Nike Red Sports', '45,000 MMK', 'https://images.unsplash.com/photo-1542291026-7eec264c27ff')">
-            <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff" alt="Nike Red">
-            <div class="content">
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff" onclick="zoomImage(this.src)" alt="Nike Red">
+            <div class="content" onclick="showProductDetails('Nike Red Sports', '45,000 MMK', 'https://images.unsplash.com/photo-1542291026-7eec264c27ff')">
                 <div class="title">Nike Red Sports</div>
                 <p class="price">45,000 MMK</p>
                 <button class="buy-btn">ဝယ်ယူမည်</button>
             </div>
         </div>
 
-        <div class="card" onclick="showProductDetails('Adidas Street Wear', '52,000 MMK', 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a')">
-            <img src="https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a" alt="Adidas">
-            <div class="content">
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a" onclick="zoomImage(this.src)" alt="Adidas">
+            <div class="content" onclick="showProductDetails('Adidas Street Wear', '52,000 MMK', 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a')">
                 <div class="title">Adidas Street Wear</div>
                 <p class="price">52,000 MMK</p>
                 <button class="buy-btn">ဝယ်ယူမည်</button>
             </div>
         </div>
-
-        <div class="card" onclick="showProductDetails('Vans Classic', '38,500 MMK', 'https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77')">
-            <img src="https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77" alt="Vans">
-            <div class="content">
-                <div class="title">Vans Classic</div>
-                <p class="price">38,500 MMK</p>
-                <button class="buy-btn">ဝယ်ယူမည်</button>
-            </div>
+        
         </div>
 
-        <div class="card" onclick="showProductDetails('Puma Running', '48,000 MMK', 'https://images.unsplash.com/photo-1584735175315-9d5df23860e6')">
-            <img src="https://images.unsplash.com/photo-1584735175315-9d5df23860e6" alt="Puma">
-            <div class="content">
-                <div class="title">Puma Running</div>
-                <p class="price">48,000 MMK</p>
-                <button class="buy-btn">ဝယ်ယူမည်</button>
-            </div>
+    <div id="imageModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('imageModal')">&times;</span>
+            <img id="fullImage" src="">
         </div>
     </div>
 
     <div id="detailsModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeDetailsModal()">&times;</span>
-            <img id="detailsModalImg" src="" alt="Product Image" style="width: 100%; max-height: 200px; object-fit: cover; border-radius: 10px; margin-bottom: 10px;">
-            <h2 id="detailsModalName">ကုန်ပစ္စည်းအမည်</h2>
-            <p id="detailsModalPrice" style="color: #ff4757; font-weight: bold; margin-top: 5px;">ဈေးနှုန်း</p>
-            <p style="color: #666; margin-top: 10px; margin-bottom: 20px;">
-                ဤကုန်ပစ္စည်းအကြောင်း အသေးစိတ်အချက်အလက်များကို ဤနေရာတွင် ဖော်ပြနိုင်ပါသည်။ (ဥပမာ- အရွယ်အစား၊ အရောင် စသည်ဖြင့်)
-            </p>
+            <span class="close" onclick="closeModal('detailsModal')">&times;</span>
+            <img id="detailsModalImg" src="" style="width: 100%; height: 200px; object-fit: cover; border-radius: 10px;">
+            <h2 id="detailsModalName" style="margin-top:15px;"></h2>
+            <p id="detailsModalPrice" style="color: #ff4757; font-weight: bold;"></p>
+            <p style="color: #666; margin: 15px 0;">အသေးစိတ်အချက်အလက်များကို ဤနေရာတွင် ဖော်ပြပေးပါမည်။</p>
             <button class="buy-btn" id="modalBuyBtn">မှာယူမည်</button>
         </div>
     </div>
 
     <div id="orderModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeOrderModal()">&times;</span>
+            <span class="close" onclick="closeModal('orderModal')">&times;</span>
             <h2 id="modalProductName">မှာယူမည်</h2>
-            <hr style="margin: 15px 0; border: 0.5px solid #eee;">
             <input type="text" id="userName" placeholder="သင့်နာမည်">
             <input type="text" id="userPhone" placeholder="ဖုန်းနံပါတ်">
-            <textarea id="userRemark" rows="4" placeholder="မှတ်ချက် (အရွယ်အစား၊ အရောင် စသည်ဖြင့်...)"></textarea>
+            <textarea id="userRemark" rows="4" placeholder="မှတ်ချက်..."></textarea>
             <button class="submit-btn" onclick="submitOrder()">အော်ဒါအတည်ပြုမည်</button>
         </div>
     </div>
@@ -110,52 +89,41 @@
     <script>
         let selectedProduct = "";
 
+        // ပုံကို အကြီးချဲ့ကြည့်ရန်
+        function zoomImage(imgSrc) {
+            document.getElementById('fullImage').src = imgSrc;
+            document.getElementById('imageModal').style.display = "block";
+        }
+
+        // ပစ္စည်းအသေးစိတ်ပြရန်
         function showProductDetails(name, price, imgSrc) {
+            selectedProduct = name;
             document.getElementById('detailsModalName').innerText = name;
             document.getElementById('detailsModalPrice').innerText = price;
             document.getElementById('detailsModalImg').src = imgSrc;
-            selectedProduct = name;
             document.getElementById('detailsModal').style.display = "block";
-            // Modal အတွင်းရှိ "မှာယူမည်" button အား မှာယူမှု Modal ကို ဖွင့်စေရန်
-            document.getElementById('modalBuyBtn').onclick = function() {
-                openOrderModal(selectedProduct);
-            };
+            document.getElementById('modalBuyBtn').onclick = function() { openOrderModal(name); };
         }
 
-        function closeDetailsModal() {
-            document.getElementById('detailsModal').style.display = "none";
-        }
-
-        function openOrderModal(productName) {
-            closeDetailsModal(); // ပစ္စည်းအသေးစိတ် Modal ကို ပိတ်ပါ
-            selectedProduct = productName;
-            document.getElementById('modalProductName').innerText = productName + " မှာယူမည်";
+        function openOrderModal(name) {
+            closeModal('detailsModal');
+            selectedProduct = name;
+            document.getElementById('modalProductName').innerText = name + " မှာယူမည်";
             document.getElementById('orderModal').style.display = "block";
         }
 
-        function closeOrderModal() {
-            document.getElementById('orderModal').style.display = "none";
-        }
+        function closeModal(id) { document.getElementById(id).style.display = "none"; }
 
         function submitOrder() {
             const name = document.getElementById('userName').value;
             const phone = document.getElementById('userPhone').value;
-            const remark = document.getElementById('userRemark').value;
-            if(!name || !phone) {
-                alert("နာမည်နှင့် ဖုန်းနံပါတ် ဖြည့်ပေးပါ");
-                return;
-            }
-            alert(`ကျေးဇူးတင်ပါတယ် ${name}!\n${selectedProduct} အတွက် အော်ဒါရရှိပါပြီ။\nမှတ်ချက်: ${remark}`);
-            closeOrderModal();
+            if(!name || !phone) { alert("အချက်အလက်အပြည့်အစုံဖြည့်ပါ"); return; }
+            alert(`ကျေးဇူးတင်ပါတယ် ${name}!\n${selectedProduct} အတွက် အော်ဒါရရှိပါပြီ။`);
+            closeModal('orderModal');
         }
 
         window.onclick = function(e) {
-            if (e.target == document.getElementById('orderModal')) {
-                closeOrderModal();
-            }
-            if (e.target == document.getElementById('detailsModal')) {
-                closeDetailsModal();
-            }
+            if (e.target.className === 'modal') { e.target.style.display = "none"; }
         }
     </script>
 </body>
