@@ -14,10 +14,29 @@
             padding: 20px;
         }
 
-        .header { text-align: center; margin-bottom: 30px; padding-top: 20px; }
+        .header { text-align: center; margin-bottom: 30px; padding-top: 20px; position: relative; }
         .header h1 { font-size: 32px; letter-spacing: 2px; margin-bottom: 5px; }
         
-        /* --- Filter & Search Section (အနီကွင်းနေရာ) --- */
+        /* --- Cart Icon Style --- */
+        .cart-container {
+            position: absolute;
+            right: 10px;
+            top: 20px;
+            cursor: pointer;
+            background: #2d3436;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+            z-index: 100;
+        }
+        .cart-container:hover { background: #d63031; }
+        #historyCount { font-weight: bold; background: #d63031; padding: 2px 8px; border-radius: 50%; font-size: 12px; }
+
+        /* --- Filter & Search Section --- */
         .controls-container {
             max-width: 1200px;
             margin: 0 auto 40px auto;
@@ -113,7 +132,9 @@
         .close { position: absolute; right: 15px; top: -40px; font-size: 35px; cursor: pointer; color: white; }
         .modal-content .close { color: #aaa; top: 10px; right: 20px; }
 
-        input[type="text"], textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #eee; border-radius: 10px; }
+        .history-item { border-bottom: 1px solid #eee; padding: 10px 0; text-align: left; font-size: 14px; }
+
+        input[type="text"], input[type="number"], textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #eee; border-radius: 10px; }
         .submit-btn { background-color: #00b894; color: white; border: none; padding: 14px; width: 100%; border-radius: 10px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
@@ -122,6 +143,11 @@
     <div class="header">
         <h1>THE SHOE HUB</h1>
         <p>Premium & Authentic Footwear Collection</p>
+        
+        <div class="cart-container" onclick="showOrderHistory()">
+            <span>🛒</span>
+            <span id="historyCount">0</span>
+        </div>
     </div>
 
     <div class="controls-container">
@@ -137,8 +163,7 @@
         </div>
     </div>
 
-    <div class="product-grid" id="productGrid">
-        </div>
+    <div class="product-grid" id="productGrid"></div>
 
     <div id="imageModal" class="modal">
         <div class="modal-content">
@@ -158,24 +183,32 @@
     </div>
 
     <div id="orderModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeModal('orderModal')">&times;</span>
-        <h2 id="modalProductName"></h2>
-        <input type="text" id="userName" placeholder="သင့်နာမည်">
-        <input type="text" id="userPhone" placeholder="ဖုန်းနံပါတ်">
-        
-        <div style="text-align: left; margin: 10px 0;">
-            <label for="userQty" style="font-size: 14px; font-weight: bold;">အရေအတွက်:</label>
-            <input type="number" id="userQty" value="1" min="1" style="width: 80px; margin-left: 10px;">
-        </div>
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('orderModal')">&times;</span>
+            <h2 id="modalProductName"></h2>
+            <input type="text" id="userName" placeholder="သင့်နာမည်">
+            <input type="text" id="userPhone" placeholder="ဖုန်းနံပါတ်">
+            
+            <div style="text-align: left; margin: 10px 0;">
+                <label style="font-size: 14px; font-weight: bold;">အရေအတွက်:</label>
+                <input type="number" id="userQty" value="1" min="1" style="width: 80px; margin-left: 10px;">
+            </div>
 
-        <textarea id="userRemark" rows="3" placeholder="မှတ်ချက် (အရွယ်အစား၊ အရောင် စသည်ဖြင့်...)"></textarea>
-        <button class="submit-btn" onclick="submitOrder()">အော်ဒါတင်မည်</button>
+            <textarea id="userRemark" rows="3" placeholder="မှတ်ချက် (အရွယ်အစား၊ အရောင် စသည်ဖြင့်...)"></textarea>
+            <button class="submit-btn" onclick="submitOrder()">အော်ဒါတင်မည်</button>
+        </div>
     </div>
-</div>
+
+    <div id="historyModal" class="modal">
+        <div class="modal-content" style="max-width: 450px;">
+            <span class="close" onclick="closeModal('historyModal')">&times;</span>
+            <h2>Order History</h2>
+            <div id="historyList" style="margin-top: 15px; max-height: 350px; overflow-y: auto;"></div>
+            <button class="buy-btn" onclick="clearHistory()" style="margin-top: 15px; background: #aaa;">Clear Records</button>
+        </div>
+    </div>
 
     <script>
-        // Demo Data (Category များ ခွဲခြားထားသည်)
         const products = [
             { id: 1, name: "Nike Red Sports", price: "45,000 MMK", category: "boy", img: "https://images.unsplash.com/photo-1542291026-7eec264c27ff" },
             { id: 2, name: "Adidas Street Wear", price: "52,000 MMK", category: "girl", img: "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a" },
@@ -189,7 +222,6 @@
 
         let selectedProduct = "";
 
-        // ပစ္စည်းများကို Grid ထဲ ထည့်ပြပေးသည့် Function
         function renderProducts(items) {
             const grid = document.getElementById('productGrid');
             grid.innerHTML = items.map(p => `
@@ -204,27 +236,17 @@
             `).join('');
         }
 
-        // Category အလိုက် စစ်ထုတ်ခြင်း
         function filterProducts(category, btn) {
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            
-            if (category === 'all') {
-                renderProducts(products);
-            } else {
-                const filtered = products.filter(p => p.category === category);
-                renderProducts(filtered);
-            }
+            category === 'all' ? renderProducts(products) : renderProducts(products.filter(p => p.category === category));
         }
 
-        // Search လုပ်ခြင်း
         function searchProducts() {
             const term = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = products.filter(p => p.name.toLowerCase().includes(term));
-            renderProducts(filtered);
+            renderProducts(products.filter(p => p.name.toLowerCase().includes(term)));
         }
 
-        // Modals Functions
         function zoomImage(src) { 
             document.getElementById('fullImage').src = src; 
             document.getElementById('imageModal').style.display = "flex"; 
@@ -247,17 +269,64 @@
 
         function closeModal(id) { document.getElementById(id).style.display = "none"; }
 
+        // --- Order Logic & History ---
         function submitOrder() {
             const name = document.getElementById('userName').value;
-            if(!name) { alert("နာမည်ဖြည့်ပါ"); return; }
-            alert(`ကျေးဇူးတင်ပါတယ် ${name}!\n${selectedProduct} အတွက် အော်ဒါရရှိပါပြီ။`);
+            const phone = document.getElementById('userPhone').value;
+            const qty = document.getElementById('userQty').value;
+
+            if(!name || !phone) { alert("အချက်အလက်ပြည့်စုံစွာဖြည့်ပါ"); return; }
+
+            const order = {
+                product: selectedProduct,
+                qty: qty,
+                date: new Date().toLocaleString(),
+                customer: name
+            };
+
+            let history = JSON.parse(localStorage.getItem('myOrders')) || [];
+            history.push(order);
+            localStorage.setItem('myOrders', JSON.stringify(history));
+
+            updateCartCount();
+            alert(`ကျေးဇူးတင်ပါတယ် ${name}!\n${selectedProduct} (${qty} ရံ) မှာယူမှုအောင်မြင်ပါသည်။`);
             closeModal('orderModal');
         }
 
-        window.onclick = (e) => { if(e.target.classList.contains('modal')) e.target.style.display = "none"; }
+        function showOrderHistory() {
+            const history = JSON.parse(localStorage.getItem('myOrders')) || [];
+            const list = document.getElementById('historyList');
+            if(history.length === 0) {
+                list.innerHTML = "<p style='text-align:center;'>မှာယူထားသောမှတ်တမ်းမရှိသေးပါ။</p>";
+            } else {
+                list.innerHTML = history.reverse().map(o => `
+                    <div class="history-item">
+                        <strong>${o.product}</strong> (${o.qty} ရံ)<br>
+                        <small>📅 ${o.date}</small> | <small>👤 ${o.customer}</small>
+                    </div>
+                `).join('');
+            }
+            document.getElementById('historyModal').style.display = "flex";
+        }
 
-        // Initial Render
+        function updateCartCount() {
+            const history = JSON.parse(localStorage.getItem('myOrders')) || [];
+            document.getElementById('historyCount').innerText = history.length;
+        }
+
+        function clearHistory() {
+            if(confirm("မှတ်တမ်းများကို ဖျက်လိုပါသလား?")) {
+                localStorage.removeItem('myOrders');
+                updateCartCount();
+                closeModal('historyModal');
+            }
+        }
+
+        window.onclick = (e) => { if(e.target.classList.contains('modal')) e.target.style.display = "none"; }
+        
+        // စတင်ချိန်တွင် ပစ္စည်းများပြရန်နှင့် Count update လုပ်ရန်
         renderProducts(products);
+        updateCartCount();
     </script>
 </body>
 </html>
