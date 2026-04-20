@@ -8,13 +8,54 @@ function submitOrder() {
         return; 
     }
 
-    // မှာယူမှု အောင်မြင်ကြောင်း ပြသသည့် Message
-    alert(`ကျေးဇူးတင်ပါတယ် ${name}!\n\n${selectedProduct} (${qty}) ရံ အတွက် အော်ဒါရရှိပါပြီ။\nဖုန်းနံပါတ် ${phone} သို့ ပြန်လည်ဆက်သွယ်ပေးပါမည်။`);
+    // မှာယူမှု အချက်အလက်ကို Object အနေနဲ့ တည်ဆောက်ခြင်း
+    const orderData = {
+        product: selectedProduct,
+        quantity: qty,
+        customer: name,
+        date: new Date().toLocaleString()
+    };
 
-    // Modal ပိတ်ပြီး Form ကို Reset လုပ်ခြင်း
+    // Browser ရဲ့ Local Storage ထဲမှာ အော်ဒါမှတ်တမ်း သိမ်းဆည်းခြင်း
+    let history = JSON.parse(localStorage.getItem('orderHistory')) || [];
+    history.push(orderData);
+    localStorage.setItem('orderHistory', JSON.stringify(history));
+
+    updateHistoryCount(); // ဈေးခြင်းပုံဘေးက အရေအတွက်ကို Update လုပ်ခြင်း
+
+    alert(`ကျေးဇူးတင်ပါတယ် ${name}!\n\n${selectedProduct} (${qty}) ရံ အတွက် အော်ဒါရရှိပါပြီ။`);
+
     closeModal('orderModal');
+    // Form ပြန်ရှင်းခြင်း
     document.getElementById('userName').value = "";
     document.getElementById('userPhone').value = "";
     document.getElementById('userQty').value = "1";
     document.getElementById('userRemark').value = "";
 }
+
+// History ပြသရန်နှင့် အရေအတွက်တွက်ရန် ထပ်တိုး function များ
+function showOrderHistory() {
+    const history = JSON.parse(localStorage.getItem('orderHistory')) || [];
+    const list = document.getElementById('historyList');
+    
+    if (history.length === 0) {
+        list.innerHTML = "<p>မှာယူထားသော မှတ်တမ်းမရှိသေးပါ။</p>";
+    } else {
+        list.innerHTML = history.reverse().map(item => `
+            <div class="history-item" style="border-bottom: 1px solid #eee; padding: 10px 0;">
+                <strong>${item.product}</strong> (${item.quantity} ရံ)<br>
+                <small>📅 ${item.date}</small> | <small>👤 ${item.customer}</small>
+            </div>
+        `).join('');
+    }
+    document.getElementById('historyModal').style.display = "flex";
+}
+
+function updateHistoryCount() {
+    const history = JSON.parse(localStorage.getItem('orderHistory')) || [];
+    const countElement = document.getElementById('historyCount');
+    if(countElement) countElement.innerText = history.length;
+}
+
+// စာမျက်နှာ စဖွင့်ချင်းမှာ အရေအတွက်ဟောင်းရှိရင် ပြပေးရန်
+updateHistoryCount();
