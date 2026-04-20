@@ -11,13 +11,56 @@
             background-color: #f8f9fa; 
             font-family: 'Segoe UI', sans-serif;
             color: #2d3436;
-            padding: 50px 20px;
+            padding: 20px;
         }
 
-        .header { text-align: center; margin-bottom: 50px; }
+        .header { text-align: center; margin-bottom: 30px; padding-top: 20px; }
         .header h1 { font-size: 32px; letter-spacing: 2px; margin-bottom: 5px; }
-        .header p { color: #636e72; font-size: 14px; }
+        
+        /* --- Filter & Search Section (အနီကွင်းနေရာ) --- */
+        .controls-container {
+            max-width: 1200px;
+            margin: 0 auto 40px auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            align-items: center;
+        }
 
+        .filter-group { display: flex; gap: 10px; }
+
+        .filter-btn {
+            background: white;
+            border: 1px solid #ddd;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .filter-btn.active, .filter-btn:hover {
+            background: #2d3436;
+            color: white;
+            border-color: #2d3436;
+        }
+
+        .search-box {
+            position: relative;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 15px;
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            outline: none;
+        }
+
+        /* --- Product Grid --- */
         .product-grid { 
             display: grid; 
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); 
@@ -37,29 +80,25 @@
             flex-direction: column;
         }
 
-        .card:hover { transform: translateY(-10px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
+        .card:hover { transform: translateY(-10px); }
 
         .card img { 
             width: 100%; 
             height: 220px; 
             object-fit: cover; 
             cursor: zoom-in;
-            background-color: #f9f9f9;
         }
 
         .content { padding: 20px; text-align: center; flex-grow: 1; }
-        .title { font-size: 17px; font-weight: 700; margin-bottom: 8px; color: #333; }
+        .title { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
         .price { color: #d63031; font-size: 18px; font-weight: 800; margin-bottom: 15px; display: block; }
 
         .buy-btn { 
-            background: #2d3436;
-            color: white; border: none; padding: 12px; 
+            background: #2d3436; color: white; border: none; padding: 12px; 
             border-radius: 10px; cursor: pointer; width: 100%; font-weight: 600; 
-            transition: background 0.3s;
         }
-        .buy-btn:hover { background: #000; }
 
-        /* Modal Styles */
+        /* Modals */
         .modal { 
             display: none; position: fixed; z-index: 1000; 
             left: 0; top: 0; width: 100%; height: 100%; 
@@ -68,19 +107,14 @@
             align-items: center; justify-content: center;
         }
 
-        .modal-content { 
-            background: white; padding: 30px; border-radius: 20px; 
-            width: 90%; max-width: 400px; position: relative; 
-        }
-
+        .modal-content { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 400px; position: relative; }
         #imageModal .modal-content { background: transparent; max-width: 80vh; padding: 0; }
         #fullImage { width: 100%; max-height: 80vh; object-fit: contain; border-radius: 10px; }
-
         .close { position: absolute; right: 15px; top: -40px; font-size: 35px; cursor: pointer; color: white; }
         .modal-content .close { color: #aaa; top: 10px; right: 20px; }
 
-        input, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #eee; border-radius: 10px; background: #fdfdfd; }
-        .submit-btn { background-color: #00b894; color: white; border: none; padding: 14px; width: 100%; border-radius: 10px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        input[type="text"], textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #eee; border-radius: 10px; }
+        .submit-btn { background-color: #00b894; color: white; border: none; padding: 14px; width: 100%; border-radius: 10px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -90,79 +124,21 @@
         <p>Premium & Authentic Footwear Collection</p>
     </div>
 
-    <div class="product-grid">
-        <div class="card">
-            <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff" onclick="zoomImage(this.src)" alt="Nike Red">
-            <div class="content" onclick="showProductDetails('Nike Red Sports', '45,000 MMK', 'https://images.unsplash.com/photo-1542291026-7eec264c27ff')">
-                <div class="title">Nike Red Sports</div>
-                <span class="price">45,000 MMK</span>
-                <button class="buy-btn">ဝယ်ယူမည်</button>
-            </div>
+    <div class="controls-container">
+        <div class="filter-group">
+            <button class="filter-btn active" onclick="filterProducts('all', this)">All</button>
+            <button class="filter-btn" onclick="filterProducts('boy', this)">Boy</button>
+            <button class="filter-btn" onclick="filterProducts('girl', this)">Girl</button>
+            <button class="filter-btn" onclick="filterProducts('kid', this)">Kid</button>
         </div>
-
-        <div class="card">
-            <img src="https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a" onclick="zoomImage(this.src)" alt="Adidas">
-            <div class="content" onclick="showProductDetails('Adidas Street Wear', '52,000 MMK', 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a')">
-                <div class="title">Adidas Street Wear</div>
-                <span class="price">52,000 MMK</span>
-                <button class="buy-btn">ဝယ်ယူမည်</button>
-            </div>
-        </div>
-
-        <div class="card">
-            <img src="https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77" onclick="zoomImage(this.src)" alt="Vans">
-            <div class="content" onclick="showProductDetails('Vans Classic Black', '38,500 MMK', 'https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77')">
-                <div class="title">Vans Classic Black</div>
-                <span class="price">38,500 MMK</span>
-                <button class="buy-btn">ဝယ်ယူမည်</button>
-            </div>
-        </div>
-
-        <div class="card">
-            <img src="https://images.unsplash.com/photo-1600185365483-26d7a4cc7519" onclick="zoomImage(this.src)" alt="Air Jordan">
-            <div class="content" onclick="showProductDetails('Nike Air Jordan 1', '125,000 MMK', 'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519')">
-                <div class="title">Nike Air Jordan 1</div>
-                <span class="price">125,000 MMK</span>
-                <button class="buy-btn">ဝယ်ယူမည်</button>
-            </div>
-        </div>
-
-        <div class="card">
-            <img src="https://images.unsplash.com/photo-1491553895911-0055eca6402d" onclick="zoomImage(this.src)" alt="Running">
-            <div class="content" onclick="showProductDetails('Black Running Pro', '65,000 MMK', 'https://images.unsplash.com/photo-1491553895911-0055eca6402d')">
-                <div class="title">Black Running Pro</div>
-                <span class="price">65,000 MMK</span>
-                <button class="buy-btn">ဝယ်ယူမည်</button>
-            </div>
-        </div>
-
-        <div class="card">
-            <img src="https://images.unsplash.com/photo-1549298916-b41d501d3772" onclick="zoomImage(this.src)" alt="Sneaker">
-            <div class="content" onclick="showProductDetails('Casual White Sneaker', '42,000 MMK', 'https://images.unsplash.com/photo-1549298916-b41d501d3772')">
-                <div class="title">Casual White Sneaker</div>
-                <span class="price">42,000 MMK</span>
-                <button class="buy-btn">ဝယ်ယူမည်</button>
-            </div>
-        </div>
-
-        <div class="card">
-            <img src="https://images.unsplash.com/photo-1539185441755-769473a23570" onclick="zoomImage(this.src)" alt="NB">
-            <div class="content" onclick="showProductDetails('New Balance 574', '88,000 MMK', 'https://images.unsplash.com/photo-1539185441755-769473a23570')">
-                <div class="title">New Balance 574</div>
-                <span class="price">88,000 MMK</span>
-                <button class="buy-btn">ဝယ်ယူမည်</button>
-            </div>
-        </div>
-
-        <div class="card">
-            <img src="https://images.unsplash.com/photo-1560769629-975ec94e6a86" onclick="zoomImage(this.src)" alt="Sport">
-            <div class="content" onclick="showProductDetails('Sport Classic Yellow', '48,000 MMK', 'https://images.unsplash.com/photo-1560769629-975ec94e6a86')">
-                <div class="title">Sport Classic Yellow</div>
-                <span class="price">48,000 MMK</span>
-                <button class="buy-btn">ဝယ်ယူမည်</button>
-            </div>
+        
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Search shoes..." onkeyup="searchProducts()">
         </div>
     </div>
+
+    <div class="product-grid" id="productGrid">
+        </div>
 
     <div id="imageModal" class="modal">
         <div class="modal-content">
@@ -175,26 +151,74 @@
         <div class="modal-content">
             <span class="close" onclick="closeModal('detailsModal')">&times;</span>
             <img id="detailsModalImg" src="" style="width: 100%; border-radius: 15px; height: 180px; object-fit: cover;">
-            <h2 id="detailsModalName" style="margin-top:20px; font-size: 20px;"></h2>
-            <p id="detailsModalPrice" style="color:#d63031; font-weight:bold; font-size:20px; margin-bottom: 15px;"></p>
-            <button class="buy-btn" id="modalBuyBtn">မှာယူမည်</button>
+            <h2 id="detailsModalName" style="margin-top:20px;"></h2>
+            <p id="detailsModalPrice" style="color:#d63031; font-weight:bold; font-size:20px;"></p>
+            <button class="buy-btn" id="modalBuyBtn" style="margin-top: 15px;">မှာယူမည်</button>
         </div>
     </div>
 
     <div id="orderModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('orderModal')">&times;</span>
-            <h2 id="modalProductName" style="margin-bottom: 10px;"></h2>
+            <h2 id="modalProductName"></h2>
             <input type="text" id="userName" placeholder="သင့်နာမည်">
             <input type="text" id="userPhone" placeholder="ဖုန်းနံပါတ်">
-            <textarea id="userRemark" rows="3" placeholder="မှတ်ချက် (အရွယ်အစား၊ အရောင် စသည်ဖြင့်...)"></textarea>
+            <textarea id="userRemark" rows="3" placeholder="မှတ်ချက်..."></textarea>
             <button class="submit-btn" onclick="submitOrder()">အော်ဒါတင်မည်</button>
         </div>
     </div>
 
     <script>
+        // Demo Data (Category များ ခွဲခြားထားသည်)
+        const products = [
+            { id: 1, name: "Nike Red Sports", price: "45,000 MMK", category: "boy", img: "https://images.unsplash.com/photo-1542291026-7eec264c27ff" },
+            { id: 2, name: "Adidas Street Wear", price: "52,000 MMK", category: "girl", img: "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a" },
+            { id: 3, name: "Vans Classic Black", price: "38,500 MMK", category: "boy", img: "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77" },
+            { id: 4, name: "Nike Air Jordan 1", price: "125,000 MMK", category: "boy", img: "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519" },
+            { id: 5, name: "Tiny Steps Kid", price: "25,000 MMK", category: "kid", img: "https://images.unsplash.com/photo-1514989940723-e8e51635b782" },
+            { id: 6, name: "Pink Sparkle Girl", price: "32,000 MMK", category: "girl", img: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2" },
+            { id: 7, name: "New Balance 574", price: "88,000 MMK", category: "boy", img: "https://images.unsplash.com/photo-1539185441755-769473a23570" },
+            { id: 8, name: "Junior Runner", price: "35,000 MMK", category: "kid", img: "https://images.unsplash.com/photo-1591195853828-11db59a44f6b" }
+        ];
+
         let selectedProduct = "";
 
+        // ပစ္စည်းများကို Grid ထဲ ထည့်ပြပေးသည့် Function
+        function renderProducts(items) {
+            const grid = document.getElementById('productGrid');
+            grid.innerHTML = items.map(p => `
+                <div class="card">
+                    <img src="${p.img}" onclick="zoomImage('${p.img}')">
+                    <div class="content" onclick="showProductDetails('${p.name}', '${p.price}', '${p.img}')">
+                        <div class="title">${p.name}</div>
+                        <span class="price">${p.price}</span>
+                        <button class="buy-btn">ဝယ်ယူမည်</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Category အလိုက် စစ်ထုတ်ခြင်း
+        function filterProducts(category, btn) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            if (category === 'all') {
+                renderProducts(products);
+            } else {
+                const filtered = products.filter(p => p.category === category);
+                renderProducts(filtered);
+            }
+        }
+
+        // Search လုပ်ခြင်း
+        function searchProducts() {
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = products.filter(p => p.name.toLowerCase().includes(term));
+            renderProducts(filtered);
+        }
+
+        // Modals Functions
         function zoomImage(src) { 
             document.getElementById('fullImage').src = src; 
             document.getElementById('imageModal').style.display = "flex"; 
@@ -211,7 +235,6 @@
 
         function openOrderModal(name) { 
             closeModal('detailsModal'); 
-            selectedProduct = name;
             document.getElementById('modalProductName').innerText = name + " မှာယူမည်"; 
             document.getElementById('orderModal').style.display = "flex"; 
         }
@@ -220,16 +243,15 @@
 
         function submitOrder() {
             const name = document.getElementById('userName').value;
-            const phone = document.getElementById('userPhone').value;
-            if(!name || !phone) { alert("နာမည်နှင့် ဖုန်းနံပါတ် ဖြည့်ပေးပါ"); return; }
+            if(!name) { alert("နာမည်ဖြည့်ပါ"); return; }
             alert(`ကျေးဇူးတင်ပါတယ် ${name}!\n${selectedProduct} အတွက် အော်ဒါရရှိပါပြီ။`);
             closeModal('orderModal');
-            document.getElementById('userName').value = "";
-            document.getElementById('userPhone').value = "";
-            document.getElementById('userRemark').value = "";
         }
 
         window.onclick = (e) => { if(e.target.classList.contains('modal')) e.target.style.display = "none"; }
+
+        // Initial Render
+        renderProducts(products);
     </script>
 </body>
 </html>
