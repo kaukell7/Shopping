@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Shoe Store</title>
+    <style>
+        body { font-family: sans-serif; background-color: #f4f4f4; display: flex; justify-content: center; padding: 20px; }
+        .card { background: white; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); width: 300px; text-align: center; padding: 20px; }
+        .card img { width: 100%; border-radius: 8px; height: 200px; object-fit: cover; }
+        .title { font-size: 22px; margin: 10px 0; font-weight: bold; }
+        .price { color: #e44d26; font-size: 20px; margin-bottom: 15px; font-weight: bold; }
+        .buy-btn { background-color: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; width: 100%; }
+        .buy-btn:hover { background-color: #0056b3; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff" alt="Shoe Image">
+        <div class="title">Nike Air Max</div>
+        <div class="price">45,000 MMK</div>
+        <button class="buy-btn">ဝယ်ယူမည်</button>
+    </div>
+
+</body>
+</html>
