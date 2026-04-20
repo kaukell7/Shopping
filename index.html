@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premium Shoe Store</title>
+    <title>THE SHOE HUB - Premium Collection</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
@@ -15,10 +15,13 @@
         }
 
         .header { text-align: center; margin-bottom: 50px; }
+        .header h1 { font-size: 32px; letter-spacing: 2px; margin-bottom: 5px; }
+        .header p { color: #636e72; font-size: 14px; }
+
         .product-grid { 
             display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
-            gap: 35px; 
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); 
+            gap: 30px; 
             max-width: 1200px; 
             margin: 0 auto; 
         }
@@ -26,90 +29,65 @@
         .card { 
             background: #ffffff; 
             border-radius: 20px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05); 
             overflow: hidden; 
-            transition: transform 0.3s ease;
+            transition: all 0.3s ease;
             border: 1px solid #f1f1f1;
+            display: flex;
+            flex-direction: column;
         }
 
-        .card:hover { transform: translateY(-10px); }
+        .card:hover { transform: translateY(-10px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
 
         .card img { 
             width: 100%; 
-            height: 260px; 
+            height: 220px; 
             object-fit: cover; 
             cursor: zoom-in;
+            background-color: #f9f9f9;
         }
 
-        .content { padding: 25px; text-align: center; }
-        .title { font-size: 19px; font-weight: 700; margin-bottom: 8px; }
-        .price { color: #d63031; font-size: 20px; font-weight: 800; margin-bottom: 20px; display: block; }
+        .content { padding: 20px; text-align: center; flex-grow: 1; }
+        .title { font-size: 17px; font-weight: 700; margin-bottom: 8px; color: #333; }
+        .price { color: #d63031; font-size: 18px; font-weight: 800; margin-bottom: 15px; display: block; }
 
         .buy-btn { 
             background: #2d3436;
-            color: white; border: none; padding: 14px; 
-            border-radius: 12px; cursor: pointer; width: 100%; font-weight: 600; 
+            color: white; border: none; padding: 12px; 
+            border-radius: 10px; cursor: pointer; width: 100%; font-weight: 600; 
+            transition: background 0.3s;
         }
+        .buy-btn:hover { background: #000; }
 
-        /* --- Modal System (ပြင်ဆင်ထားသောအပိုင်း) --- */
+        /* Modal Styles */
         .modal { 
-            display: none; 
-            position: fixed; 
-            z-index: 1000; 
-            left: 0; top: 0; 
-            width: 100%; height: 100%; 
+            display: none; position: fixed; z-index: 1000; 
+            left: 0; top: 0; width: 100%; height: 100%; 
             background-color: rgba(0,0,0,0.85); 
             backdrop-filter: blur(5px);
-            /* အလယ်တည့်တည့်ပို့ရန် flex သုံးထားသည် */
-            display: none; 
-            align-items: center; 
-            justify-content: center;
+            align-items: center; justify-content: center;
         }
 
         .modal-content { 
-            background: white; 
-            padding: 30px; 
-            border-radius: 25px; 
-            width: 90%; 
-            max-width: 450px; 
-            position: relative;
-            margin: auto; /* Browser အဟောင်းများအတွက် */
+            background: white; padding: 30px; border-radius: 20px; 
+            width: 90%; max-width: 400px; position: relative; 
         }
 
-        /* ပုံကြည့်ရုံသီးသန့် Modal */
-        #imageModal .modal-content { 
-            background: transparent; 
-            max-width: 80vh; /* ပုံမရှည်ထွက်သွားစေရန် */
-            padding: 0;
-        }
+        #imageModal .modal-content { background: transparent; max-width: 80vh; padding: 0; }
+        #fullImage { width: 100%; max-height: 80vh; object-fit: contain; border-radius: 10px; }
 
-        #fullImage { 
-            width: 100%; 
-            max-height: 85vh; /* Screen ထက်မကျော်စေရန် */
-            object-fit: contain; 
-            border-radius: 10px;
-        }
+        .close { position: absolute; right: 15px; top: -40px; font-size: 35px; cursor: pointer; color: white; }
+        .modal-content .close { color: #aaa; top: 10px; right: 20px; }
 
-        .close { 
-            position: absolute; 
-            right: 15px; 
-            top: -40px; 
-            font-size: 35px; 
-            cursor: pointer; 
-            color: white; 
-        }
-
-        #detailsModal .close, #orderModal .close { color: #aaa; top: 10px; right: 20px; }
-
-        input, textarea { width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #eee; border-radius: 12px; }
-        .submit-btn { background-color: #00b894; color: white; border: none; padding: 15px; width: 100%; border-radius: 12px; cursor: pointer; font-weight: bold; }
+        input, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #eee; border-radius: 10px; background: #fdfdfd; }
+        .submit-btn { background-color: #00b894; color: white; border: none; padding: 14px; width: 100%; border-radius: 10px; cursor: pointer; font-weight: bold; margin-top: 10px; }
     </style>
 </head>
 <body>
 
     <div class="header">
         <h1>THE SHOE HUB</h1>
-        <p>Premium Footwear Collection</p>
+        <p>Premium & Authentic Footwear Collection</p>
     </div>
 
     <div class="product-grid">
@@ -130,6 +108,60 @@
                 <button class="buy-btn">ဝယ်ယူမည်</button>
             </div>
         </div>
+
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77" onclick="zoomImage(this.src)" alt="Vans">
+            <div class="content" onclick="showProductDetails('Vans Classic Black', '38,500 MMK', 'https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77')">
+                <div class="title">Vans Classic Black</div>
+                <span class="price">38,500 MMK</span>
+                <button class="buy-btn">ဝယ်ယူမည်</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1600185365483-26d7a4cc7519" onclick="zoomImage(this.src)" alt="Air Jordan">
+            <div class="content" onclick="showProductDetails('Nike Air Jordan 1', '125,000 MMK', 'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519')">
+                <div class="title">Nike Air Jordan 1</div>
+                <span class="price">125,000 MMK</span>
+                <button class="buy-btn">ဝယ်ယူမည်</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1491553895911-0055eca6402d" onclick="zoomImage(this.src)" alt="Running">
+            <div class="content" onclick="showProductDetails('Black Running Pro', '65,000 MMK', 'https://images.unsplash.com/photo-1491553895911-0055eca6402d')">
+                <div class="title">Black Running Pro</div>
+                <span class="price">65,000 MMK</span>
+                <button class="buy-btn">ဝယ်ယူမည်</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1549298916-b41d501d3772" onclick="zoomImage(this.src)" alt="Sneaker">
+            <div class="content" onclick="showProductDetails('Casual White Sneaker', '42,000 MMK', 'https://images.unsplash.com/photo-1549298916-b41d501d3772')">
+                <div class="title">Casual White Sneaker</div>
+                <span class="price">42,000 MMK</span>
+                <button class="buy-btn">ဝယ်ယူမည်</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1539185441755-769473a23570" onclick="zoomImage(this.src)" alt="NB">
+            <div class="content" onclick="showProductDetails('New Balance 574', '88,000 MMK', 'https://images.unsplash.com/photo-1539185441755-769473a23570')">
+                <div class="title">New Balance 574</div>
+                <span class="price">88,000 MMK</span>
+                <button class="buy-btn">ဝယ်ယူမည်</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1560769629-975ec94e6a86" onclick="zoomImage(this.src)" alt="Sport">
+            <div class="content" onclick="showProductDetails('Sport Classic Yellow', '48,000 MMK', 'https://images.unsplash.com/photo-1560769629-975ec94e6a86')">
+                <div class="title">Sport Classic Yellow</div>
+                <span class="price">48,000 MMK</span>
+                <button class="buy-btn">ဝယ်ယူမည်</button>
+            </div>
+        </div>
     </div>
 
     <div id="imageModal" class="modal">
@@ -142,21 +174,21 @@
     <div id="detailsModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('detailsModal')">&times;</span>
-            <img id="detailsModalImg" src="" style="width: 100%; border-radius: 15px; height: 200px; object-fit: cover;">
-            <h2 id="detailsModalName" style="margin-top:20px;"></h2>
-            <p id="detailsModalPrice" style="color:#d63031; font-weight:bold; font-size:22px;"></p>
-            <button class="buy-btn" id="modalBuyBtn" style="margin-top: 20px;">ယခုပဲ မှာယူမည်</button>
+            <img id="detailsModalImg" src="" style="width: 100%; border-radius: 15px; height: 180px; object-fit: cover;">
+            <h2 id="detailsModalName" style="margin-top:20px; font-size: 20px;"></h2>
+            <p id="detailsModalPrice" style="color:#d63031; font-weight:bold; font-size:20px; margin-bottom: 15px;"></p>
+            <button class="buy-btn" id="modalBuyBtn">မှာယူမည်</button>
         </div>
     </div>
 
     <div id="orderModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('orderModal')">&times;</span>
-            <h2 id="modalProductName">မှာယူမည်</h2>
+            <h2 id="modalProductName" style="margin-bottom: 10px;"></h2>
             <input type="text" id="userName" placeholder="သင့်နာမည်">
             <input type="text" id="userPhone" placeholder="ဖုန်းနံပါတ်">
-            <textarea id="userRemark" rows="4" placeholder="မှတ်ချက်..."></textarea>
-            <button class="submit-btn" onclick="submitOrder()">အော်ဒါအတည်ပြုမည်</button>
+            <textarea id="userRemark" rows="3" placeholder="မှတ်ချက် (အရွယ်အစား၊ အရောင် စသည်ဖြင့်...)"></textarea>
+            <button class="submit-btn" onclick="submitOrder()">အော်ဒါတင်မည်</button>
         </div>
     </div>
 
@@ -165,8 +197,7 @@
 
         function zoomImage(src) { 
             document.getElementById('fullImage').src = src; 
-            const modal = document.getElementById('imageModal');
-            modal.style.display = "flex"; // အလယ်မှာ ပေါ်စေရန် flex သုံးသည်
+            document.getElementById('imageModal').style.display = "flex"; 
         }
 
         function showProductDetails(name, price, img) {
@@ -180,7 +211,8 @@
 
         function openOrderModal(name) { 
             closeModal('detailsModal'); 
-            document.getElementById('modalProductName').innerText = name; 
+            selectedProduct = name;
+            document.getElementById('modalProductName').innerText = name + " မှာယူမည်"; 
             document.getElementById('orderModal').style.display = "flex"; 
         }
 
@@ -188,9 +220,13 @@
 
         function submitOrder() {
             const name = document.getElementById('userName').value;
-            if(!name) { alert("နာမည်ဖြည့်ပါ"); return; }
-            alert("ကျေးဇူးတင်ပါတယ် " + name + "!\n" + selectedProduct + " အတွက် အော်ဒါရရှိပါပြီ။");
+            const phone = document.getElementById('userPhone').value;
+            if(!name || !phone) { alert("နာမည်နှင့် ဖုန်းနံပါတ် ဖြည့်ပေးပါ"); return; }
+            alert(`ကျေးဇူးတင်ပါတယ် ${name}!\n${selectedProduct} အတွက် အော်ဒါရရှိပါပြီ။`);
             closeModal('orderModal');
+            document.getElementById('userName').value = "";
+            document.getElementById('userPhone').value = "";
+            document.getElementById('userRemark').value = "";
         }
 
         window.onclick = (e) => { if(e.target.classList.contains('modal')) e.target.style.display = "none"; }
