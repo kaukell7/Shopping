@@ -1,0 +1,12 @@
+.price-container { margin-bottom: 15px; }
+.original-price { 
+    text-decoration: line-through; 
+    color: #999; 
+    font-size: 14px; 
+    margin-right: 5px; 
+}
+.discount-price { 
+    color: #d63031; 
+    font-size: 18px; 
+    font-weight: 800; 
+}
