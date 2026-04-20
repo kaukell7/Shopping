@@ -1,10 +1,17 @@
-.price-container { margin-bottom: 15px; }
+/* ဈေးနှုန်းပြသသည့် အပိုင်းအတွက် ပတ်ပတ်လည်အကွာအဝေး */
+.price-container { 
+    margin-bottom: 15px; 
+}
+
+/* မူရင်းဈေးနှုန်း (မျဉ်းဖြတ်ဖြင့်ပြရန်) */
 .original-price { 
     text-decoration: line-through; 
     color: #999; 
     font-size: 14px; 
     margin-right: 5px; 
 }
+
+/* လျှော့ဈေးနှုန်း (စာလုံးအကြီးနှင့် အရောင်အနီဖြင့်ပြရန်) */
 .discount-price { 
     color: #d63031; 
     font-size: 18px; 
