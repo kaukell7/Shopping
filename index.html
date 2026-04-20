@@ -5,33 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Premium Shoe Store</title>
     <style>
-        /* Modern Design System */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
         body { 
-            background-color: #f8f9fa; /* လူအကြည့်အများဆုံးနဲ့ မျက်စိအေးတဲ့ အရောင်နု */
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f8f9fa; 
+            font-family: 'Segoe UI', sans-serif;
             color: #2d3436;
             padding: 50px 20px;
         }
 
-        .header { 
-            text-align: center; 
-            margin-bottom: 50px; 
-        }
-
-        .header h1 { 
-            font-size: 36px; 
-            color: #1a1a1a; 
-            letter-spacing: 1px;
-            margin-bottom: 10px;
-        }
-
-        .header p { 
-            color: #636e72; 
-            font-size: 16px;
-        }
-
+        .header { text-align: center; margin-bottom: 50px; }
         .product-grid { 
             display: grid; 
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
@@ -40,125 +23,99 @@
             margin: 0 auto; 
         }
 
-        /* Card Design ကို ပိုပြီး Clean ဖြစ်အောင် ပြင်ထားပါတယ် */
         .card { 
             background: #ffffff; 
             border-radius: 20px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05); /* နူးညံ့တဲ့ အရိပ် */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
             overflow: hidden; 
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: transform 0.3s ease;
             border: 1px solid #f1f1f1;
         }
 
-        .card:hover { 
-            transform: translateY(-12px); 
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1); 
-        }
+        .card:hover { transform: translateY(-10px); }
 
         .card img { 
             width: 100%; 
             height: 260px; 
             object-fit: cover; 
             cursor: zoom-in;
-            border-bottom: 1px solid #f9f9f9;
         }
 
-        .content { 
-            padding: 25px; 
-            text-align: center;
-        }
-
-        .title { 
-            font-size: 19px; 
-            font-weight: 700; 
-            margin-bottom: 8px; 
-            color: #2d3436;
-        }
-
-        .price { 
-            color: #d63031; 
-            font-size: 20px; 
-            font-weight: 800; 
-            margin-bottom: 20px;
-            display: block;
-        }
+        .content { padding: 25px; text-align: center; }
+        .title { font-size: 19px; font-weight: 700; margin-bottom: 8px; }
+        .price { color: #d63031; font-size: 20px; font-weight: 800; margin-bottom: 20px; display: block; }
 
         .buy-btn { 
-            background: linear-gradient(135deg, #2d3436 0%, #000000 100%);
-            color: white; 
-            border: none; 
-            padding: 14px; 
-            border-radius: 12px; 
-            cursor: pointer; 
-            width: 100%; 
-            font-weight: 600; 
-            font-size: 15px;
-            transition: opacity 0.3s;
+            background: #2d3436;
+            color: white; border: none; padding: 14px; 
+            border-radius: 12px; cursor: pointer; width: 100%; font-weight: 600; 
         }
 
-        .buy-btn:hover { 
-            opacity: 0.9;
-        }
-
-        /* Modals & Inputs */
+        /* --- Modal System (ပြင်ဆင်ထားသောအပိုင်း) --- */
         .modal { 
             display: none; 
             position: fixed; 
             z-index: 1000; 
             left: 0; top: 0; 
             width: 100%; height: 100%; 
-            background-color: rgba(0,0,0,0.7); 
-            backdrop-filter: blur(5px); /* Background ကို ဝါးပေးတာ (Modern look) */
+            background-color: rgba(0,0,0,0.85); 
+            backdrop-filter: blur(5px);
+            /* အလယ်တည့်တည့်ပို့ရန် flex သုံးထားသည် */
+            display: none; 
+            align-items: center; 
+            justify-content: center;
         }
 
         .modal-content { 
             background: white; 
-            margin: 5% auto; 
-            padding: 35px; 
+            padding: 30px; 
             border-radius: 25px; 
             width: 90%; 
             max-width: 450px; 
-            position: relative; 
-            animation: slideUp 0.4s ease;
+            position: relative;
+            margin: auto; /* Browser အဟောင်းများအတွက် */
         }
 
-        @keyframes slideUp {
-            from { transform: translateY(50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+        /* ပုံကြည့်ရုံသီးသန့် Modal */
+        #imageModal .modal-content { 
+            background: transparent; 
+            max-width: 80vh; /* ပုံမရှည်ထွက်သွားစေရန် */
+            padding: 0;
         }
 
-        input, textarea { 
-            width: 100%; padding: 15px; margin: 10px 0; 
-            border: 1px solid #eee; border-radius: 12px; 
-            background-color: #f8f9fa; font-family: inherit;
+        #fullImage { 
+            width: 100%; 
+            max-height: 85vh; /* Screen ထက်မကျော်စေရန် */
+            object-fit: contain; 
+            border-radius: 10px;
         }
 
-        .submit-btn { 
-            background-color: #00b894; 
-            color: white; border: none; 
-            padding: 15px; width: 100%; 
-            border-radius: 12px; cursor: pointer; 
-            font-weight: bold; margin-top: 15px; 
+        .close { 
+            position: absolute; 
+            right: 15px; 
+            top: -40px; 
+            font-size: 35px; 
+            cursor: pointer; 
+            color: white; 
         }
 
-        .close { position: absolute; right: 25px; top: 15px; font-size: 28px; cursor: pointer; color: #b2bec3; }
+        #detailsModal .close, #orderModal .close { color: #aaa; top: 10px; right: 20px; }
 
-        /* Full Image View */
-        #imageModal .modal-content { background: transparent; max-width: 900px; padding: 0; }
-        #fullImage { width: 100%; border-radius: 15px; }
+        input, textarea { width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #eee; border-radius: 12px; }
+        .submit-btn { background-color: #00b894; color: white; border: none; padding: 15px; width: 100%; border-radius: 12px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <div class="header">
         <h1>THE SHOE HUB</h1>
-        <p>Explore the premium collection of original footwear.</p>
+        <p>Premium Footwear Collection</p>
     </div>
 
     <div class="product-grid">
         <div class="card">
             <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff" onclick="zoomImage(this.src)" alt="Nike Red">
-            <div class="content" onclick="showProductDetails('Nike Red Sports', '45,000 MMK', this.parentElement.querySelector('img').src)">
+            <div class="content" onclick="showProductDetails('Nike Red Sports', '45,000 MMK', 'https://images.unsplash.com/photo-1542291026-7eec264c27ff')">
                 <div class="title">Nike Red Sports</div>
                 <span class="price">45,000 MMK</span>
                 <button class="buy-btn">ဝယ်ယူမည်</button>
@@ -167,18 +124,9 @@
 
         <div class="card">
             <img src="https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a" onclick="zoomImage(this.src)" alt="Adidas">
-            <div class="content" onclick="showProductDetails('Adidas Street Wear', '52,000 MMK', this.parentElement.querySelector('img').src)">
+            <div class="content" onclick="showProductDetails('Adidas Street Wear', '52,000 MMK', 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a')">
                 <div class="title">Adidas Street Wear</div>
                 <span class="price">52,000 MMK</span>
-                <button class="buy-btn">ဝယ်ယူမည်</button>
-            </div>
-        </div>
-
-        <div class="card">
-            <img src="https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77" onclick="zoomImage(this.src)" alt="Vans">
-            <div class="content" onclick="showProductDetails('Vans Classic', '38,500 MMK', this.parentElement.querySelector('img').src)">
-                <div class="title">Vans Classic</div>
-                <span class="price">38,500 MMK</span>
                 <button class="buy-btn">ဝယ်ယူမည်</button>
             </div>
         </div>
@@ -194,11 +142,10 @@
     <div id="detailsModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('detailsModal')">&times;</span>
-            <img id="detailsModalImg" src="" style="width: 100%; border-radius: 15px;">
+            <img id="detailsModalImg" src="" style="width: 100%; border-radius: 15px; height: 200px; object-fit: cover;">
             <h2 id="detailsModalName" style="margin-top:20px;"></h2>
             <p id="detailsModalPrice" style="color:#d63031; font-weight:bold; font-size:22px;"></p>
-            <p style="color:#636e72; margin:15px 0;">Premium quality footwear designed for comfort and style.</p>
-            <button class="buy-btn" id="modalBuyBtn">ယခုပဲ မှာယူမည်</button>
+            <button class="buy-btn" id="modalBuyBtn" style="margin-top: 20px;">ယခုပဲ မှာယူမည်</button>
         </div>
     </div>
 
@@ -208,31 +155,45 @@
             <h2 id="modalProductName">မှာယူမည်</h2>
             <input type="text" id="userName" placeholder="သင့်နာမည်">
             <input type="text" id="userPhone" placeholder="ဖုန်းနံပါတ်">
-            <textarea id="userRemark" rows="4" placeholder="မှတ်ချက် (အရွယ်အစား၊ အရောင်...)"></textarea>
+            <textarea id="userRemark" rows="4" placeholder="မှတ်ချက်..."></textarea>
             <button class="submit-btn" onclick="submitOrder()">အော်ဒါအတည်ပြုမည်</button>
         </div>
     </div>
 
     <script>
         let selectedProduct = "";
-        function zoomImage(src) { document.getElementById('fullImage').src = src; document.getElementById('imageModal').style.display = "block"; }
+
+        function zoomImage(src) { 
+            document.getElementById('fullImage').src = src; 
+            const modal = document.getElementById('imageModal');
+            modal.style.display = "flex"; // အလယ်မှာ ပေါ်စေရန် flex သုံးသည်
+        }
+
         function showProductDetails(name, price, img) {
             selectedProduct = name;
             document.getElementById('detailsModalName').innerText = name;
             document.getElementById('detailsModalPrice').innerText = price;
             document.getElementById('detailsModalImg').src = img;
-            document.getElementById('detailsModal').style.display = "block";
+            document.getElementById('detailsModal').style.display = "flex";
             document.getElementById('modalBuyBtn').onclick = () => openOrderModal(name);
         }
-        function openOrderModal(name) { closeModal('detailsModal'); document.getElementById('modalProductName').innerText = name; document.getElementById('orderModal').style.display = "block"; }
+
+        function openOrderModal(name) { 
+            closeModal('detailsModal'); 
+            document.getElementById('modalProductName').innerText = name; 
+            document.getElementById('orderModal').style.display = "flex"; 
+        }
+
         function closeModal(id) { document.getElementById(id).style.display = "none"; }
+
         function submitOrder() {
             const name = document.getElementById('userName').value;
             if(!name) { alert("နာမည်ဖြည့်ပါ"); return; }
             alert("ကျေးဇူးတင်ပါတယ် " + name + "!\n" + selectedProduct + " အတွက် အော်ဒါရရှိပါပြီ။");
             closeModal('orderModal');
         }
-        window.onclick = (e) => { if(e.target.className === 'modal') e.target.style.display = "none"; }
+
+        window.onclick = (e) => { if(e.target.classList.contains('modal')) e.target.style.display = "none"; }
     </script>
 </body>
 </html>
