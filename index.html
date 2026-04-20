@@ -130,4 +130,258 @@
             overflow: hidden; 
             transition: all 0.3s ease;
             border: 1px solid #f1f1f1;
-            display: flex
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover { transform: translateY(-10px); }
+
+        .card img { 
+            width: 100%; 
+            height: 220px; 
+            object-fit: cover; 
+            cursor: zoom-in;
+        }
+
+        .content { padding: 20px; text-align: center; flex-grow: 1; }
+        .title { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+        .price { color: #d63031; font-size: 18px; font-weight: 800; margin-bottom: 15px; display: block; }
+
+        .buy-btn { 
+            background: #2d3436; color: white; border: none; padding: 12px; 
+            border-radius: 10px; cursor: pointer; width: 100%; font-weight: 600; 
+        }
+
+        /* Modals */
+        .modal { 
+            display: none; position: fixed; z-index: 1000; 
+            left: 0; top: 0; width: 100%; height: 100%; 
+            background-color: rgba(0,0,0,0.85); 
+            backdrop-filter: blur(5px);
+            align-items: center; justify-content: center;
+        }
+
+        .modal-content { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 400px; position: relative; }
+        #imageModal .modal-content { background: transparent; max-width: 80vh; padding: 0; }
+        #fullImage { width: 100%; max-height: 80vh; object-fit: contain; border-radius: 10px; }
+        .close { position: absolute; right: 15px; top: -40px; font-size: 35px; cursor: pointer; color: white; }
+        .modal-content .close { color: #aaa; top: 10px; right: 20px; }
+
+        .history-item { border-bottom: 1px solid #eee; padding: 10px 0; text-align: left; font-size: 14px; }
+
+        input[type="text"], input[type="number"], textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #eee; border-radius: 10px; }
+        .submit-btn { background-color: #00b894; color: white; border: none; padding: 14px; width: 100%; border-radius: 10px; cursor: pointer; font-weight: bold; }
+
+        /* Responsive slider */
+        @media (max-width: 768px) {
+            .promo-slider { height: 180px; }
+            .promo-text { font-size: 14px; bottom: 10px; left: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>THE SHOE HUB</h1>
+        <p>Premium & Authentic Footwear Collection</p>
+        
+        <div class="cart-container" onclick="showOrderHistory()">
+            <span>🛒</span>
+            <span id="historyCount">0</span>
+        </div>
+    </div>
+
+    <div class="promo-slider">
+        <img class="slide" src="https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=2012&auto=format&fit=crop">
+        <img class="slide" src="https://images.unsplash.com/photo-1514989940723-e8e51635b782?q=80&w=2070&auto=format&fit=crop">
+        <img class="slide" src="https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?q=80&w=2070&auto=format&fit=crop">
+        
+        <div class="promo-text">
+            <strong>NEW COLLECTION!</strong><br>
+            ဒီတစ်ပတ်အတွက် အထူးလျော့စျေး ၃၀%
+        </div>
+    </div>
+
+    <div class="controls-container">
+        <div class="filter-group">
+            <button class="filter-btn active" onclick="filterProducts('all', this)">All</button>
+            <button class="filter-btn" onclick="filterProducts('boy', this)">Boy</button>
+            <button class="filter-btn" onclick="filterProducts('girl', this)">Girl</button>
+            <button class="filter-btn" onclick="filterProducts('kid', this)">Kid</button>
+        </div>
+        
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Search shoes..." onkeyup="searchProducts()">
+        </div>
+    </div>
+
+    <div class="product-grid" id="productGrid"></div>
+
+    <div id="imageModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('imageModal')">&times;</span>
+            <img id="fullImage" src="">
+        </div>
+    </div>
+
+    <div id="detailsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('detailsModal')">&times;</span>
+            <img id="detailsModalImg" src="" style="width: 100%; border-radius: 15px; height: 180px; object-fit: cover;">
+            <h2 id="detailsModalName" style="margin-top:20px;"></h2>
+            <p id="detailsModalPrice" style="color:#d63031; font-weight:bold; font-size:20px;"></p>
+            <button class="buy-btn" id="modalBuyBtn" style="margin-top: 15px;">မှာယူမည်</button>
+        </div>
+    </div>
+
+    <div id="orderModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('orderModal')">&times;</span>
+            <h2 id="modalProductName"></h2>
+            <input type="text" id="userName" placeholder="သင့်နာမည်">
+            <input type="text" id="userPhone" placeholder="ဖုန်းနံပါတ်">
+            <div style="text-align: left; margin: 10px 0;">
+                <label style="font-size: 14px; font-weight: bold;">အရေအတွက်:</label>
+                <input type="number" id="userQty" value="1" min="1" style="width: 80px; margin-left: 10px;">
+            </div>
+            <textarea id="userRemark" rows="3" placeholder="မှတ်ချက် (အရွယ်အစား၊ အရောင် စသည်ဖြင့်...)"></textarea>
+            <button class="submit-btn" onclick="submitOrder()">အော်ဒါတင်မည်</button>
+        </div>
+    </div>
+
+    <div id="historyModal" class="modal">
+        <div class="modal-content" style="max-width: 450px;">
+            <span class="close" onclick="closeModal('historyModal')">&times;</span>
+            <h2>Order History</h2>
+            <div id="historyList" style="margin-top: 15px; max-height: 350px; overflow-y: auto;"></div>
+            <button class="buy-btn" onclick="clearHistory()" style="margin-top: 15px; background: #aaa;">Clear Records</button>
+        </div>
+    </div>
+
+    <script>
+        // Slider Logic
+        let slideIndex = 0;
+        showSlides();
+
+        function showSlides() {
+            let i;
+            let slides = document.getElementsByClassName("slide");
+            for (i = 0; i < slides.length; i++) {
+                slides[i].style.display = "none";  
+            }
+            slideIndex++;
+            if (slideIndex > slides.length) {slideIndex = 1}    
+            slides[slideIndex-1].style.display = "block";  
+            setTimeout(showSlides, 3000); // ၃ စက္ကန့်လျှင် တစ်ကြိမ် ပုံပြောင်းမည်
+        }
+
+        const products = [
+            { id: 1, name: "Nike Red Sports", price: "45,000 MMK", category: "boy", img: "https://images.unsplash.com/photo-1542291026-7eec264c27ff" },
+            { id: 2, name: "Adidas Street Wear", price: "52,000 MMK", category: "girl", img: "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a" },
+            { id: 3, name: "Vans Classic Black", price: "38,500 MMK", category: "boy", img: "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77" },
+            { id: 4, name: "Nike Air Jordan 1", price: "125,000 MMK", category: "boy", img: "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519" },
+            { id: 5, name: "Tiny Steps Kid", price: "25,000 MMK", category: "kid", img: "https://images.unsplash.com/photo-1514989940723-e8e51635b782" },
+            { id: 6, name: "Pink Sparkle Girl", price: "32,000 MMK", category: "girl", img: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2" },
+            { id: 7, name: "New Balance 574", price: "88,000 MMK", category: "boy", img: "https://images.unsplash.com/photo-1539185441755-769473a23570" },
+            { id: 8, name: "Junior Runner", price: "35,000 MMK", category: "kid", img: "https://images.unsplash.com/photo-1591195853828-11db59a44f6b" }
+        ];
+
+        let selectedProduct = "";
+
+        function renderProducts(items) {
+            const grid = document.getElementById('productGrid');
+            grid.innerHTML = items.map(p => `
+                <div class="card">
+                    <img src="${p.img}" onclick="zoomImage('${p.img}')">
+                    <div class="content" onclick="showProductDetails('${p.name}', '${p.price}', '${p.img}')">
+                        <div class="title">${p.name}</div>
+                        <span class="price">${p.price}</span>
+                        <button class="buy-btn">ဝယ်ယူမည်</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterProducts(category, btn) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            category === 'all' ? renderProducts(products) : renderProducts(products.filter(p => p.category === category));
+        }
+
+        function searchProducts() {
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            renderProducts(products.filter(p => p.name.toLowerCase().includes(term)));
+        }
+
+        function zoomImage(src) { 
+            document.getElementById('fullImage').src = src; 
+            document.getElementById('imageModal').style.display = "flex"; 
+        }
+
+        function showProductDetails(name, price, img) {
+            selectedProduct = name;
+            document.getElementById('detailsModalName').innerText = name;
+            document.getElementById('detailsModalPrice').innerText = price;
+            document.getElementById('detailsModalImg').src = img;
+            document.getElementById('detailsModal').style.display = "flex";
+            document.getElementById('modalBuyBtn').onclick = () => openOrderModal(name);
+        }
+
+        function openOrderModal(name) { 
+            closeModal('detailsModal'); 
+            document.getElementById('modalProductName').innerText = name + " မှာယူမည်"; 
+            document.getElementById('orderModal').style.display = "flex"; 
+        }
+
+        function closeModal(id) { document.getElementById(id).style.display = "none"; }
+
+        function submitOrder() {
+            const name = document.getElementById('userName').value;
+            const phone = document.getElementById('userPhone').value;
+            const qty = document.getElementById('userQty').value;
+            if(!name || !phone) { alert("အချက်အလက်ပြည့်စုံစွာဖြည့်ပါ"); return; }
+            const order = { product: selectedProduct, qty: qty, date: new Date().toLocaleString(), customer: name };
+            let history = JSON.parse(localStorage.getItem('myOrders')) || [];
+            history.push(order);
+            localStorage.setItem('myOrders', JSON.stringify(history));
+            updateCartCount();
+            alert(`ကျေးဇူးတင်ပါတယ် ${name}!\n${selectedProduct} (${qty} ရံ) မှာယူမှုအောင်မြင်ပါသည်။`);
+            closeModal('orderModal');
+        }
+
+        function showOrderHistory() {
+            const history = JSON.parse(localStorage.getItem('myOrders')) || [];
+            const list = document.getElementById('historyList');
+            if(history.length === 0) {
+                list.innerHTML = "<p style='text-align:center;'>မှာယူထားသောမှတ်တမ်းမရှိသေးပါ။</p>";
+            } else {
+                list.innerHTML = history.reverse().map(o => `
+                    <div class="history-item">
+                        <strong>${o.product}</strong> (${o.qty} ရံ)<br>
+                        <small>📅 ${o.date}</small> | <small>👤 ${o.customer}</small>
+                    </div>
+                `).join('');
+            }
+            document.getElementById('historyModal').style.display = "flex";
+        }
+
+        function updateCartCount() {
+            const history = JSON.parse(localStorage.getItem('myOrders')) || [];
+            document.getElementById('historyCount').innerText = history.length;
+        }
+
+        function clearHistory() {
+            if(confirm("မှတ်တမ်းများကို ဖျက်လိုပါသလား?")) {
+                localStorage.removeItem('myOrders');
+                updateCartCount();
+                closeModal('historyModal');
+            }
+        }
+
+        window.onclick = (e) => { if(e.target.classList.contains('modal')) e.target.style.display = "none"; }
+        
+        renderProducts(products);
+        updateCartCount();
+    </script>
+</body>
+</html>
