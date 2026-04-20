@@ -5,22 +5,98 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Shoe Store</title>
     <style>
-        body { font-family: sans-serif; background-color: #f4f4f4; display: flex; justify-content: center; padding: 20px; }
-        .card { background: white; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); width: 300px; text-align: center; padding: 20px; }
-        .card img { width: 100%; border-radius: 8px; height: 200px; object-fit: cover; }
-        .title { font-size: 22px; margin: 10px 0; font-weight: bold; }
-        .price { color: #e44d26; font-size: 20px; margin-bottom: 15px; font-weight: bold; }
-        .buy-btn { background-color: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; width: 100%; }
-        .buy-btn:hover { background-color: #0056b3; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; padding: 40px 20px; }
+        
+        .header { text-align: center; margin-bottom: 40px; }
+        .header h1 { color: #333; font-size: 32px; }
+        .header p { color: #666; margin-top: 10px; }
+
+        /* Product Grid: ဒီအပိုင်းက ပုံတွေကို ဘေးတိုက် စီပေးတာပါ */
+        .product-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+            gap: 30px; 
+            max-width: 1200px; 
+            margin: 0 auto; 
+        }
+
+        .card { 
+            background: white; 
+            border-radius: 15px; 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05); 
+            overflow: hidden; 
+            transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover { transform: translateY(-10px); }
+
+        .card img { width: 100%; height: 250px; object-fit: cover; }
+
+        .content { padding: 20px; text-align: center; }
+        .title { font-size: 20px; font-weight: bold; color: #333; margin-bottom: 10px; }
+        .price { color: #ff4757; font-size: 18px; font-weight: bold; margin-bottom: 20px; }
+
+        .buy-btn { 
+            background-color: #2f3542; 
+            color: white; 
+            border: none; 
+            padding: 12px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            width: 100%; 
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .buy-btn:hover { background-color: #57606f; }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff" alt="Shoe Image">
-        <div class="title">Nike Air Max</div>
-        <div class="price">45,000 MMK</div>
-        <button class="buy-btn">ဝယ်ယူမည်</button>
+    <div class="header">
+        <h1>ရှုးဖိနပ်မျိုးစုံ အရောင်းဆိုင်</h1>
+        <p>အရည်အသွေးမြင့် ဖိနပ်များကို ဈေးနှုန်းချိုသာစွာဖြင့် ဝယ်ယူနိုင်ပါသည်</p>
+    </div>
+
+    <div class="product-grid">
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff" alt="Shoe 1">
+            <div class="content">
+                <div class="title">Nike Red Sports</div>
+                <div class="price">45,000 MMK</div>
+                <button class="buy-btn">ဝယ်ယူမည်</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a" alt="Shoe 2">
+            <div class="content">
+                <div class="title">Adidas Street Wear</div>
+                <div class="price">52,000 MMK</div>
+                <button class="buy-btn">ဝယ်ယူမည်</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77" alt="Shoe 3">
+            <div class="content">
+                <div class="title">Vans Classic</div>
+                <div class="price">38,500 MMK</div>
+                <button class="buy-btn">ဝယ်ယူမည်</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1584735175315-9d5df23860e6" alt="Shoe 4">
+            <div class="content">
+                <div class="title">Puma Running</div>
+                <div class="price">48,000 MMK</div>
+                <button class="buy-btn">ဝယ်ယူမည်</button>
+            </div>
+        </div>
     </div>
 
 </body>
