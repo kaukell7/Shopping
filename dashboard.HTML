@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Admin - Create Agent</title>
+    <link rel="stylesheet" href="CSS/style.css"> </head>
+<body>
+    <div class="admin-container">
+        <h1>Super Admin Control Panel</h1>
+        
+        <div class="create-agent-section">
+            <h3>Add New Agent Account</h3>
+            <input type="text" id="agentName" placeholder="Agent Shop Name (e.g. Ali Shoes)">
+            <input type="text" id="agentId" placeholder="Unique ID (e.g. ali_001)">
+            <input type="password" id="agentPass" placeholder="Set Password">
+            <button onclick="saveAgent()">Create & Save to MongoDB</button>
+        </div>
+
+        <hr>
+
+        <div class="agent-list">
+            <h3>Existing Agents</h3>
+            <div id="displayAgents"></div>
+        </div>
+    </div>
+
+    <script src="JavaScript/admin-script.js"></script>
+</body>
+</html>
