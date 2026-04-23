@@ -63,3 +63,38 @@
     height: 30px;
     fill: white;
 }
+
+/* --- Promo Slider (PC & Mobile Responsive) --- */
+.promo-slider {
+    width: 100vw; /* PC မှာ screen အပြည့်ယူရန် */
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    margin-bottom: 30px;
+    height: 350px; /* PC အတွက် အမြင့် */
+    background: #dfe6e9;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.slide {
+    width: 100%;
+    height: 100%;
+    display: none;
+    position: absolute;
+    object-fit: cover; /* ပုံမပိန်သွားစေရန် */
+}
+
+/* ဖုန်းအတွက် ပြန်လည်ချိန်ညှိခြင်း */
+@media (max-width: 768px) {
+    .promo-slider {
+        width: 100%;
+        left: 0;
+        margin-left: 0;
+        margin-right: 0;
+        height: 180px; /* ဖုန်းမှာတော့ အမြင်မရှုပ်အောင် အမြင့်လျှော့ထားသည် */
+        border-radius: 15px; /* ဖုန်းမှာ ဘေးနည်းနည်းဝိုင်းလျှင် ပိုလှပါသည် */
+    }
+}
