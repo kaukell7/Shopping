@@ -159,6 +159,27 @@
         }
         .buy-btn:hover { background: #00b894; }
 
+        /* Live Chat Floating Button CSS */
+        .live-chat-btn {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 60px;
+            height: 60px;
+            background-color: #00b894;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            cursor: pointer;
+            z-index: 9999;
+            transition: transform 0.3s ease;
+        }
+
+        .live-chat-btn:hover { transform: scale(1.1); }
+        .live-chat-btn svg { width: 30px; height: 30px; fill: white; }
+
         /* Modals */
         .modal { 
             display: none; position: fixed; z-index: 1000; 
@@ -174,7 +195,6 @@
         .close { position: absolute; right: 15px; top: -40px; font-size: 35px; cursor: pointer; color: white; }
         .modal-content .close { color: #aaa; top: 10px; right: 20px; }
 
-        /* မှာယူမှုမှတ်တမ်း Modal အတွက် Style */
         .history-item { border-bottom: 1px solid #eee; padding: 10px 0; font-size: 14px; }
 
         input[type="text"], input[type="number"], textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #eee; border-radius: 10px; outline: none; }
@@ -184,6 +204,7 @@
             .promo-slider { height: 180px; }
             .promo-text { font-size: 14px; bottom: 10px; left: 10px; }
             .cart-container { right: 0; }
+            .live-chat-btn { bottom: 20px; right: 20px; width: 50px; height: 50px; }
         }
     </style>
 </head>
@@ -226,6 +247,12 @@
         <div class="product-grid" id="productGrid"></div>
     </div>
 
+    <div class="live-chat-btn" onclick="alert('Live Chat ဝန်ဆောင်မှု မကြာမီ လာပါမည်...')">
+        <svg viewBox="0 0 24 24">
+            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+        </svg>
+    </div>
+
     <div id="imageModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('imageModal')">&times;</span>
@@ -255,7 +282,7 @@
 
     <script>
         let slideIndex = 0;
-        let selectedProduct = ""; // ရွေးချယ်ထားသော ပစ္စည်းအမည် သိမ်းရန်
+        let selectedProduct = ""; 
         showSlides();
 
         function showSlides() {
@@ -301,7 +328,7 @@
         }
 
         function openOrderModal(name) {
-            selectedProduct = name; // အမည်သိမ်းထားတယ်
+            selectedProduct = name; 
             document.getElementById('modalProductTitle').innerText = name + " မှာယူမည်";
             document.getElementById('orderModal').style.display = "flex";
         }
@@ -341,7 +368,6 @@
                 date: new Date().toLocaleString()
             };
 
-            // LocalStorage မှာ သိမ်းဆည်းခြင်း
             let history = JSON.parse(localStorage.getItem('orderHistory')) || [];
             history.push(orderData);
             localStorage.setItem('orderHistory', JSON.stringify(history));
@@ -352,7 +378,6 @@
             
             closeModal('orderModal');
             
-            // Form ရှင်းခြင်း
             document.getElementById('userName').value = "";
             document.getElementById('userPhone').value = "";
             document.getElementById('userQty').value = "1";
@@ -381,7 +406,6 @@
             document.getElementById('historyModal').style.display = "flex";
         }
 
-        // စဖွင့်ချင်း update လုပ်ပေးရန်
         updateHistoryCount();
         renderProducts(products);
     </script>
