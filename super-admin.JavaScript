@@ -48,7 +48,7 @@ async function saveAgent() {
             // Error တက်ပါက Console တွင် အသေးစိတ်ကြည့်ရန်
             const errorRes = await response.json();
             console.error("Supabase Error Details:", errorRes);
-            alert("Database သိမ်းဆည်းမှု မအောင်မြင်ပါ။ RLS Settings နှင့် Table Name ကို ထပ်မံစစ်ဆေးပေးပါ");
+            alert("Database သိမ်းဆည်းမှု မအောင်မြင်ပါ။ (RLS Setting ကို ထပ်မံစစ်ဆေးပေးပါ)");
         }
         
     } catch (error) {
