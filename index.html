@@ -11,13 +11,12 @@
             background-color: #f8f9fa; 
             font-family: 'Segoe UI', sans-serif;
             color: #2d3436;
-            padding: 20px; /* ဘေးနှစ်ဖက် နေရာလွတ် ပိုသိသာစေရန် */
+            padding: 20px;
         }
 
-        /* --- ADDED: Wrapper for layout --- */
         .page-wrapper {
             max-width: 1200px;
-            margin: 0 auto; /* အလယ်ဗဟိုသို့ ပို့ပေးသည် */
+            margin: 0 auto;
             width: 100%;
         }
 
@@ -25,7 +24,7 @@
         .header h1 { font-size: 32px; letter-spacing: 2px; margin-bottom: 5px; }
         
         .promo-slider {
-            width: 100%; /* CHANGED */
+            width: 100%;
             margin-bottom: 30px;
             height: 250px;
             background: #dfe6e9;
@@ -56,11 +55,12 @@
             border-radius: 10px;
             font-size: 18px;
             backdrop-filter: blur(5px);
+            z-index: 2;
         }
 
         .cart-container {
             position: absolute;
-            right: 0px; /* CHANGED */
+            right: 0px;
             top: 10px;
             cursor: pointer;
             background: #2d3436;
@@ -77,7 +77,7 @@
         #historyCount { font-weight: bold; background: #d63031; padding: 2px 8px; border-radius: 50%; font-size: 12px; }
 
         .controls-container {
-            width: 100%; /* CHANGED */
+            width: 100%;
             margin: 0 auto 40px auto;
             display: flex;
             flex-wrap: wrap;
@@ -122,7 +122,7 @@
             display: grid; 
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); 
             gap: 30px; 
-            width: 100%; /* CHANGED */
+            width: 100%;
         }
 
         .card { 
@@ -153,8 +153,9 @@
             background: #2d3436; color: white; border: none; padding: 12px; 
             border-radius: 10px; cursor: pointer; width: 100%; font-weight: 600; 
         }
+        .buy-btn:hover { background: #00b894; }
 
-        /* Modals... (Keep same modal styles) */
+        /* Modals */
         .modal { 
             display: none; position: fixed; z-index: 1000; 
             left: 0; top: 0; width: 100%; height: 100%; 
@@ -163,13 +164,14 @@
             align-items: center; justify-content: center;
         }
         .modal-content { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 400px; position: relative; }
-        #imageModal .modal-content { background: transparent; max-width: 80vh; padding: 0; }
+        #imageModal .modal-content { background: transparent; max-width: 80vh; padding: 0; border:none; }
         #fullImage { width: 100%; max-height: 80vh; object-fit: contain; border-radius: 10px; }
+        
         .close { position: absolute; right: 15px; top: -40px; font-size: 35px; cursor: pointer; color: white; }
         .modal-content .close { color: #aaa; top: 10px; right: 20px; }
-        .history-item { border-bottom: 1px solid #eee; padding: 10px 0; text-align: left; font-size: 14px; }
-        input[type="text"], input[type="number"], textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #eee; border-radius: 10px; }
-        .submit-btn { background-color: #00b894; color: white; border: none; padding: 14px; width: 100%; border-radius: 10px; cursor: pointer; font-weight: bold; }
+
+        input[type="text"], input[type="number"], textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #eee; border-radius: 10px; outline: none; }
+        .submit-btn { background-color: #00b894; color: white; border: none; padding: 14px; width: 100%; border-radius: 10px; cursor: pointer; font-weight: bold; margin-top: 10px; }
 
         @media (max-width: 768px) {
             .promo-slider { height: 180px; }
@@ -181,12 +183,10 @@
 <body>
 
     <div class="page-wrapper">
-
         <div class="header">
             <h1>THE SHOE HUB</h1>
             <p>Premium & Authentic Footwear Collection</p>
-            
-            <div class="cart-container" onclick="showOrderHistory()">
+            <div class="cart-container" onclick="alert('Order History coming soon!')">
                 <span>🛒</span>
                 <span id="historyCount">0</span>
             </div>
@@ -217,18 +217,30 @@
         </div>
 
         <div class="product-grid" id="productGrid"></div>
+    </div>
 
-    </div> <div id="imageModal" class="modal">
+    <div id="imageModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('imageModal')">&times;</span>
             <img id="fullImage" src="">
         </div>
     </div>
+
+    <div id="orderModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('orderModal')" style="top: 10px; color: #333;">&times;</span>
+            <h3 id="modalProductTitle" style="margin-bottom: 15px;">မှာယူရန်</h3>
+            <input type="text" id="userName" placeholder="သင့်အမည်">
+            <input type="text" id="userPhone" placeholder="ဖုန်းနံပါတ်">
+            <textarea id="userAddress" placeholder="ပို့ဆောင်ရမည့် လိပ်စာ"></textarea>
+            <button class="submit-btn" onclick="submitOrder()">အော်ဒါတင်မည်</button>
+        </div>
+    </div>
+
     <script>
-        // အရင် script အတိုင်း ပြန်ထည့်ပေးပါ (Slider, Products data, filterFunctions, etc.)
-        // code အရှည်ကြီး ဖြစ်မှာစိုးလို့ အတိုချုပ်ထားခြင်း ဖြစ်ပါတယ်။
         let slideIndex = 0;
         showSlides();
+
         function showSlides() {
             let i;
             let slides = document.getElementsByClassName("slide");
@@ -238,6 +250,7 @@
             slides[slideIndex-1].style.display = "block";  
             setTimeout(showSlides, 3000);
         }
+
         const products = [
             { id: 1, name: "Nike Red Sports", price: "45,000 MMK", category: "boy", img: "https://images.unsplash.com/photo-1542291026-7eec264c27ff" },
             { id: 2, name: "Adidas Street Wear", price: "52,000 MMK", category: "girl", img: "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a" },
@@ -248,6 +261,7 @@
             { id: 7, name: "New Balance 574", price: "88,000 MMK", category: "boy", img: "https://images.unsplash.com/photo-1539185441755-769473a23570" },
             { id: 8, name: "Junior Runner", price: "35,000 MMK", category: "kid", img: "https://images.unsplash.com/photo-1591195853828-11db59a44f6b" }
         ];
+
         function renderProducts(items) {
             const grid = document.getElementById('productGrid');
             grid.innerHTML = items.map(p => `
@@ -256,13 +270,50 @@
                     <div class="content">
                         <div class="title">${p.name}</div>
                         <span class="price">${p.price}</span>
-                        <button class="buy-btn">ဝယ်ယူမည်</button>
+                        <button class="buy-btn" onclick="openOrderModal('${p.name}')">ဝယ်ယူမည်</button>
                     </div>
                 </div>
             `).join('');
         }
+
+        function zoomImage(src) {
+            document.getElementById('fullImage').src = src;
+            document.getElementById('imageModal').style.display = "flex";
+        }
+
+        function openOrderModal(name) {
+            document.getElementById('modalProductTitle').innerText = name + " မှာယူမည်";
+            document.getElementById('orderModal').style.display = "flex";
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).style.display = "none";
+        }
+
+        function filterProducts(cat, btn) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const filtered = cat === 'all' ? products : products.filter(p => p.category === cat);
+            renderProducts(filtered);
+        }
+
+        function searchProducts() {
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = products.filter(p => p.name.toLowerCase().includes(term));
+            renderProducts(filtered);
+        }
+
+        function submitOrder() {
+            const name = document.getElementById('userName').value;
+            if(name) {
+                alert("ကျေးဇူးတင်ပါတယ် " + name + " ခင်ဗျာ။ အော်ဒါတင်ခြင်း အောင်မြင်ပါသည်။");
+                closeModal('orderModal');
+            } else {
+                alert("အမည်ဖြည့်ပေးပါ");
+            }
+        }
+
         renderProducts(products);
-        // ... (SubmitOrder, CloseModal etc logic များ ဆက်ထည့်ပါ)
     </script>
 </body>
 </html>
