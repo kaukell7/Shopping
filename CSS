@@ -1,49 +1,85 @@
-/* --- Logo အပိုင်း (Demo Logo အပါအဝင်) --- */
+/* --- Global Styles & Background --- */
+body { 
+    /* သင်ပေးပို့ထားသော Hexagon ပုံကို Background ထားခြင်း */
+    background-image: url('image_cf9941.jpg'); 
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    
+    font-family: 'Segoe UI', sans-serif;
+    color: #ffffff; /* နောက်ခံမှောင်သဖြင့် စာသားများကို အဖြူရောင်ပြောင်းထားသည် */
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+/* --- Logo အပိုင်း --- */
 .logo {
-    max-width: 150px; /* Logo ဆိုဒ်ကို လိုသလို ချိန်နိုင်ပါသည် */
+    max-width: 150px;
     height: auto;
     display: block;
-    margin: 10px auto; /* အလယ်ဗဟိုသို့ ပို့ရန် */
+    margin: 10px auto;
 }
 
 .demo-logo {
     width: 100px;
     height: 100px;
-    background-color: #f1f2f6; /* Logo မရှိသေးခင် ပြမည့် အရောင် */
+    background-color: rgba(255, 255, 255, 0.1); /* နောက်ခံနှင့်လိုက်အောင် ပွင့်လင်းမြင်သာမှုပေးထားသည် */
     border-radius: 12px;
     display: flex;
     justify-content: center;
     align-items: center;
     font-size: 14px;
-    color: #a4b0be;
+    color: #ffffff;
     font-weight: bold;
-    border: 2px dashed #ced4da; /* ဘောင်လေးခတ်ထားရန် */
+    border: 2px dashed rgba(255, 255, 255, 0.3);
 }
 
-/* --- ဈေးနှုန်းပြသသည့် အပိုင်း --- */
-.price-container { 
-    margin-bottom: 15px; 
+/* --- Main Layout Structure (Sidebar များအတွက်) --- */
+.main-layout {
+    display: flex;
+    max-width: 1500px;
+    margin: 0 auto;
+    gap: 20px;
+    padding: 0 15px;
+}
+
+/* --- Sidebar Ad Space (နီကွင်းပြထားသည့်နေရာ) --- */
+.sidebar-ad {
+    width: 200px;
+    flex-shrink: 0;
+    padding-top: 100px;
+}
+
+.ad-box {
+    width: 100%;
+    height: 500px; /* ကြော်ငြာအမြင့် */
+    background: rgba(255, 255, 255, 0.05); /* မှန်ကြည်ဒီဇိုင်း (Glassmorphism) */
+    backdrop-filter: blur(10px);
+    border: 2px dashed #ffffff; /* ဘောင်ကို အဖြူရောင်ပြောင်းထားသည် */
+    border-radius: 15px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px; /* ဈေးနှုန်းနှစ်ခုကြား အကွာအဝေး */
+    text-align: center;
+    position: sticky;
+    top: 20px;
+    color: #ffffff;
 }
 
-/* မူရင်းဈေးနှုန်း (မျဉ်းဖြတ်ဖြင့်ပြရန်) */
-.original-price { 
-    text-decoration: line-through; 
-    color: #b2bec3; 
-    font-size: 14px; 
+/* --- Product Cards Section --- */
+.card { 
+    background: rgba(255, 255, 255, 0.95); /* Card ကို အဖြူရောင်ထားခြင်းက ပစ္စည်းပုံများကို ပိုပေါ်လွင်စေသည် */
+    border-radius: 20px; 
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3); 
+    overflow: hidden; 
+    transition: 0.3s;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* လျှော့ဈေးနှုန်း (စာလုံးအကြီးနှင့် အရောင်အနီဖြင့်ပြရန်) */
-.discount-price { 
-    color: #d63031; 
-    font-size: 19px; 
-    font-weight: 800;
-}
+.card:hover { transform: translateY(-10px); }
 
-/* --- Card Content ထိန်းညှိခြင်း --- */
 .content {
     padding: 15px;
     display: flex;
@@ -55,7 +91,28 @@
     font-size: 16px;
     font-weight: 600;
     margin-bottom: 10px;
-    color: #2d3436;
+    color: #2d3436; /* Card အဖြူပေါ်တွင် စာသားအမည်း */
+}
+
+/* --- ဈေးနှုန်းပြသသည့် အပိုင်း --- */
+.price-container { 
+    margin-bottom: 15px; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.original-price { 
+    text-decoration: line-through; 
+    color: #b2bec3; 
+    font-size: 14px; 
+}
+
+.discount-price { 
+    color: #d63031; /* လျှော့ဈေးကို အနီရောင်ဖြင့် ပေါ်လွင်စေခြင်း */
+    font-size: 19px; 
+    font-weight: 800;
 }
 
 /* --- Live Chat Floating Button --- */
@@ -65,40 +122,29 @@
     right: 25px;
     width: 60px;
     height: 60px;
-    background-color: #00b894; /* အော်ဒါတင်သည့် ခလုတ်အရောင်နှင့် ညှိထားပါသည် */
+    background-color: #00b894;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
     cursor: pointer;
     z-index: 9999;
     transition: transform 0.3s ease;
 }
 
-.live-chat-btn:hover {
-    transform: scale(1.1); /* mouse တင်လိုက်လျှင် အနည်းငယ် ပွလာမည် */
-}
+.live-chat-btn:hover { transform: scale(1.1); }
 
-.live-chat-btn svg {
-    width: 30px;
-    height: 30px;
-    fill: white;
-}
-
-/* --- Promo Slider (PC တွင် Screen အပြည့်ဖြစ်စေရန်) --- */
+/* --- Promo Slider --- */
 .promo-slider {
-    width: 100vw; /* Browser screen ၏ width အပြည့် */
+    width: 100%;
     position: relative;
-    left: 50%;
-    right: 50%;
-    margin-left: -50vw; /* ဘေးအစွန်းထိ တွန်းထုတ်ရန် */
-    margin-right: -50vw;
     margin-bottom: 30px;
-    height: 350px; /* PC အတွက် အမြင့် */
+    height: 350px;
     background: #dfe6e9;
     overflow: hidden;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
 }
 
 .slide {
@@ -106,17 +152,18 @@
     height: 100%;
     display: none;
     position: absolute;
-    object-fit: cover; /* ပုံမပိန်သွားဘဲ အချိုးကျဖြစ်စေရန် */
+    object-fit: cover;
 }
 
-/* --- Mobile Version အတွက် ပြန်လည်ချိန်ညှိခြင်း --- */
+/* --- Responsive for Mobile --- */
+@media (max-width: 1024px) {
+    .sidebar-ad { display: none; } /* ဖုန်းတွင် Sidebar ကြော်ငြာများကို ဖျောက်ထားမည် */
+    .main-layout { padding: 0 10px; }
+}
+
 @media (max-width: 768px) {
     .promo-slider {
-        width: 100%; /* ဖုန်းတွင် ဘောင်အတွင်း ပြန်ထားရန် */
-        left: 0;
-        margin-left: 0;
-        margin-right: 0;
-        height: 180px; /* ဖုန်းတွင် အမြင့်လျှော့ရန် */
+        height: 180px; 
         border-radius: 15px; 
     }
 }
