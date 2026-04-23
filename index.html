@@ -11,48 +11,83 @@
             background-color: #f8f9fa; 
             font-family: 'Segoe UI', sans-serif;
             color: #2d3436;
-            padding: 20px;
+            overflow-x: hidden; /* Slider ဘေးထွက်တာကို ကာကွယ်ရန် */
         }
 
         .page-wrapper {
             max-width: 1200px;
             margin: 0 auto;
             width: 100%;
+            padding: 0 20px;
         }
 
-        .header { text-align: center; margin-bottom: 20px; padding-top: 10px; position: relative; }
+        /* Logo & Header Section */
+        .header { 
+            text-align: center; 
+            margin-bottom: 20px; 
+            padding: 20px 0; 
+            position: relative; 
+        }
+
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        .demo-logo {
+            width: 100px;
+            height: 60px;
+            background-color: #eee;
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: #888;
+            font-size: 14px;
+        }
+
         .header h1 { font-size: 32px; letter-spacing: 2px; margin-bottom: 5px; }
-        
+
+        /* --- Promo Slider (PC တွင် Screen အပြည့်) --- */
         .promo-slider {
-            width: 100%;
-            margin-bottom: 30px;
-            height: 250px;
-            background: #dfe6e9;
-            border-radius: 20px;
-            overflow: hidden;
+            width: 100vw; /* Screen width အပြည့်ယူမည် */
             position: relative;
+            left: 50%;
+            right: 50%;
+            margin-left: -50vw; /* အလယ်မှ ဘေးသို့ တွန်းထုတ်ရန် */
+            margin-right: -50vw;
+            margin-bottom: 40px;
+            height: 380px; /* PC အတွက် အမြင့် */
+            background: #dfe6e9;
+            overflow: hidden;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
+
         .slide {
             width: 100%;
             height: 100%;
             display: none;
             position: absolute;
-            object-fit: cover;
+            object-fit: cover; /* ပုံမပိန်စေရန် */
             animation: fade 1.5s;
         }
+
         @keyframes fade {
             from {opacity: .4} 
             to {opacity: 1}
         }
+
         .promo-text {
             position: absolute;
-            bottom: 20px;
-            left: 20px;
+            bottom: 30px;
+            left: 10%;
             background: rgba(0,0,0,0.6);
             color: white;
-            padding: 10px 20px;
-            border-radius: 10px;
+            padding: 15px 25px;
+            border-radius: 12px;
             font-size: 18px;
             backdrop-filter: blur(5px);
             z-index: 2;
@@ -60,8 +95,8 @@
 
         .cart-container {
             position: absolute;
-            right: 0px;
-            top: 10px;
+            right: 20px;
+            top: 25px;
             cursor: pointer;
             background: #2d3436;
             color: white;
@@ -76,17 +111,16 @@
         .cart-container:hover { background: #d63031; }
         #historyCount { font-weight: bold; background: #d63031; padding: 2px 8px; border-radius: 50%; font-size: 12px; }
 
+        /* Controls & Grid */
         .controls-container {
             width: 100%;
-            margin: 0 auto 40px auto;
+            margin-bottom: 40px;
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             gap: 20px;
             align-items: center;
         }
-
-        .filter-group { display: flex; gap: 10px; }
 
         .filter-btn {
             background: white;
@@ -95,26 +129,19 @@
             border-radius: 20px;
             cursor: pointer;
             font-weight: 600;
-            transition: all 0.3s;
+            transition: 0.3s;
         }
 
         .filter-btn.active, .filter-btn:hover {
             background: #2d3436;
             color: white;
-            border-color: #2d3436;
-        }
-
-        .search-box {
-            position: relative;
-            width: 100%;
-            max-width: 300px;
         }
 
         .search-box input {
-            width: 100%;
             padding: 10px 15px;
             border-radius: 20px;
             border: 1px solid #ddd;
+            width: 250px;
             outline: none;
         }
 
@@ -122,7 +149,7 @@
             display: grid; 
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); 
             gap: 30px; 
-            width: 100%;
+            padding-bottom: 50px;
         }
 
         .card { 
@@ -130,25 +157,14 @@
             border-radius: 20px; 
             box-shadow: 0 5px 15px rgba(0,0,0,0.05); 
             overflow: hidden; 
-            transition: all 0.3s ease;
+            transition: 0.3s;
             border: 1px solid #f1f1f1;
-            display: flex;
-            flex-direction: column;
         }
 
         .card:hover { transform: translateY(-10px); }
+        .card img { width: 100%; height: 220px; object-fit: cover; }
 
-        .card img { 
-            width: 100%; 
-            height: 220px; 
-            object-fit: cover; 
-            cursor: zoom-in;
-        }
-
-        .content { padding: 20px; text-align: center; flex-grow: 1; }
-        .title { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
-        
-        /* ဈေးနှုန်း Style သစ်များ */
+        .content { padding: 20px; text-align: center; }
         .price-container { margin-bottom: 15px; display: flex; justify-content: center; align-items: center; gap: 10px; }
         .original-price { text-decoration: line-through; color: #999; font-size: 14px; }
         .discount-price { color: #d63031; font-size: 19px; font-weight: 800; }
@@ -159,7 +175,7 @@
         }
         .buy-btn:hover { background: #00b894; }
 
-        /* Live Chat Floating Button CSS */
+        /* Live Chat Button */
         .live-chat-btn {
             position: fixed;
             bottom: 25px;
@@ -174,46 +190,39 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             cursor: pointer;
             z-index: 9999;
-            transition: transform 0.3s ease;
         }
 
-        .live-chat-btn:hover { transform: scale(1.1); }
-        .live-chat-btn svg { width: 30px; height: 30px; fill: white; }
+        /* --- Mobile Responsive --- */
+        @media (max-width: 768px) {
+            .promo-slider { 
+                width: 100%; /* ဖုန်းတွင် screen အတွင်း ပြန်ဝင်ရန် */
+                left: 0;
+                margin-left: 0;
+                margin-right: 0;
+                height: 180px; 
+                border-radius: 15px;
+            }
+            .promo-text { font-size: 14px; bottom: 15px; left: 15px; padding: 10px; }
+            .header h1 { font-size: 24px; }
+        }
 
         /* Modals */
-        .modal { 
-            display: none; position: fixed; z-index: 1000; 
-            left: 0; top: 0; width: 100%; height: 100%; 
-            background-color: rgba(0,0,0,0.85); 
-            backdrop-filter: blur(5px);
-            align-items: center; justify-content: center;
-        }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; }
         .modal-content { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 400px; position: relative; }
-        #imageModal .modal-content { background: transparent; max-width: 80vh; padding: 0; border:none; }
-        #fullImage { width: 100%; max-height: 80vh; object-fit: contain; border-radius: 10px; }
-        
-        .close { position: absolute; right: 15px; top: -40px; font-size: 35px; cursor: pointer; color: white; }
-        .modal-content .close { color: #aaa; top: 10px; right: 20px; }
-
-        .history-item { border-bottom: 1px solid #eee; padding: 10px 0; font-size: 14px; }
-
-        input[type="text"], input[type="number"], textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #eee; border-radius: 10px; outline: none; }
-        .submit-btn { background-color: #00b894; color: white; border: none; padding: 14px; width: 100%; border-radius: 10px; cursor: pointer; font-weight: bold; margin-top: 10px; }
-
-        @media (max-width: 768px) {
-            .promo-slider { height: 180px; }
-            .promo-text { font-size: 14px; bottom: 10px; left: 10px; }
-            .cart-container { right: 0; }
-            .live-chat-btn { bottom: 20px; right: 20px; width: 50px; height: 50px; }
-        }
+        .close { position: absolute; right: 15px; top: 10px; font-size: 25px; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <div class="page-wrapper">
         <div class="header">
+            <div class="logo-container">
+                <div class="demo-logo">LOGO</div>
+            </div>
+            
             <h1>THE SHOE HUB</h1>
             <p>Premium & Authentic Footwear Collection</p>
+            
             <div class="cart-container" onclick="showOrderHistory()">
                 <span>🛒</span>
                 <span id="historyCount">0</span>
@@ -248,35 +257,20 @@
     </div>
 
     <div class="live-chat-btn" onclick="alert('Live Chat ဝန်ဆောင်မှု မကြာမီ လာပါမည်...')">
-        <svg viewBox="0 0 24 24">
+        <svg viewBox="0 0 24 24" width="30" height="30" fill="white">
             <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
         </svg>
     </div>
 
-    <div id="imageModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('imageModal')">&times;</span>
-            <img id="fullImage" src="">
-        </div>
-    </div>
-
     <div id="orderModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal('orderModal')" style="top: 10px; color: #333;">&times;</span>
+            <span class="close" onclick="closeModal('orderModal')">&times;</span>
             <h3 id="modalProductTitle" style="margin-bottom: 15px;">မှာယူရန်</h3>
             <input type="text" id="userName" placeholder="သင့်အမည်">
             <input type="text" id="userPhone" placeholder="ဖုန်းနံပါတ်">
-            <input type="number" id="userQty" value="1" min="1" placeholder="အရေအတွက်">
-            <textarea id="userAddress" placeholder="ပို့ဆောင်ရမည့် လိပ်စာ"></textarea>
-            <button class="submit-btn" onclick="submitOrder()">အော်ဒါတင်မည်</button>
-        </div>
-    </div>
-
-    <div id="historyModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('historyModal')" style="top: 10px; color: #333;">&times;</span>
-            <h3 style="margin-bottom: 15px;">မှာယူမှုမှတ်တမ်း</h3>
-            <div id="historyList" style="max-height: 300px; overflow-y: auto;"></div>
+            <input type="number" id="userQty" value="1" min="1">
+            <textarea id="userAddress" placeholder="ပို့ဆောင်ရမည့် လိပ်စာ" style="width:100%; height:80px; padding:10px; margin-top:10px; border-radius:10px; border:1px solid #ddd;"></textarea>
+            <button class="buy-btn" style="background:#00b894; margin-top:15px;" onclick="submitOrder()">အော်ဒါတင်မည်</button>
         </div>
     </div>
 
@@ -300,18 +294,16 @@
             { id: 3, name: "Vans Classic Black", price: "38,500 MMK", original: "50,000 MMK", category: "boy", img: "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77" },
             { id: 4, name: "Nike Air Jordan 1", price: "125,000 MMK", original: "160,000 MMK", category: "boy", img: "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519" },
             { id: 5, name: "Tiny Steps Kid", price: "25,000 MMK", original: "35,000 MMK", category: "kid", img: "https://images.unsplash.com/photo-1514989940723-e8e51635b782" },
-            { id: 6, name: "Pink Sparkle Girl", price: "32,000 MMK", original: "45,000 MMK", category: "girl", img: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2" },
-            { id: 7, name: "New Balance 574", price: "88,000 MMK", original: "110,000 MMK", category: "boy", img: "https://images.unsplash.com/photo-1539185441755-769473a23570" },
-            { id: 8, name: "Junior Runner", price: "35,000 MMK", original: "48,000 MMK", category: "kid", img: "https://images.unsplash.com/photo-1591195853828-11db59a44f6b" }
+            { id: 6, name: "Pink Sparkle Girl", price: "32,000 MMK", original: "45,000 MMK", category: "girl", img: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2" }
         ];
 
         function renderProducts(items) {
             const grid = document.getElementById('productGrid');
             grid.innerHTML = items.map(p => `
                 <div class="card">
-                    <img src="${p.img}" onclick="zoomImage('${p.img}')">
+                    <img src="${p.img}">
                     <div class="content">
-                        <div class="title">${p.name}</div>
+                        <div class="title" style="font-weight:bold;">${p.name}</div>
                         <div class="price-container">
                             <span class="original-price">${p.original}</span>
                             <span class="discount-price">${p.price}</span>
@@ -322,20 +314,13 @@
             `).join('');
         }
 
-        function zoomImage(src) {
-            document.getElementById('fullImage').src = src;
-            document.getElementById('imageModal').style.display = "flex";
-        }
-
         function openOrderModal(name) {
             selectedProduct = name; 
             document.getElementById('modalProductTitle').innerText = name + " မှာယူမည်";
             document.getElementById('orderModal').style.display = "flex";
         }
 
-        function closeModal(id) {
-            document.getElementById(id).style.display = "none";
-        }
+        function closeModal(id) { document.getElementById(id).style.display = "none"; }
 
         function filterProducts(cat, btn) {
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -352,61 +337,11 @@
 
         function submitOrder() {
             const name = document.getElementById('userName').value;
-            const phone = document.getElementById('userPhone').value;
-            const qty = document.getElementById('userQty').value;
-            const address = document.getElementById('userAddress').value;
-
-            if(!name || !phone || !address) {
-                alert("အချက်အလက်များကို ပြည့်စုံစွာ ဖြည့်ပေးပါ");
-                return;
-            }
-
-            const orderData = {
-                product: selectedProduct,
-                quantity: qty,
-                customer: name,
-                date: new Date().toLocaleString()
-            };
-
-            let history = JSON.parse(localStorage.getItem('orderHistory')) || [];
-            history.push(orderData);
-            localStorage.setItem('orderHistory', JSON.stringify(history));
-
-            updateHistoryCount();
-
-            alert(`ကျေးဇူးတင်ပါတယ် ${name}!\n\n${selectedProduct} (${qty}) ရံ အတွက် အော်ဒါရရှိပါပြီ။`);
-            
+            if(!name) { alert("အချက်အလက်ဖြည့်ပါ"); return; }
+            alert("အော်ဒါတင်ခြင်း အောင်မြင်ပါသည်။");
             closeModal('orderModal');
-            
-            document.getElementById('userName').value = "";
-            document.getElementById('userPhone').value = "";
-            document.getElementById('userQty').value = "1";
-            document.getElementById('userAddress').value = "";
         }
 
-        function updateHistoryCount() {
-            const history = JSON.parse(localStorage.getItem('orderHistory')) || [];
-            document.getElementById('historyCount').innerText = history.length;
-        }
-
-        function showOrderHistory() {
-            const history = JSON.parse(localStorage.getItem('orderHistory')) || [];
-            const list = document.getElementById('historyList');
-            
-            if (history.length === 0) {
-                list.innerHTML = "<p>မှာယူထားသော မှတ်တမ်းမရှိသေးပါ။</p>";
-            } else {
-                list.innerHTML = [...history].reverse().map(item => `
-                    <div class="history-item">
-                        <strong>${item.product}</strong> (${item.quantity} ရံ)<br>
-                        <small>📅 ${item.date}</small> | <small>👤 ${item.customer}</small>
-                    </div>
-                `).join('');
-            }
-            document.getElementById('historyModal').style.display = "flex";
-        }
-
-        updateHistoryCount();
         renderProducts(products);
     </script>
 </body>
