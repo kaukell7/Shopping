@@ -1,7 +1,22 @@
+// အော်ဒါတင်မယ့် ဖိနပ်အမည်ကို သိမ်းထားဖို့ variable
+let selectedProduct = ""; 
+
+// Order Modal ဖွင့်တဲ့ function (ဒီမှာ selectedProduct ကို တန်ဖိုးသတ်မှတ်ရမယ်)
+function openOrderModal(productName) {
+    selectedProduct = productName; // ရွေးချယ်လိုက်တဲ့ ဖိနပ်အမည်ကို သိမ်းလိုက်တယ်
+    document.getElementById('modalProductTitle').innerText = productName + " မှာယူမည်";
+    document.getElementById('orderModal').style.display = "flex";
+}
+
 function submitOrder() {
-    const name = document.getElementById('userName').value;
-    const phone = document.getElementById('userPhone').value;
-    const qty = document.getElementById('userQty').value;
+    const nameInput = document.getElementById('userName');
+    const phoneInput = document.getElementById('userPhone');
+    const qtyInput = document.getElementById('userQty');
+    const remarkInput = document.getElementById('userRemark');
+
+    const name = nameInput.value;
+    const phone = phoneInput.value;
+    const qty = qtyInput ? qtyInput.value : 1; // userQty input မရှိရင် 1 လို့ သတ်မှတ်မယ်
 
     if(!name || !phone) { 
         alert("နာမည်နှင့် ဖုန်းနံပါတ် ဖြည့်ပေးပါ"); 
@@ -13,6 +28,7 @@ function submitOrder() {
         product: selectedProduct,
         quantity: qty,
         customer: name,
+        phone: phone,
         date: new Date().toLocaleString()
     };
 
@@ -26,35 +42,47 @@ function submitOrder() {
     alert(`ကျေးဇူးတင်ပါတယ် ${name}!\n\n${selectedProduct} (${qty}) ရံ အတွက် အော်ဒါရရှိပါပြီ။`);
 
     closeModal('orderModal');
-    // Form ပြန်ရှင်းခြင်း
-    document.getElementById('userName').value = "";
-    document.getElementById('userPhone').value = "";
-    document.getElementById('userQty').value = "1";
-    document.getElementById('userRemark').value = "";
+
+    // Form ပြန်ရှင်းခြင်း (Input element တွေ ရှိမှ ရှင်းမယ်)
+    if(nameInput) nameInput.value = "";
+    if(phoneInput) phoneInput.value = "";
+    if(qtyInput) qtyInput.value = "1";
+    if(remarkInput) remarkInput.value = "";
 }
 
-// History ပြသရန်နှင့် အရေအတွက်တွက်ရန် ထပ်တိုး function များ
+// History ပြသရန်
 function showOrderHistory() {
     const history = JSON.parse(localStorage.getItem('orderHistory')) || [];
     const list = document.getElementById('historyList');
     
     if (history.length === 0) {
-        list.innerHTML = "<p>မှာယူထားသော မှတ်တမ်းမရှိသေးပါ။</p>";
+        list.innerHTML = "<p style='text-align:center; padding:20px;'>မှာယူထားသော မှတ်တမ်းမရှိသေးပါ။</p>";
     } else {
-        list.innerHTML = history.reverse().map(item => `
-            <div class="history-item" style="border-bottom: 1px solid #eee; padding: 10px 0;">
-                <strong>${item.product}</strong> (${item.quantity} ရံ)<br>
-                <small>📅 ${item.date}</small> | <small>👤 ${item.customer}</small>
+        // အသစ်ဆုံးကို အပေါ်မှာ ပြချင်ရင် .reverse() သုံးပါမယ်
+        list.innerHTML = [...history].reverse().map(item => `
+            <div class="history-item" style="border-bottom: 1px solid #eee; padding: 15px 0;">
+                <div style="font-weight:bold; color:#2d3436;">${item.product}</div>
+                <div style="font-size:13px; color:#636e72;">
+                    အရေအတွက်: ${item.quantity} ရံ | 👤 ${item.customer}<br>
+                    📅 ${item.date}
+                </div>
             </div>
         `).join('');
     }
-    document.getElementById('historyModal').style.display = "flex";
+    
+    const historyModal = document.getElementById('historyModal');
+    if(historyModal) historyModal.style.display = "flex";
 }
 
 function updateHistoryCount() {
     const history = JSON.parse(localStorage.getItem('orderHistory')) || [];
     const countElement = document.getElementById('historyCount');
     if(countElement) countElement.innerText = history.length;
+}
+
+// ပိတ်တဲ့ Function (Modal အားလုံးအတွက် သုံးလို့ရတယ်)
+function closeModal(id) {
+    document.getElementById(id).style.display = "none";
 }
 
 // စာမျက်နှာ စဖွင့်ချင်းမှာ အရေအတွက်ဟောင်းရှိရင် ပြပေးရန်
