@@ -11,252 +11,219 @@
             background-color: #f8f9fa; 
             font-family: 'Segoe UI', sans-serif;
             color: #2d3436;
-            overflow-x: hidden; /* Slider ဘေးထွက်တာကို ကာကွယ်ရန် */
+            overflow-x: hidden;
         }
 
-        .page-wrapper {
-            max-width: 1200px;
+        /* --- Main Layout Container --- */
+        .main-layout {
+            display: flex;
+            max-width: 1500px; /* Sidebar များပါဝင်ရန် အကျယ်ချဲ့ထားသည် */
             margin: 0 auto;
-            width: 100%;
-            padding: 0 20px;
+            padding: 0 10px;
+            gap: 20px;
         }
 
-        /* Logo & Header Section */
+        /* --- Sidebar Ads (နီကွင်းပြထားသည့်နေရာ) --- */
+        .sidebar-ad {
+            width: 200px; /* Sidebar အကျယ် */
+            flex-shrink: 0;
+            padding-top: 150px; /* Header နှင့် တစ်တန်းတည်းဖြစ်စေရန် */
+        }
+
+        .ad-box {
+            width: 100%;
+            height: 500px; /* ကြော်ငြာအမြင့် */
+            background: #ffffff;
+            border: 2px dashed #d63031; /* နီကွင်းသဏ္ဍာန်ပြထားခြင်း */
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 15px;
+            position: sticky; 
+            top: 20px;
+            color: #d63031;
+            font-weight: bold;
+        }
+
+        /* --- Center Content Area --- */
+        .content-wrapper {
+            flex-grow: 1;
+            max-width: 1100px;
+        }
+
         .header { 
             text-align: center; 
-            margin-bottom: 20px; 
-            padding: 20px 0; 
+            padding: 40px 0 20px 0; 
             position: relative; 
         }
 
-        .logo-container {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 10px;
-        }
-
+        .logo-container { display: flex; justify-content: center; margin-bottom: 10px; }
         .demo-logo {
-            width: 100px;
-            height: 60px;
-            background-color: #eee;
-            border: 2px dashed #ccc;
-            border-radius: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-weight: bold;
-            color: #888;
-            font-size: 14px;
+            width: 100px; height: 60px; background-color: #eee;
+            border: 2px dashed #ccc; border-radius: 10px;
+            display: flex; justify-content: center; align-items: center;
+            font-weight: bold; color: #888;
         }
 
-        .header h1 { font-size: 32px; letter-spacing: 2px; margin-bottom: 5px; }
+        .header h1 { font-size: 32px; letter-spacing: 2px; }
 
-        /* --- Promo Slider (PC တွင် Screen အပြည့်) --- */
+        .cart-container {
+            position: absolute; right: 0; top: 45px;
+            cursor: pointer; background: #2d3436; color: white;
+            padding: 10px 15px; border-radius: 50px;
+            display: flex; align-items: center; gap: 8px; z-index: 100;
+        }
+        #historyCount { background: #d63031; padding: 2px 8px; border-radius: 50%; font-size: 12px; }
+
+        /* Promo Slider (PC အပြည့်) */
         .promo-slider {
-            width: 100vw; /* Screen width အပြည့်ယူမည် */
-            position: relative;
-            left: 50%;
-            right: 50%;
-            margin-left: -50vw; /* အလယ်မှ ဘေးသို့ တွန်းထုတ်ရန် */
-            margin-right: -50vw;
-            margin-bottom: 40px;
-            height: 380px; /* PC အတွက် အမြင့် */
+            width: 100%;
+            height: 380px;
             background: #dfe6e9;
             overflow: hidden;
+            border-radius: 20px;
+            margin-bottom: 40px;
+            position: relative;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
 
         .slide {
-            width: 100%;
-            height: 100%;
-            display: none;
-            position: absolute;
-            object-fit: cover; /* ပုံမပိန်စေရန် */
+            width: 100%; height: 100%; display: none;
+            position: absolute; object-fit: cover;
             animation: fade 1.5s;
         }
 
-        @keyframes fade {
-            from {opacity: .4} 
-            to {opacity: 1}
-        }
+        @keyframes fade { from {opacity: .4} to {opacity: 1} }
 
         .promo-text {
-            position: absolute;
-            bottom: 30px;
-            left: 10%;
-            background: rgba(0,0,0,0.6);
-            color: white;
-            padding: 15px 25px;
-            border-radius: 12px;
-            font-size: 18px;
-            backdrop-filter: blur(5px);
-            z-index: 2;
+            position: absolute; bottom: 30px; left: 5%;
+            background: rgba(0,0,0,0.6); color: white;
+            padding: 15px 25px; border-radius: 12px;
+            backdrop-filter: blur(5px); z-index: 2;
         }
 
-        .cart-container {
-            position: absolute;
-            right: 20px;
-            top: 25px;
-            cursor: pointer;
-            background: #2d3436;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 50px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: 0.3s;
-            z-index: 100;
-        }
-        .cart-container:hover { background: #d63031; }
-        #historyCount { font-weight: bold; background: #d63031; padding: 2px 8px; border-radius: 50%; font-size: 12px; }
-
-        /* Controls & Grid */
+        /* Controls */
         .controls-container {
-            width: 100%;
-            margin-bottom: 40px;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
-            align-items: center;
+            margin-bottom: 40px; display: flex;
+            flex-wrap: wrap; justify-content: center;
+            gap: 20px; align-items: center;
         }
 
         .filter-btn {
-            background: white;
-            border: 1px solid #ddd;
-            padding: 8px 20px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: 0.3s;
+            background: white; border: 1px solid #ddd;
+            padding: 8px 20px; border-radius: 20px;
+            cursor: pointer; font-weight: 600; transition: 0.3s;
         }
 
-        .filter-btn.active, .filter-btn:hover {
-            background: #2d3436;
-            color: white;
-        }
+        .filter-btn.active { background: #2d3436; color: white; }
 
         .search-box input {
-            padding: 10px 15px;
-            border-radius: 20px;
-            border: 1px solid #ddd;
-            width: 250px;
-            outline: none;
+            padding: 10px 15px; border-radius: 20px;
+            border: 1px solid #ddd; width: 250px; outline: none;
         }
 
+        /* Product Grid */
         .product-grid { 
             display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); 
-            gap: 30px; 
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); 
+            gap: 25px; 
             padding-bottom: 50px;
         }
 
         .card { 
-            background: #ffffff; 
-            border-radius: 20px; 
+            background: #ffffff; border-radius: 20px; 
             box-shadow: 0 5px 15px rgba(0,0,0,0.05); 
-            overflow: hidden; 
-            transition: 0.3s;
-            border: 1px solid #f1f1f1;
+            overflow: hidden; transition: 0.3s; border: 1px solid #f1f1f1;
         }
 
         .card:hover { transform: translateY(-10px); }
-        .card img { width: 100%; height: 220px; object-fit: cover; }
-
+        .card img { width: 100%; height: 200px; object-fit: cover; }
         .content { padding: 20px; text-align: center; }
-        .price-container { margin-bottom: 15px; display: flex; justify-content: center; align-items: center; gap: 10px; }
-        .original-price { text-decoration: line-through; color: #999; font-size: 14px; }
-        .discount-price { color: #d63031; font-size: 19px; font-weight: 800; }
+        .discount-price { color: #d63031; font-size: 18px; font-weight: 800; }
 
         .buy-btn { 
             background: #2d3436; color: white; border: none; padding: 12px; 
             border-radius: 10px; cursor: pointer; width: 100%; font-weight: 600; 
         }
-        .buy-btn:hover { background: #00b894; }
 
-        /* Live Chat Button */
+        /* Live Chat */
         .live-chat-btn {
-            position: fixed;
-            bottom: 25px;
-            right: 25px;
-            width: 60px;
-            height: 60px;
-            background-color: #00b894;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            cursor: pointer;
-            z-index: 9999;
+            position: fixed; bottom: 25px; right: 25px;
+            width: 60px; height: 60px; background-color: #00b894;
+            border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            cursor: pointer; z-index: 9999;
         }
 
-        /* --- Mobile Responsive --- */
-        @media (max-width: 768px) {
-            .promo-slider { 
-                width: 100%; /* ဖုန်းတွင် screen အတွင်း ပြန်ဝင်ရန် */
-                left: 0;
-                margin-left: 0;
-                margin-right: 0;
-                height: 180px; 
-                border-radius: 15px;
-            }
-            .promo-text { font-size: 14px; bottom: 15px; left: 15px; padding: 10px; }
-            .header h1 { font-size: 24px; }
+        /* Mobile View */
+        @media (max-width: 1100px) {
+            .sidebar-ad { display: none; } /* ဖုန်းတွင် Sidebar ဖြုတ်ထားမည် */
+            .promo-slider { height: 200px; }
         }
 
-        /* Modals */
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; }
+        /* Modal */
+        .modal { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; }
         .modal-content { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 400px; position: relative; }
+        .modal-content input, .modal-content textarea { width: 100%; padding: 10px; margin-top: 10px; border-radius: 10px; border: 1px solid #ddd; }
         .close { position: absolute; right: 15px; top: 10px; font-size: 25px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div class="page-wrapper">
-        <div class="header">
-            <div class="logo-container">
-                <div class="demo-logo">LOGO</div>
+    <div class="main-layout">
+        <aside class="sidebar-ad">
+            <div class="ad-box">
+                <div>AD SPACE<br>LEFT</div>
             </div>
-            
-            <h1>THE SHOE HUB</h1>
-            <p>Premium & Authentic Footwear Collection</p>
-            
-            <div class="cart-container" onclick="showOrderHistory()">
-                <span>🛒</span>
-                <span id="historyCount">0</span>
+        </aside>
+
+        <div class="content-wrapper">
+            <div class="header">
+                <div class="logo-container">
+                    <div class="demo-logo">LOGO</div>
+                </div>
+                <h1>THE SHOE HUB</h1>
+                <p>Premium & Authentic Footwear Collection</p>
+                <div class="cart-container">
+                    <span>🛒</span>
+                    <span id="historyCount">0</span>
+                </div>
             </div>
+
+            <div class="promo-slider">
+                <img class="slide" src="https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=2012&auto=format&fit=crop">
+                <img class="slide" src="https://images.unsplash.com/photo-1514989940723-e8e51635b782?q=80&w=2070&auto=format&fit=crop">
+                <img class="slide" src="https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?q=80&w=2070&auto=format&fit=crop">
+                <div class="promo-text">
+                    <strong>NEW COLLECTION!</strong><br>ဒီတစ်ပတ်အတွက် အထူးလျော့စျေး ၃၀%
+                </div>
+            </div>
+
+            <div class="controls-container">
+                <div class="filter-group">
+                    <button class="filter-btn active" onclick="filterProducts('all', this)">All</button>
+                    <button class="filter-btn" onclick="filterProducts('boy', this)">Boy</button>
+                    <button class="filter-btn" onclick="filterProducts('girl', this)">Girl</button>
+                    <button class="filter-btn" onclick="filterProducts('kid', this)">Kid</button>
+                </div>
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Search shoes..." onkeyup="searchProducts()">
+                </div>
+            </div>
+
+            <div class="product-grid" id="productGrid"></div>
         </div>
 
-        <div class="promo-slider">
-            <img class="slide" src="https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=2012&auto=format&fit=crop">
-            <img class="slide" src="https://images.unsplash.com/photo-1514989940723-e8e51635b782?q=80&w=2070&auto=format&fit=crop">
-            <img class="slide" src="https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?q=80&w=2070&auto=format&fit=crop">
-            
-            <div class="promo-text">
-                <strong>NEW COLLECTION!</strong><br>
-                ဒီတစ်ပတ်အတွက် အထူးလျော့စျေး ၃၀%
+        <aside class="sidebar-ad">
+            <div class="ad-box">
+                <div>AD SPACE<br>RIGHT</div>
             </div>
-        </div>
-
-        <div class="controls-container">
-            <div class="filter-group">
-                <button class="filter-btn active" onclick="filterProducts('all', this)">All</button>
-                <button class="filter-btn" onclick="filterProducts('boy', this)">Boy</button>
-                <button class="filter-btn" onclick="filterProducts('girl', this)">Girl</button>
-                <button class="filter-btn" onclick="filterProducts('kid', this)">Kid</button>
-            </div>
-            
-            <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Search shoes..." onkeyup="searchProducts()">
-            </div>
-        </div>
-
-        <div class="product-grid" id="productGrid"></div>
+        </aside>
     </div>
 
-    <div class="live-chat-btn" onclick="alert('Live Chat ဝန်ဆောင်မှု မကြာမီ လာပါမည်...')">
+    <div class="live-chat-btn" onclick="alert('Live Chat မကြာမီ လာပါမည်...')">
         <svg viewBox="0 0 24 24" width="30" height="30" fill="white">
             <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
         </svg>
@@ -264,19 +231,17 @@
 
     <div id="orderModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal('orderModal')">&times;</span>
-            <h3 id="modalProductTitle" style="margin-bottom: 15px;">မှာယူရန်</h3>
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h3 id="modalProductTitle">မှာယူရန်</h3>
             <input type="text" id="userName" placeholder="သင့်အမည်">
             <input type="text" id="userPhone" placeholder="ဖုန်းနံပါတ်">
-            <input type="number" id="userQty" value="1" min="1">
-            <textarea id="userAddress" placeholder="ပို့ဆောင်ရမည့် လိပ်စာ" style="width:100%; height:80px; padding:10px; margin-top:10px; border-radius:10px; border:1px solid #ddd;"></textarea>
+            <textarea id="userAddress" placeholder="ပို့ဆောင်ရမည့် လိပ်စာ"></textarea>
             <button class="buy-btn" style="background:#00b894; margin-top:15px;" onclick="submitOrder()">အော်ဒါတင်မည်</button>
         </div>
     </div>
 
     <script>
         let slideIndex = 0;
-        let selectedProduct = ""; 
         showSlides();
 
         function showSlides() {
@@ -303,9 +268,9 @@
                 <div class="card">
                     <img src="${p.img}">
                     <div class="content">
-                        <div class="title" style="font-weight:bold;">${p.name}</div>
-                        <div class="price-container">
-                            <span class="original-price">${p.original}</span>
+                        <div style="font-weight:bold; margin-bottom:5px;">${p.name}</div>
+                        <div style="margin-bottom:10px;">
+                            <span style="text-decoration:line-through; color:#999; font-size:13px;">${p.original}</span>
                             <span class="discount-price">${p.price}</span>
                         </div>
                         <button class="buy-btn" onclick="openOrderModal('${p.name}')">ဝယ်ယူမည်</button>
@@ -315,12 +280,11 @@
         }
 
         function openOrderModal(name) {
-            selectedProduct = name; 
             document.getElementById('modalProductTitle').innerText = name + " မှာယူမည်";
             document.getElementById('orderModal').style.display = "flex";
         }
 
-        function closeModal(id) { document.getElementById(id).style.display = "none"; }
+        function closeModal() { document.getElementById('orderModal').style.display = "none"; }
 
         function filterProducts(cat, btn) {
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -336,10 +300,9 @@
         }
 
         function submitOrder() {
-            const name = document.getElementById('userName').value;
-            if(!name) { alert("အချက်အလက်ဖြည့်ပါ"); return; }
+            if(!document.getElementById('userName').value) { alert("အမည်ဖြည့်ပါ"); return; }
             alert("အော်ဒါတင်ခြင်း အောင်မြင်ပါသည်။");
-            closeModal('orderModal');
+            closeModal();
         }
 
         renderProducts(products);
