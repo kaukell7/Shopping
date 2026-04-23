@@ -64,13 +64,13 @@
     fill: white;
 }
 
-/* --- Promo Slider (PC & Mobile Responsive) --- */
+/* --- Promo Slider (PC တွင် Screen အပြည့်ဖြစ်စေရန်) --- */
 .promo-slider {
-    width: 100vw; /* PC မှာ screen အပြည့်ယူရန် */
+    width: 100vw; /* Browser screen ၏ width အပြည့်ကို ယူမည် */
     position: relative;
     left: 50%;
     right: 50%;
-    margin-left: -50vw;
+    margin-left: -50vw; /* Page container ဘောင်များကို ကျော်ပြီး ဘေးအစွန်းထိ တွန်းထုတ်ရန် */
     margin-right: -50vw;
     margin-bottom: 30px;
     height: 350px; /* PC အတွက် အမြင့် */
@@ -84,17 +84,17 @@
     height: 100%;
     display: none;
     position: absolute;
-    object-fit: cover; /* ပုံမပိန်သွားစေရန် */
+    object-fit: cover; /* ပုံမပိန်သွားဘဲ screen နှင့် အချိုးကျ အပြည့်ဖြစ်နေစေရန် */
 }
 
-/* ဖုန်းအတွက် ပြန်လည်ချိန်ညှိခြင်း */
+/* --- Mobile Version အတွက် ပြန်လည်ချိန်ညှိခြင်း --- */
 @media (max-width: 768px) {
     .promo-slider {
-        width: 100%;
+        width: 100%; /* ဖုန်းတွင် screen အပြည့်မဟုတ်ဘဲ ဘောင်အတွင်း ပုံမှန်အတိုင်း ပြန်ထားရန် */
         left: 0;
         margin-left: 0;
         margin-right: 0;
-        height: 180px; /* ဖုန်းမှာတော့ အမြင်မရှုပ်အောင် အမြင့်လျှော့ထားသည် */
-        border-radius: 15px; /* ဖုန်းမှာ ဘေးနည်းနည်းဝိုင်းလျှင် ပိုလှပါသည် */
+        height: 180px; /* ဖုန်းတွင် အမြင့်ကို လျှော့ထားသည် */
+        border-radius: 15px; /* ဖုန်းတွင် ဘေးအနားလေးများ ဝိုင်းထားလျှင် ပိုလှသည် */
     }
 }
