@@ -1,3 +1,25 @@
+/* --- Logo အပိုင်း (Demo Logo အပါအဝင်) --- */
+.logo {
+    max-width: 150px; /* Logo ဆိုဒ်ကို လိုသလို ချိန်နိုင်ပါသည် */
+    height: auto;
+    display: block;
+    margin: 10px auto; /* အလယ်ဗဟိုသို့ ပို့ရန် */
+}
+
+.demo-logo {
+    width: 100px;
+    height: 100px;
+    background-color: #f1f2f6; /* Logo မရှိသေးခင် ပြမည့် အရောင် */
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    color: #a4b0be;
+    font-weight: bold;
+    border: 2px dashed #ced4da; /* ဘောင်လေးခတ်ထားရန် */
+}
+
 /* --- ဈေးနှုန်းပြသသည့် အပိုင်း --- */
 .price-container { 
     margin-bottom: 15px; 
@@ -43,7 +65,7 @@
     right: 25px;
     width: 60px;
     height: 60px;
-    background-color: #00b894; /* အော်ဒါတင်သည့် ခလုတ်အရောင်နှင့် တူညီအောင် ညှိထားပါသည် */
+    background-color: #00b894; /* အော်ဒါတင်သည့် ခလုတ်အရောင်နှင့် ညှိထားပါသည် */
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -66,11 +88,11 @@
 
 /* --- Promo Slider (PC တွင် Screen အပြည့်ဖြစ်စေရန်) --- */
 .promo-slider {
-    width: 100vw; /* Browser screen ၏ width အပြည့်ကို ယူမည် */
+    width: 100vw; /* Browser screen ၏ width အပြည့် */
     position: relative;
     left: 50%;
     right: 50%;
-    margin-left: -50vw; /* Page container ဘောင်များကို ကျော်ပြီး ဘေးအစွန်းထိ တွန်းထုတ်ရန် */
+    margin-left: -50vw; /* ဘေးအစွန်းထိ တွန်းထုတ်ရန် */
     margin-right: -50vw;
     margin-bottom: 30px;
     height: 350px; /* PC အတွက် အမြင့် */
@@ -84,17 +106,17 @@
     height: 100%;
     display: none;
     position: absolute;
-    object-fit: cover; /* ပုံမပိန်သွားဘဲ screen နှင့် အချိုးကျ အပြည့်ဖြစ်နေစေရန် */
+    object-fit: cover; /* ပုံမပိန်သွားဘဲ အချိုးကျဖြစ်စေရန် */
 }
 
 /* --- Mobile Version အတွက် ပြန်လည်ချိန်ညှိခြင်း --- */
 @media (max-width: 768px) {
     .promo-slider {
-        width: 100%; /* ဖုန်းတွင် screen အပြည့်မဟုတ်ဘဲ ဘောင်အတွင်း ပုံမှန်အတိုင်း ပြန်ထားရန် */
+        width: 100%; /* ဖုန်းတွင် ဘောင်အတွင်း ပြန်ထားရန် */
         left: 0;
         margin-left: 0;
         margin-right: 0;
-        height: 180px; /* ဖုန်းတွင် အမြင့်ကို လျှော့ထားသည် */
-        border-radius: 15px; /* ဖုန်းတွင် ဘေးအနားလေးများ ဝိုင်းထားလျှင် ပိုလှသည် */
+        height: 180px; /* ဖုန်းတွင် အမြင့်လျှော့ရန် */
+        border-radius: 15px; 
     }
 }
