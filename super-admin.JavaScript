@@ -9,16 +9,16 @@ async function saveAgent() {
         return;
     }
 
-    // Supabase အတွက် ပြင်ဆင်ထားသော URL နှင့် Key
-    const supabaseUrl = 'https://rxqigyvaxumeszuapfzs.supabase.co'; // သင်၏ Project URL
-    const supabaseKey = 'ဒီနေရာမှာ_သင်ကူးထားတဲ့_Publishable_Key_ကို_အစားထိုးပါ'; // Publishable Key (sb_...)
+    // Supabase အတွက် အချက်အလက်များ
+    const supabaseUrl = 'https://rxqigyvaxumeszuapfzs.supabase.co'; 
+    const supabaseKey = 'sb_publishable_DdRPY0oATSou-L929A7p8Q_rhSc0NqG-N5U6l6B6tTfA-vH3R'; // သင့်ပုံထဲက Key ကို ထည့်ပေးထားသည်
 
     // Supabase (PostgreSQL) သို့ ပို့မည့် data format
     const data = {
         "name": agentName,
         "tenantId": agentId,
         "password": agentPass,
-        "createdAt": new Date()
+        "created_at": new Date().toISOString() // Database ထဲက column name အတိုင်း ပြင်ထားသည်
     };
 
     try {
@@ -29,7 +29,7 @@ async function saveAgent() {
                 'apikey': supabaseKey,
                 'Authorization': `Bearer ${supabaseKey}`,
                 'Content-Type': 'application/json',
-                'Prefer': 'return=minimal' // အောင်မြင်ရင် data ပြန်မတောင်းဘဲ speed မြန်အောင်လုပ်ခြင်း
+                'Prefer': 'return=minimal'
             },
             body: JSON.stringify(data)
         });
@@ -37,15 +37,14 @@ async function saveAgent() {
         if (response.ok) {
             alert(agentName + " အတွက် အကောင့်ဖွင့်ခြင်း အောင်မြင်ပါသည်");
             
-            // Form ကို Clean ပြန်လုပ်ခြင်း
+            // Form ကို ပြန်ရှင်းခြင်း
             document.getElementById('agentName').value = '';
             document.getElementById('agentId').value = '';
             document.getElementById('agentPass').value = '';
         } else {
-            // အမှားအယွင်းရှိပါက အသေးစိတ်ပြရန်
             const errorRes = await response.json();
             console.error("Supabase Error:", errorRes);
-            alert("Database နှင့် ချိတ်ဆက်မှု မအောင်မြင်ပါ။ (RLS Setting ကို စစ်ဆေးပါ)");
+            alert("Database နှင့် ချိတ်ဆက်မှု မအောင်မြင်ပါ။ (RLS Setting ပိတ်ထားလား ပြန်စစ်ပေးပါ)");
         }
         
     } catch (error) {
