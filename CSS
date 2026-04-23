@@ -1,4 +1,4 @@
-/* --- ဈေးနှုန်းပြသသည့် အပိုင်း (အသစ်ပြင်ဆင်ချက်) --- */
+/* --- ဈေးနှုန်းပြသသည့် အပိုင်း --- */
 .price-container { 
     margin-bottom: 15px; 
     display: flex;
@@ -21,7 +21,7 @@
     font-weight: 800;
 }
 
-/* Card ထဲက Content တွေကို ပိုကြည့်ကောင်းအောင် ထိန်းညှိခြင်း */
+/* --- Card Content ထိန်းညှိခြင်း --- */
 .content {
     padding: 15px;
     display: flex;
@@ -34,4 +34,32 @@
     font-weight: 600;
     margin-bottom: 10px;
     color: #2d3436;
+}
+
+/* --- Live Chat Floating Button --- */
+.live-chat-btn {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    width: 60px;
+    height: 60px;
+    background-color: #00b894; /* အော်ဒါတင်သည့် ခလုတ်အရောင်နှင့် တူညီအောင် ညှိထားပါသည် */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    cursor: pointer;
+    z-index: 9999;
+    transition: transform 0.3s ease;
+}
+
+.live-chat-btn:hover {
+    transform: scale(1.1); /* mouse တင်လိုက်လျှင် အနည်းငယ် ပွလာမည် */
+}
+
+.live-chat-btn svg {
+    width: 30px;
+    height: 30px;
+    fill: white;
 }
