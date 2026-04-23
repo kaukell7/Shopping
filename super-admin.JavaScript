@@ -16,6 +16,7 @@ async function saveAgent() {
     const supabaseKey = 'sb_publishable_DdRPY0oATSou-L929A7p8Q_rhSc0NqG-N5U6l6B6tTfA-vH3R'; 
 
     // Database ထဲက column name များအတိုင်း ဒေတာပြင်ဆင်ခြင်း
+    // မှတ်ချက် - tenantId သည် စာလုံးအကြီးအသေး အတိအကျတူရန်လိုအပ်သည်
     const data = {
         "name": agentName,
         "tenantId": agentId,
@@ -24,7 +25,7 @@ async function saveAgent() {
     };
 
     try {
-        // Supabase သို့ API မှတစ်ဆင့် data ပို့ခြင်း
+        // Supabase REST API သို့ data ပို့ခြင်း
         const response = await fetch(`${supabaseUrl}/rest/v1/agents`, {
             method: 'POST',
             headers: {
@@ -37,21 +38,21 @@ async function saveAgent() {
         });
 
         if (response.ok) {
-            // အောင်မြင်ပါက Alert ပြပြီး input များကို ပြန်ရှင်းထုတ်ခြင်း
+            // အောင်မြင်ပါက အသိပေးချက်ပြပြီး input များကို ရှင်းထုတ်ခြင်း
             alert(agentName + " အတွက် အကောင့်ဖွင့်ခြင်း အောင်မြင်ပါသည်");
             
             document.getElementById('agentName').value = '';
             document.getElementById('agentId').value = '';
             document.getElementById('agentPass').value = '';
         } else {
-            // Error တစ်ခုခုတက်ပါက Console မှာ ပြခြင်း
+            // Error တက်ပါက Console တွင် အသေးစိတ်ကြည့်ရန်
             const errorRes = await response.json();
-            console.error("Supabase Error:", errorRes);
-            alert("Database နှင့် ချိတ်ဆက်မှု မအောင်မြင်ပါ။ (RLS Setting ပိတ်ထားလား ပြန်စစ်ပေးပါ)");
+            console.error("Supabase Error Details:", errorRes);
+            alert("Database သိမ်းဆည်းမှု မအောင်မြင်ပါ။ (RLS ပိတ်ထားရန် လိုအပ်သည်)");
         }
         
     } catch (error) {
-        console.error("Connection Error:", error);
-        alert("Network အမှားအယွင်း ရှိနေပါသည်။");
+        console.error("Network or Code Error:", error);
+        alert("ချိတ်ဆက်မှု အမှားအယွင်း ရှိနေပါသည်။");
     }
 }
