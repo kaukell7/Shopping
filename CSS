@@ -1,19 +1,37 @@
-/* ဈေးနှုန်းပြသသည့် အပိုင်းအတွက် ပတ်ပတ်လည်အကွာအဝေး */
+/* --- ဈေးနှုန်းပြသသည့် အပိုင်း (အသစ်ပြင်ဆင်ချက်) --- */
 .price-container { 
     margin-bottom: 15px; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px; /* ဈေးနှုန်းနှစ်ခုကြား အကွာအဝေး */
 }
 
 /* မူရင်းဈေးနှုန်း (မျဉ်းဖြတ်ဖြင့်ပြရန်) */
 .original-price { 
     text-decoration: line-through; 
-    color: #999; 
+    color: #b2bec3; 
     font-size: 14px; 
-    margin-right: 5px; 
 }
 
 /* လျှော့ဈေးနှုန်း (စာလုံးအကြီးနှင့် အရောင်အနီဖြင့်ပြရန်) */
 .discount-price { 
     color: #d63031; 
-    font-size: 18px; 
-    font-weight: 800; 
+    font-size: 19px; 
+    font-weight: 800;
+}
+
+/* Card ထဲက Content တွေကို ပိုကြည့်ကောင်းအောင် ထိန်းညှိခြင်း */
+.content {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #2d3436;
 }
