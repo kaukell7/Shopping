@@ -9,6 +9,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
 
     <style>
+        /* သင့်မူလ Style များကို ဒီနေရာမှာ ဆက်ထားနိုင်ပါတယ် */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background-color: #f8f9fa; font-family: 'Segoe UI', sans-serif; color: #2d3436; overflow-x: hidden; }
         .main-layout { display: flex; max-width: 1500px; margin: 0 auto; padding: 0 10px; gap: 20px; }
@@ -98,7 +99,7 @@
     </div>
 
     <script>
-        // --- Firebase Configuration ---
+        // --- Firebase Configuration (သင့် API Key များ ပြန်ထည့်ပါ) ---
         const firebaseConfig = {
             apiKey: "AIzaSy...", 
             authDomain: "spider-io.firebaseapp.com",
@@ -115,11 +116,11 @@
         // --- Firebase မှ ပစ္စည်းများ ဆွဲထုတ်ခြင်း ---
         async function fetchProducts() {
             try {
-                // 'products' collection ကို ဆွဲထုတ်ခြင်း
                 const snapshot = await db.collection("products").get();
+                // Firestore id ပါ တစ်ခါတည်း ယူထားပါတယ်
                 allProducts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 
-                console.log("Firebase Data:", allProducts); // Error ရှာရန် Console မှာကြည့်ပါ
+                console.log("Firebase Data Loaded:", allProducts); 
                 renderProducts(allProducts);
             } catch (error) {
                 console.error("Error fetching products: ", error);
@@ -133,24 +134,26 @@
                 grid.innerHTML = '<p style="text-align:center; grid-column: 1/-1;">ရောင်းရန် ပစ္စည်းမရှိသေးပါ။</p>';
                 return;
             }
+
             grid.innerHTML = items.map(p => {
-                // Database field တွေနဲ့ ကိုက်ညီအောင် ညှိပေးထားပါတယ်
-                const originalPrice = p.original_price || p['Original Price'] || 0;
-                const finalPrice = p.price || p.final_price || p['Final Price'] || 0;
-                const discount = p.discount_percent || p['Discount Percentage'] || 0;
+                // Screenshot အရ Field နာမည်များကို Space များဖြင့် တိတိကျကျ ပြင်ဆင်ထားပါတယ်
+                const productName = p['Product Name'] || p.name || 'Unnamed Product';
+                const originalPrice = p['Original Price (Ks)'] || p.original_price || 0;
+                const finalPrice = p['Final Price (ကျသင့်ငွေ)'] || p['Final Price'] || p.price || 0;
+                const discount = p['Discount Percentage (%)'] || p.discount_percent || 0;
                 const image = p.imageUrl || p.image || 'https://via.placeholder.com/300';
 
                 return `
                 <div class="card">
                     ${discount > 0 ? `<div class="discount-tag">-${discount}% Off</div>` : ''}
-                    <img src="${image}" alt="${p.name || 'Shoe'}">
+                    <img src="${image}" alt="${productName}">
                     <div class="content">
-                        <div style="font-weight:bold; margin-bottom:5px; font-size:16px;">${p.name || 'Unnamed Product'}</div>
+                        <div style="font-weight:bold; margin-bottom:5px; font-size:16px;">${productName}</div>
                         <div style="margin-bottom:10px;">
                             ${originalPrice > 0 ? `<span style="text-decoration:line-through; color:#999; font-size:13px;">${originalPrice} Ks</span><br>` : ''}
                             <span class="discount-price">${finalPrice} Ks</span>
                         </div>
-                        <button class="buy-btn" onclick="openOrderModal('${p.name}')">ဝယ်ယူမည်</button>
+                        <button class="buy-btn" onclick="openOrderModal('${productName}')">ဝယ်ယူမည်</button>
                     </div>
                 </div>
                 `;
@@ -167,7 +170,10 @@
 
         function searchProducts() {
             const term = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = allProducts.filter(p => (p.name || "").toLowerCase().includes(term));
+            const filtered = allProducts.filter(p => {
+                const name = (p['Product Name'] || p.name || "").toLowerCase();
+                return name.includes(term);
+            });
             renderProducts(filtered);
         }
 
