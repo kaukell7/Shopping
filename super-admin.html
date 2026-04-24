@@ -40,10 +40,10 @@
         <a href="super-admin.html" class="nav-item active">
             <i class="fas fa-plus-circle"></i> Add Agent
         </a>
-        <a href="user-list.html" class="nav-item">
+        <a href="user_list.html" class="nav-item">
             <i class="fas fa-users"></i> User List
         </a>
-        <a href="#" class="nav-item">
+        <a href="analytics.html" class="nav-item">
             <i class="fas fa-chart-line"></i> Analytics
         </a>
     </div>
@@ -99,17 +99,17 @@
             }
 
             try {
-                // user-list.html မှာ ပြသနိုင်ဖို့ "agents" collection ထဲကို သိမ်းပါတယ်
+                // Login ဖိုင်နှင့် ကိုက်ညီစေရန် gmail_phone ဟု ပြင်ဆင်သိမ်းဆည်းသည်
                 await db.collection("agents").add({
                     name: name,
-                    contact: contact,
+                    gmail_phone: contact,
                     password: password,
                     status: "Active",
                     created_at: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
                 alert("Agent အကောင့် ဖွင့်ပြီးပါပြီ");
-                window.location.href = "user-list.html"; // အောင်မြင်ရင် User List သို့ သွားမယ်
+                window.location.href = "user_list.html"; 
             } catch (error) {
                 console.error("Error: ", error);
                 alert("ဒေတာ သိမ်းဆည်းရာမှာ အမှားအယွင်း ရှိနေပါတယ်");
