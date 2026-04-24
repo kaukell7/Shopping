@@ -8,107 +8,26 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        :root {
-            --primary: #4f46e5;
-            --bg: #f8fafc;
-            --card-bg: #ffffff;
-            --text-main: #1e293b;
-            --text-sub: #64748b;
-        }
-
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--bg);
-            margin: 0;
-            display: flex;
-        }
+        :root { --primary: #4f46e5; --bg: #f8fafc; --card-bg: #ffffff; --text-main: #1e293b; --text-sub: #64748b; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); margin: 0; display: flex; }
 
         /* Sidebar Style */
-        .sidebar {
-            width: 260px;
-            background: #1e293b;
-            color: white;
-            min-height: 100vh;
-            padding: 2rem 1rem;
-            position: fixed;
-            z-index: 1000;
-        }
-
+        .sidebar { width: 260px; background: #1e293b; color: white; min-height: 100vh; padding: 2rem 1rem; position: fixed; z-index: 1000; }
         .sidebar h2 { margin-bottom: 2rem; padding-left: 1rem; }
-
-        .nav-item {
-            padding: 0.8rem 1rem;
-            border-radius: 8px;
-            color: #cbd5e1;
-            text-decoration: none;
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            transition: 0.3s;
-        }
-
+        .nav-item { padding: 0.8rem 1rem; border-radius: 8px; color: #cbd5e1; text-decoration: none; margin-bottom: 0.5rem; display: flex; align-items: center; transition: 0.3s; }
         .nav-item:hover, .nav-item.active { background: var(--primary); color: white; }
 
         /* Content Area */
-        .main-content {
-            margin-left: 280px;
-            padding: 2rem;
-            width: calc(100% - 280px);
-        }
+        .main-content { margin-left: 280px; padding: 2rem; width: calc(100% - 280px); }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
 
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-
-        .table-container {
-            background: var(--card-bg);
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-            overflow: hidden;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-        }
-
-        th {
-            background: #f1f5f9;
-            padding: 1rem;
-            font-weight: 600;
-            color: var(--text-main);
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        td {
-            padding: 1rem;
-            border-bottom: 1px solid #e2e8f0;
-            color: var(--text-sub);
-        }
-
-        tr:hover { background: #f8fafc; }
-
-        .status-badge {
-            background: #dcfce7;
-            color: #166534;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
-        .btn-back {
-            background: var(--primary);
-            color: white;
-            padding: 0.6rem 1.2rem;
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 0.9rem;
-        }
+        /* Table Design */
+        .table-container { background: var(--card-bg); border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background: #f1f5f9; padding: 1rem; font-weight: 600; color: var(--text-main); border-bottom: 1px solid #e2e8f0; }
+        td { padding: 1rem; border-bottom: 1px solid #e2e8f0; color: var(--text-sub); }
+        .status-badge { background: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+        .btn-back { background: var(--primary); color: white; padding: 0.6rem 1.2rem; border-radius: 8px; text-decoration: none; font-size: 0.9rem; }
     </style>
 </head>
 <body>
@@ -136,15 +55,14 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Shop Name</th>
-                        <th>Agent ID</th>
+                        <th>Name</th>
+                        <th>Gmail / Phone</th>
                         <th>Password</th>
                         <th>Status</th>
-                        <th>Created Date</th>
+                        <th>Date</th>
                     </tr>
                 </thead>
-                <tbody id="userTableBody">
-                </tbody>
+                <tbody id="userTableBody"></tbody>
             </table>
         </div>
     </div>
@@ -161,7 +79,6 @@
             messagingSenderId: "1073972515996",
             appId: "1:1073972515996:web:28049f5e5977e3a8e74959"
         };
-
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.firestore();
 
@@ -172,11 +89,12 @@
                 querySnapshot.forEach((doc) => {
                     const data = doc.data();
                     const date = data.created_at ? new Date(data.created_at.seconds * 1000).toLocaleDateString() : "N/A";
+                    // Displaying Name, Contact (Gmail/Phone), and Password
                     const row = `
                         <tr>
-                            <td style="font-weight:600; color:#1e293b;">${data.name}</td>
-                            <td>${data.tenantId}</td>
-                            <td><code>${data.password}</code></td>
+                            <td style="font-weight:600; color:#1e293b;">${data.name || 'N/A'}</td>
+                            <td>${data.contact || data.tenantId || 'N/A'}</td>
+                            <td><code>${data.password || '****'}</code></td>
                             <td><span class="status-badge">Active</span></td>
                             <td>${date}</td>
                         </tr>
