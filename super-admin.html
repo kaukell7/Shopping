@@ -31,6 +31,7 @@
             min-height: 100vh;
             padding: 2rem 1rem;
             position: fixed;
+            z-index: 1000; /* Sidebar ကို အပေါ်ဆုံးမှာရှိနေစေရန် */
         }
 
         .sidebar h2 { margin-bottom: 2rem; padding-left: 1rem; }
@@ -44,6 +45,7 @@
             display: flex;
             align-items: center;
             transition: 0.3s;
+            cursor: pointer;
         }
 
         .nav-item:hover, .nav-item.active { background: var(--primary); color: white; }
@@ -52,7 +54,7 @@
         .main-content {
             margin-left: 280px;
             padding: 2rem;
-            width: 100%;
+            width: calc(100% - 280px);
         }
 
         .header {
@@ -115,9 +117,15 @@
 
     <div class="sidebar">
         <h2>Spider.io</h2>
-        <a href="super-admin.html" class="nav-item"><i class="fas fa-plus-circle"></i> Add Agent</a>
-        <a href="#" class="nav-item active"><i class="fas fa-users"></i> User List</a>
-        <a href="#" class="nav-item"><i class="fas fa-chart-line"></i> Analytics</a>
+        <a href="super-admin.html" class="nav-item">
+            <i class="fas fa-plus-circle"></i> Add Agent
+        </a>
+        <a href="#" class="nav-item active">
+            <i class="fas fa-users"></i> User List
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fas fa-chart-line"></i> Analytics
+        </a>
     </div>
 
     <div class="main-content">
@@ -147,7 +155,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
     <script>
-        // Firebase Config (သင်၏ Config ကို ဤနေရာတွင် အစားထိုးပါ)
         const firebaseConfig = {
             apiKey: "AIzaSyCt1SMVSMqdX3u2viQ-n_BVwp6KgQwDLOM",
             authDomain: "my-shop-admin-cedb1.firebaseapp.com",
@@ -160,7 +167,6 @@
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.firestore();
 
-        // Load Users from Firestore
         function loadUsers() {
             const tableBody = document.getElementById('userTableBody');
             
