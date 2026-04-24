@@ -3,128 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agent Management - Spider.io</title>
+    <title>User List - Spider.io</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        :root {
-            --primary: #4f46e5;
-            --bg: #1e293b;
-            --card-bg: #ffffff;
-            --text-main: #1e293b;
-            --text-sub: #64748b;
-        }
-
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #f8fafc;
-            margin: 0;
-            display: flex;
-        }
+        :root { --primary: #4f46e5; --bg: #f8fafc; --card-bg: #ffffff; --text-main: #1e293b; --text-sub: #64748b; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); margin: 0; display: flex; }
 
         /* Sidebar Style */
-        .sidebar {
-            width: 260px;
-            background: var(--bg);
-            color: white;
-            min-height: 100vh;
-            padding: 2rem 1rem;
-            position: fixed;
-        }
-
+        .sidebar { width: 260px; background: #1e293b; color: white; min-height: 100vh; padding: 2rem 1rem; position: fixed; z-index: 1000; }
         .sidebar h2 { margin-bottom: 2rem; padding-left: 1rem; }
+        .nav-item { padding: 0.8rem 1rem; border-radius: 8px; color: #cbd5e1; text-decoration: none; margin-bottom: 0.5rem; display: flex; align-items: center; transition: 0.3s; }
+        .nav-item:hover, .nav-item.active { background: var(--primary); color: white; }
 
-        .nav-item {
-            padding: 0.8rem 1rem;
-            border-radius: 8px;
-            color: #cbd5e1;
-            text-decoration: none;
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            transition: 0.3s;
-        }
+        /* Content Area */
+        .main-content { margin-left: 280px; padding: 2rem; width: calc(100% - 280px); }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
 
-        .nav-item:hover, .nav-item.active {
-            background: var(--primary);
-            color: white;
-        }
-
-        /* Main Content */
-        .main-content {
-            margin-left: 280px;
-            padding: 2.5rem;
-            width: 100%;
-        }
-
-        .header { margin-bottom: 2rem; }
-        .header h1 { font-size: 1.8rem; color: var(--text-main); }
-
-        /* Form Card */
-        .card {
-            background: var(--card-bg);
-            padding: 2rem;
-            border-radius: 16px;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-            max-width: 900px;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .input-group { display: flex; flex-direction: column; gap: 0.5rem; }
-        label { font-weight: 600; font-size: 0.9rem; color: var(--text-main); }
-        
-        input {
-            padding: 0.8rem;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            outline: none;
-        }
-
-        input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
-
-        .btn-create {
-            background: var(--primary);
-            color: white;
-            padding: 0.8rem 1.5rem;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            width: fit-content;
-        }
-
-        .btn-create:hover { opacity: 0.9; }
-
-        /* Registration Display */
-        .display-card {
-            margin-top: 2rem;
-            padding: 1.5rem;
-            border-left: 4px solid #3b82f6;
-            background: #eff6ff;
-            border-radius: 8px;
-            display: none;
-        }
+        /* Table Design */
+        .table-container { background: var(--card-bg); border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background: #f1f5f9; padding: 1rem; font-weight: 600; color: var(--text-main); border-bottom: 1px solid #e2e8f0; }
+        td { padding: 1rem; border-bottom: 1px solid #e2e8f0; color: var(--text-sub); }
+        .status-badge { background: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+        .btn-back { background: var(--primary); color: white; padding: 0.6rem 1.2rem; border-radius: 8px; text-decoration: none; font-size: 0.9rem; }
     </style>
 </head>
 <body>
 
     <div class="sidebar">
         <h2>Spider.io</h2>
-        <a href="super-admin.html" class="nav-item active">
+        <a href="super-admin.html" class="nav-item">
             <i class="fas fa-plus-circle"></i> Add Agent
         </a>
-        <a href="user-list.html" class="nav-item">
+        <a href="#" class="nav-item active">
             <i class="fas fa-users"></i> User List
         </a>
         <a href="#" class="nav-item">
@@ -134,34 +47,24 @@
 
     <div class="main-content">
         <div class="header">
-            <h1>Agent Management</h1>
+            <h1>Agent User List</h1>
+            <a href="super-admin.html" class="btn-back"><i class="fas fa-arrow-left"></i> Back to Register</a>
         </div>
 
-        <div class="card">
-            <h3>Register New Agent</h3>
-            <div class="form-grid">
-                <div class="input-group">
-                    <label>Shop Name</label>
-                    <input type="text" id="shopName" placeholder="e.g. Ali Shoes">
-                </div>
-                <div class="input-group">
-                    <label>Gmail / Phone</label>
-                    <input type="text" id="contact" placeholder="e.g. ali@gmail.com">
-                </div>
-                <div class="input-group">
-                    <label>Password</label>
-                    <input type="password" id="password" placeholder="Set password">
-                </div>
-            </div>
-            <button class="btn-create" onclick="createAgent()">
-                <i class="fas fa-plus"></i> Create Agent
-            </button>
-
-            <div id="displayResult" class="display-card">
-                <p><strong>Shop Name:</strong> <span id="resName"></span></p>
-                <p><strong>Contact:</strong> <span id="resContact"></span></p>
-                <p><strong>Password:</strong> <span id="resPass"></span></p>
-            </div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Gmail / Phone</th>
+                        <th>Password</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody id="userTableBody">
+                    </tbody>
+            </table>
         </div>
     </div>
 
@@ -177,34 +80,36 @@
             messagingSenderId: "1073972515996",
             appId: "1:1073972515996:web:28049f5e5977e3a8e74959"
         };
-        firebase.initializeApp(firebaseConfig);
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.firestore();
 
-        async function createAgent() {
-            const name = document.getElementById('shopName').value;
-            const contact = document.getElementById('contact').value;
-            const password = document.getElementById('password').value;
-
-            if(!name || !contact || !password) return alert("Please fill all fields");
-
-            try {
-                await db.collection("agents").add({
-                    name: name,
-                    contact: contact,
-                    password: password,
-                    created_at: firebase.firestore.FieldValue.serverTimestamp()
+        // Real-time user list loading
+        function loadUsers() {
+            const tableBody = document.getElementById('userTableBody');
+            
+            db.collection("agents").orderBy("created_at", "desc").onSnapshot((querySnapshot) => {
+                tableBody.innerHTML = "";
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const date = data.created_at ? new Date(data.created_at.seconds * 1000).toLocaleDateString() : "N/A";
+                    
+                    const row = `
+                        <tr>
+                            <td style="font-weight:600; color:#1e293b;">${data.name || 'N/A'}</td>
+                            <td>${data.contact || 'N/A'}</td>
+                            <td><code>${data.password || '****'}</code></td>
+                            <td><span class="status-badge">Active</span></td>
+                            <td>${date}</td>
+                        </tr>
+                    `;
+                    tableBody.innerHTML += row;
                 });
-
-                document.getElementById('displayResult').style.display = 'block';
-                document.getElementById('resName').innerText = name;
-                document.getElementById('resContact').innerText = contact;
-                document.getElementById('resPass').innerText = password;
-                
-                alert("Agent Created Successfully!");
-            } catch (error) {
-                console.error("Error: ", error);
-            }
+            }, (error) => {
+                console.error("Error fetching users: ", error);
+            });
         }
+
+        window.onload = loadUsers;
     </script>
 </body>
 </html>
