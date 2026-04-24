@@ -11,15 +11,33 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; margin: 0; display: flex; }
         .sidebar { width: 260px; background: var(--bg); color: white; min-height: 100vh; padding: 2rem 1rem; position: fixed; }
         .sidebar h2 { padding-left: 1rem; margin-bottom: 2rem; font-size: 1.5rem; }
-        .nav-item { padding: 0.8rem 1rem; border-radius: 8px; color: #cbd5e1; text-decoration: none; margin-bottom: 0.5rem; display: flex; align-items: center; transition: 0.3s; }
-        .nav-item:hover, .nav-item.active { background: var(--primary); color: white; }
+        .nav-item { padding: 0.8rem 1rem; border-radius: 8px; color: #cbd5e1; text-decoration: none; margin-bottom: 0.5rem; display: flex; align-items: center; }
+        .nav-item.active { background: var(--primary); color: white; }
         .main-content { margin-left: 280px; padding: 2.5rem; width: 100%; }
         .table-card { background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        table { width: 100%; border-collapse: collapse; }
         th, td { padding: 15px; text-align: left; border-bottom: 1px solid #edf2f7; }
-        th { color: #64748b; font-weight: 600; background: #f8fafc; }
-        .status-badge { color: #059669; background: #ecfdf5; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
-        .btn-back { float: right; background: var(--primary); color: white; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 0.9rem; }
+        
+        /* Status Badges */
+        .status-active { color: #059669; background: #ecfdf5; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
+        .status-disabled { color: #dc2626; background: #fee2e2; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
+        
+        /* Setting Icon */
+        .btn-setting { color: #64748b; cursor: pointer; transition: 0.3s; font-size: 1.1rem; }
+        .btn-setting:hover { color: var(--primary); }
+
+        /* Modal Style */
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+        .modal-content { background: white; margin: 10% auto; padding: 2rem; border-radius: 16px; width: 400px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        .modal-header { margin-bottom: 1.5rem; font-weight: 700; font-size: 1.2rem; display: flex; justify-content: space-between; }
+        .form-group { margin-bottom: 1.2rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; }
+        input { width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; box-sizing: border-box; }
+        .btn-group { display: flex; gap: 10px; margin-top: 1.5rem; }
+        .btn { flex: 1; padding: 0.8rem; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; }
+        .btn-save { background: var(--primary); color: white; }
+        .btn-disable { background: #ef4444; color: white; }
+        .btn-close { background: #f1f5f9; color: #64748b; }
     </style>
 </head>
 <body>
@@ -30,7 +48,6 @@
     </div>
 
     <div class="main-content">
-        <a href="super-admin.html" class="btn-back"><i class="fas fa-arrow-left"></i> Back to Register</a>
         <h1>Agent User List</h1>
         <div class="table-card">
             <table>
@@ -41,11 +58,30 @@
                         <th>Password</th>
                         <th>Status</th>
                         <th>Date</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
-                <tbody id="agentTableBody">
-                    </tbody>
+                <tbody id="agentTableBody"></tbody>
             </table>
+        </div>
+    </div>
+
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>Account Settings</span>
+                <i class="fas fa-times" style="cursor:pointer" onclick="closeModal()"></i>
+            </div>
+            <input type="hidden" id="editDocId">
+            <div class="form-group">
+                <label>New Password</label>
+                <input type="text" id="newPassword" placeholder="Enter new password">
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-save" onclick="updatePassword()">Change Password</button>
+                <button id="toggleStatusBtn" class="btn btn-disable" onclick="toggleAccountStatus()">Disable Account</button>
+            </div>
+            <button class="btn btn-close" style="width:100%; margin-top:10px;" onclick="closeModal()">Close</button>
         </div>
     </div>
 
@@ -61,29 +97,69 @@
             messagingSenderId: "1073972515996",
             appId: "1:1073972515996:web:28049f5e5977e3a8e74959"
         };
-        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // ဒေတာများကို Firebase မှ အချိန်နှင့်တပြေးညီ ဆွဲထုတ်ခြင်း
+        // Load Data
         db.collection("agents").orderBy("created_at", "desc").onSnapshot((querySnapshot) => {
             const tableBody = document.getElementById('agentTableBody');
             tableBody.innerHTML = "";
             querySnapshot.forEach((doc) => {
                 const data = doc.data();
+                const statusClass = data.status === "Disabled" ? "status-disabled" : "status-active";
                 const date = data.created_at ? new Date(data.created_at.seconds * 1000).toLocaleDateString() : "N/A";
                 
                 tableBody.innerHTML += `
                     <tr>
-                        <td style="font-weight:600; color:#1e293b;">${data.name || 'N/A'}</td>
+                        <td>${data.name}</td>
                         <td>${data.contact || 'N/A'}</td>
-                        <td><code>${data.password || '****'}</code></td>
-                        <td><span class="status-badge">Active</span></td>
+                        <td>${data.password}</td>
+                        <td><span class="${statusClass}">${data.status || 'Active'}</span></td>
                         <td>${date}</td>
+                        <td><i class="fas fa-cog btn-setting" onclick="openModal('${doc.id}', '${data.password}', '${data.status}')"></i></td>
                     </tr>`;
             });
-        }, (error) => {
-            console.error("Error fetching data: ", error);
         });
+
+        // Modal Functions
+        function openModal(id, currentPass, status) {
+            document.getElementById('editDocId').value = id;
+            document.getElementById('newPassword').value = currentPass;
+            const statusBtn = document.getElementById('toggleStatusBtn');
+            
+            if(status === "Disabled") {
+                statusBtn.innerText = "Enable Account";
+                statusBtn.style.background = "#059669";
+            } else {
+                statusBtn.innerText = "Disable Account";
+                statusBtn.style.background = "#ef4444";
+            }
+            
+            document.getElementById('editModal').style.display = "block";
+        }
+
+        function closeModal() {
+            document.getElementById('editModal').style.display = "none";
+        }
+
+        // Update Functions
+        async function updatePassword() {
+            const id = document.getElementById('editDocId').value;
+            const newPass = document.getElementById('newPassword').value;
+            await db.collection("agents").doc(id).update({ password: newPass });
+            alert("Password updated!");
+            closeModal();
+        }
+
+        async function toggleAccountStatus() {
+            const id = document.getElementById('editDocId').value;
+            const btnText = document.getElementById('toggleStatusBtn').innerText;
+            const newStatus = btnText === "Disable Account" ? "Disabled" : "Active";
+            
+            await db.collection("agents").doc(id).update({ status: newStatus });
+            alert(`Account ${newStatus}!`);
+            closeModal();
+        }
     </script>
 </body>
 </html>
