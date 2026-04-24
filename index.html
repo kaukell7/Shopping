@@ -4,166 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>THE SHOE HUB - Premium Collection</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        
-        body { 
-            background-color: #f8f9fa; 
-            font-family: 'Segoe UI', sans-serif;
-            color: #2d3436;
-            overflow-x: hidden;
-        }
-
-        /* --- Main Layout Container --- */
-        .main-layout {
-            display: flex;
-            max-width: 1500px; /* Sidebar များပါဝင်ရန် အကျယ်ချဲ့ထားသည် */
-            margin: 0 auto;
-            padding: 0 10px;
-            gap: 20px;
-        }
-
-        /* --- Sidebar Ads (နီကွင်းပြထားသည့်နေရာ) --- */
-        .sidebar-ad {
-            width: 200px; /* Sidebar အကျယ် */
-            flex-shrink: 0;
-            padding-top: 150px; /* Header နှင့် တစ်တန်းတည်းဖြစ်စေရန် */
-        }
-
-        .ad-box {
-            width: 100%;
-            height: 500px; /* ကြော်ငြာအမြင့် */
-            background: #ffffff;
-            border: 2px dashed #d63031; /* နီကွင်းသဏ္ဍာန်ပြထားခြင်း */
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 15px;
-            position: sticky; 
-            top: 20px;
-            color: #d63031;
-            font-weight: bold;
-        }
-
-        /* --- Center Content Area --- */
-        .content-wrapper {
-            flex-grow: 1;
-            max-width: 1100px;
-        }
-
-        .header { 
-            text-align: center; 
-            padding: 40px 0 20px 0; 
-            position: relative; 
-        }
-
+        body { background-color: #f8f9fa; font-family: 'Segoe UI', sans-serif; color: #2d3436; overflow-x: hidden; }
+        .main-layout { display: flex; max-width: 1500px; margin: 0 auto; padding: 0 10px; gap: 20px; }
+        .sidebar-ad { width: 200px; flex-shrink: 0; padding-top: 150px; }
+        .ad-box { width: 100%; height: 500px; background: #ffffff; border: 2px dashed #d63031; border-radius: 15px; display: flex; align-items: center; justify-content: center; text-align: center; padding: 15px; position: sticky; top: 20px; color: #d63031; font-weight: bold; }
+        .content-wrapper { flex-grow: 1; max-width: 1100px; }
+        .header { text-align: center; padding: 40px 0 20px 0; position: relative; }
         .logo-container { display: flex; justify-content: center; margin-bottom: 10px; }
-        .demo-logo {
-            width: 100px; height: 60px; background-color: #eee;
-            border: 2px dashed #ccc; border-radius: 10px;
-            display: flex; justify-content: center; align-items: center;
-            font-weight: bold; color: #888;
-        }
-
+        .demo-logo { width: 100px; height: 60px; background-color: #eee; border: 2px dashed #ccc; border-radius: 10px; display: flex; justify-content: center; align-items: center; font-weight: bold; color: #888; }
         .header h1 { font-size: 32px; letter-spacing: 2px; }
-
-        .cart-container {
-            position: absolute; right: 0; top: 45px;
-            cursor: pointer; background: #2d3436; color: white;
-            padding: 10px 15px; border-radius: 50px;
-            display: flex; align-items: center; gap: 8px; z-index: 100;
-        }
+        .cart-container { position: absolute; right: 0; top: 45px; cursor: pointer; background: #2d3436; color: white; padding: 10px 15px; border-radius: 50px; display: flex; align-items: center; gap: 8px; z-index: 100; }
         #historyCount { background: #d63031; padding: 2px 8px; border-radius: 50%; font-size: 12px; }
-
-        /* Promo Slider (PC အပြည့်) */
-        .promo-slider {
-            width: 100%;
-            height: 380px;
-            background: #dfe6e9;
-            overflow: hidden;
-            border-radius: 20px;
-            margin-bottom: 40px;
-            position: relative;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        }
-
-        .slide {
-            width: 100%; height: 100%; display: none;
-            position: absolute; object-fit: cover;
-            animation: fade 1.5s;
-        }
-
+        .promo-slider { width: 100%; height: 380px; background: #dfe6e9; overflow: hidden; border-radius: 20px; margin-bottom: 40px; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .slide { width: 100%; height: 100%; display: none; position: absolute; object-fit: cover; animation: fade 1.5s; }
         @keyframes fade { from {opacity: .4} to {opacity: 1} }
-
-        .promo-text {
-            position: absolute; bottom: 30px; left: 5%;
-            background: rgba(0,0,0,0.6); color: white;
-            padding: 15px 25px; border-radius: 12px;
-            backdrop-filter: blur(5px); z-index: 2;
-        }
-
-        /* Controls */
-        .controls-container {
-            margin-bottom: 40px; display: flex;
-            flex-wrap: wrap; justify-content: center;
-            gap: 20px; align-items: center;
-        }
-
-        .filter-btn {
-            background: white; border: 1px solid #ddd;
-            padding: 8px 20px; border-radius: 20px;
-            cursor: pointer; font-weight: 600; transition: 0.3s;
-        }
-
+        .promo-text { position: absolute; bottom: 30px; left: 5%; background: rgba(0,0,0,0.6); color: white; padding: 15px 25px; border-radius: 12px; backdrop-filter: blur(5px); z-index: 2; }
+        .controls-container { margin-bottom: 40px; display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; align-items: center; }
+        .filter-btn { background: white; border: 1px solid #ddd; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-weight: 600; transition: 0.3s; }
         .filter-btn.active { background: #2d3436; color: white; }
-
-        .search-box input {
-            padding: 10px 15px; border-radius: 20px;
-            border: 1px solid #ddd; width: 250px; outline: none;
-        }
-
-        /* Product Grid */
-        .product-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); 
-            gap: 25px; 
-            padding-bottom: 50px;
-        }
-
-        .card { 
-            background: #ffffff; border-radius: 20px; 
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05); 
-            overflow: hidden; transition: 0.3s; border: 1px solid #f1f1f1;
-        }
-
+        .search-box input { padding: 10px 15px; border-radius: 20px; border: 1px solid #ddd; width: 250px; outline: none; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 25px; padding-bottom: 50px; }
+        .card { background: #ffffff; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); overflow: hidden; transition: 0.3s; border: 1px solid #f1f1f1; position: relative; }
         .card:hover { transform: translateY(-10px); }
-        .card img { width: 100%; height: 200px; object-fit: cover; }
+        .card img { width: 100%; height: 230px; object-fit: cover; }
+        .discount-tag { position: absolute; top: 10px; right: 10px; background: #ff7675; color: white; padding: 5px 10px; border-radius: 8px; font-size: 12px; font-weight: bold; }
         .content { padding: 20px; text-align: center; }
         .discount-price { color: #d63031; font-size: 18px; font-weight: 800; }
-
-        .buy-btn { 
-            background: #2d3436; color: white; border: none; padding: 12px; 
-            border-radius: 10px; cursor: pointer; width: 100%; font-weight: 600; 
-        }
-
-        /* Live Chat */
-        .live-chat-btn {
-            position: fixed; bottom: 25px; right: 25px;
-            width: 60px; height: 60px; background-color: #00b894;
-            border-radius: 50%; display: flex; align-items: center;
-            justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            cursor: pointer; z-index: 9999;
-        }
-
-        /* Mobile View */
-        @media (max-width: 1100px) {
-            .sidebar-ad { display: none; } /* ဖုန်းတွင် Sidebar ဖြုတ်ထားမည် */
-            .promo-slider { height: 200px; }
-        }
-
-        /* Modal */
+        .buy-btn { background: #2d3436; color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: 600; }
+        .live-chat-btn { position: fixed; bottom: 25px; right: 25px; width: 60px; height: 60px; background-color: #00b894; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); cursor: pointer; z-index: 9999; }
+        @media (max-width: 1100px) { .sidebar-ad { display: none; } .promo-slider { height: 200px; } }
         .modal { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; }
         .modal-content { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 400px; position: relative; }
         .modal-content input, .modal-content textarea { width: 100%; padding: 10px; margin-top: 10px; border-radius: 10px; border: 1px solid #ddd; }
@@ -174,31 +49,21 @@
 
     <div class="main-layout">
         <aside class="sidebar-ad">
-            <div class="ad-box">
-                <div>AD SPACE<br>LEFT</div>
-            </div>
+            <div class="ad-box">AD SPACE<br>LEFT</div>
         </aside>
 
         <div class="content-wrapper">
             <div class="header">
-                <div class="logo-container">
-                    <div class="demo-logo">LOGO</div>
-                </div>
+                <div class="logo-container"><div class="demo-logo">LOGO</div></div>
                 <h1>THE SHOE HUB</h1>
                 <p>Premium & Authentic Footwear Collection</p>
-                <div class="cart-container">
-                    <span>🛒</span>
-                    <span id="historyCount">0</span>
-                </div>
+                <div class="cart-container"><span>🛒</span><span id="historyCount">0</span></div>
             </div>
 
             <div class="promo-slider">
                 <img class="slide" src="https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=2012&auto=format&fit=crop">
                 <img class="slide" src="https://images.unsplash.com/photo-1514989940723-e8e51635b782?q=80&w=2070&auto=format&fit=crop">
-                <img class="slide" src="https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?q=80&w=2070&auto=format&fit=crop">
-                <div class="promo-text">
-                    <strong>NEW COLLECTION!</strong><br>ဒီတစ်ပတ်အတွက် အထူးလျော့စျေး ၃၀%
-                </div>
+                <div class="promo-text"><strong>NEW COLLECTION!</strong><br>ဒီတစ်ပတ်အတွက် အထူးလျော့စျေး ၃၀%</div>
             </div>
 
             <div class="controls-container">
@@ -213,20 +78,14 @@
                 </div>
             </div>
 
-            <div class="product-grid" id="productGrid"></div>
+            <div class="product-grid" id="productGrid">
+                <p style="text-align:center; grid-column: 1/-1;">ပစ္စည်းများအား ဆွဲတင်နေပါသည်...</p>
+            </div>
         </div>
 
         <aside class="sidebar-ad">
-            <div class="ad-box">
-                <div>AD SPACE<br>RIGHT</div>
-            </div>
+            <div class="ad-box">AD SPACE<br>RIGHT</div>
         </aside>
-    </div>
-
-    <div class="live-chat-btn" onclick="alert('Live Chat မကြာမီ လာပါမည်...')">
-        <svg viewBox="0 0 24 24" width="30" height="30" fill="white">
-            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
-        </svg>
     </div>
 
     <div id="orderModal" class="modal">
@@ -241,37 +100,47 @@
     </div>
 
     <script>
-        let slideIndex = 0;
-        showSlides();
+        // --- Firebase Configuration (သင့် Project ID များဖြင့် အစားထိုးရန်) ---
+        const firebaseConfig = {
+            apiKey: "AIzaSy...", 
+            authDomain: "spider-io.firebaseapp.com",
+            projectId: "spider-io",
+            storageBucket: "spider-io.appspot.com",
+            messagingSenderId: "...",
+            appId: "..."
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
 
-        function showSlides() {
-            let slides = document.getElementsByClassName("slide");
-            for (let i = 0; i < slides.length; i++) { slides[i].style.display = "none"; }
-            slideIndex++;
-            if (slideIndex > slides.length) {slideIndex = 1}    
-            slides[slideIndex-1].style.display = "block";  
-            setTimeout(showSlides, 3000);
+        let allProducts = [];
+
+        // --- Firebase မှ ပစ္စည်းများ ဆွဲထုတ်ခြင်း ---
+        async function fetchProducts() {
+            try {
+                const snapshot = await db.collection("products").orderBy("created_at", "desc").get();
+                allProducts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderProducts(allProducts);
+            } catch (error) {
+                console.error("Error fetching products: ", error);
+                document.getElementById('productGrid').innerHTML = "ပစ္စည်းများ တင်ရာတွင် အမှားအယွင်းရှိနေပါသည်။";
+            }
         }
-
-        const products = [
-            { id: 1, name: "Nike Red Sports", price: "45,000 MMK", original: "60,000 MMK", category: "boy", img: "https://images.unsplash.com/photo-1542291026-7eec264c27ff" },
-            { id: 2, name: "Adidas Street Wear", price: "52,000 MMK", original: "70,000 MMK", category: "girl", img: "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a" },
-            { id: 3, name: "Vans Classic Black", price: "38,500 MMK", original: "50,000 MMK", category: "boy", img: "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77" },
-            { id: 4, name: "Nike Air Jordan 1", price: "125,000 MMK", original: "160,000 MMK", category: "boy", img: "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519" },
-            { id: 5, name: "Tiny Steps Kid", price: "25,000 MMK", original: "35,000 MMK", category: "kid", img: "https://images.unsplash.com/photo-1514989940723-e8e51635b782" },
-            { id: 6, name: "Pink Sparkle Girl", price: "32,000 MMK", original: "45,000 MMK", category: "girl", img: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2" }
-        ];
 
         function renderProducts(items) {
             const grid = document.getElementById('productGrid');
+            if (items.length === 0) {
+                grid.innerHTML = '<p style="text-align:center; grid-column: 1/-1;">ရောင်းရန် ပစ္စည်းမရှိသေးပါ။</p>';
+                return;
+            }
             grid.innerHTML = items.map(p => `
                 <div class="card">
-                    <img src="${p.img}">
+                    ${p.discount_percent > 0 ? `<div class="discount-tag">-${p.discount_percent}% Off</div>` : ''}
+                    <img src="${p.imageUrl || 'https://via.placeholder.com/300'}" alt="${p.name}">
                     <div class="content">
-                        <div style="font-weight:bold; margin-bottom:5px;">${p.name}</div>
+                        <div style="font-weight:bold; margin-bottom:5px; font-size:16px;">${p.name}</div>
                         <div style="margin-bottom:10px;">
-                            <span style="text-decoration:line-through; color:#999; font-size:13px;">${p.original}</span>
-                            <span class="discount-price">${p.price}</span>
+                            <span style="text-decoration:line-through; color:#999; font-size:13px;">${p.original_price} Ks</span><br>
+                            <span class="discount-price">${p.price} Ks</span>
                         </div>
                         <button class="buy-btn" onclick="openOrderModal('${p.name}')">ဝယ်ယူမည်</button>
                     </div>
@@ -279,33 +148,50 @@
             `).join('');
         }
 
-        function openOrderModal(name) {
-            document.getElementById('modalProductTitle').innerText = name + " မှာယူမည်";
-            document.getElementById('orderModal').style.display = "flex";
-        }
-
-        function closeModal() { document.getElementById('orderModal').style.display = "none"; }
-
+        // --- Filter & Search Functions ---
         function filterProducts(cat, btn) {
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            const filtered = cat === 'all' ? products : products.filter(p => p.category === cat);
+            const filtered = cat === 'all' ? allProducts : allProducts.filter(p => p.category === cat);
             renderProducts(filtered);
         }
 
         function searchProducts() {
             const term = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = products.filter(p => p.name.toLowerCase().includes(term));
+            const filtered = allProducts.filter(p => p.name.toLowerCase().includes(term));
             renderProducts(filtered);
         }
 
+        // --- Modal & Order Functions ---
+        function openOrderModal(name) {
+            document.getElementById('modalProductTitle').innerText = name + " မှာယူမည်";
+            document.getElementById('orderModal').style.display = "flex";
+        }
+        function closeModal() { document.getElementById('orderModal').style.display = "none"; }
         function submitOrder() {
-            if(!document.getElementById('userName').value) { alert("အမည်ဖြည့်ပါ"); return; }
+            if(!document.getElementById('userName').value || !document.getElementById('userPhone').value) {
+                alert("အမည်နှင့် ဖုန်းနံပါတ် ဖြည့်စွက်ပေးပါ");
+                return;
+            }
             alert("အော်ဒါတင်ခြင်း အောင်မြင်ပါသည်။");
             closeModal();
         }
 
-        renderProducts(products);
+        // --- Slideshow ---
+        let slideIndex = 0;
+        function showSlides() {
+            let slides = document.getElementsByClassName("slide");
+            for (let i = 0; i < slides.length; i++) { slides[i].style.display = "none"; }
+            slideIndex++;
+            if (slideIndex > slides.length) {slideIndex = 1}    
+            if(slides.length > 0) slides[slideIndex-1].style.display = "block";  
+            setTimeout(showSlides, 3000);
+        }
+
+        window.onload = () => {
+            fetchProducts();
+            showSlides();
+        };
     </script>
 </body>
 </html>
