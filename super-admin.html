@@ -99,7 +99,17 @@
             }
 
             try {
-                // Login ဖိုင်နှင့် ကိုက်ညီစေရန် gmail_phone ဟု ပြင်ဆင်သိမ်းဆည်းသည်
+                // ၁။ ဖုန်းနံပါတ် သို့မဟုတ် Gmail ရှိပြီးသားလား အရင်စစ်ဆေးသည်
+                const checkDuplicate = await db.collection("agents")
+                    .where("gmail_phone", "==", contact)
+                    .get();
+
+                if (!checkDuplicate.empty) {
+                    // အကယ်၍ ရှိနေပြီးသားဆိုလျှင် သတိပေးချက်ပြပြီး ဆက်မလုပ်တော့ပါ
+                    return alert("ဤ Gmail သို့မဟုတ် ဖုန်းနံပါတ်ဖြင့် အကောင့်ဖွင့်ထားပြီးသား ဖြစ်ပါသည်။");
+                }
+
+                // ၂။ မရှိသေးမှသာ အကောင့်အသစ်ကို သိမ်းဆည်းသည်
                 await db.collection("agents").add({
                     name: name,
                     gmail_phone: contact,
@@ -108,7 +118,7 @@
                     created_at: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
-                alert("Agent အကောင့် ဖွင့်ပြီးပါပြီ");
+                alert("Agent အကောင့် အောင်မြင်စွာ ဖွင့်ပြီးပါပြီ");
                 window.location.href = "user_list.html"; 
             } catch (error) {
                 console.error("Error: ", error);
