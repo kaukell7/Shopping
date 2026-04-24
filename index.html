@@ -37,8 +37,6 @@
         .content { padding: 20px; text-align: center; }
         .discount-price { color: #d63031; font-size: 18px; font-weight: 800; }
         .buy-btn { background: #2d3436; color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: 600; }
-        .live-chat-btn { position: fixed; bottom: 25px; right: 25px; width: 60px; height: 60px; background-color: #00b894; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); cursor: pointer; z-index: 9999; }
-        @media (max-width: 1100px) { .sidebar-ad { display: none; } .promo-slider { height: 200px; } }
         .modal { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; }
         .modal-content { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 400px; position: relative; }
         .modal-content input, .modal-content textarea { width: 100%; padding: 10px; margin-top: 10px; border-radius: 10px; border: 1px solid #ddd; }
@@ -100,7 +98,7 @@
     </div>
 
     <script>
-        // --- Firebase Configuration (သင့် Project ID များဖြင့် အစားထိုးရန်) ---
+        // --- Firebase Configuration ---
         const firebaseConfig = {
             apiKey: "AIzaSy...", 
             authDomain: "spider-io.firebaseapp.com",
@@ -117,35 +115,46 @@
         // --- Firebase မှ ပစ္စည်းများ ဆွဲထုတ်ခြင်း ---
         async function fetchProducts() {
             try {
-                const snapshot = await db.collection("products").orderBy("created_at", "desc").get();
+                // 'products' collection ကို ဆွဲထုတ်ခြင်း
+                const snapshot = await db.collection("products").get();
                 allProducts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                
+                console.log("Firebase Data:", allProducts); // Error ရှာရန် Console မှာကြည့်ပါ
                 renderProducts(allProducts);
             } catch (error) {
                 console.error("Error fetching products: ", error);
-                document.getElementById('productGrid').innerHTML = "ပစ္စည်းများ တင်ရာတွင် အမှားအယွင်းရှိနေပါသည်။";
+                document.getElementById('productGrid').innerHTML = "ဒေတာချိတ်ဆက်မှု အဆင်မပြေပါ။";
             }
         }
 
         function renderProducts(items) {
             const grid = document.getElementById('productGrid');
-            if (items.length === 0) {
+            if (!items || items.length === 0) {
                 grid.innerHTML = '<p style="text-align:center; grid-column: 1/-1;">ရောင်းရန် ပစ္စည်းမရှိသေးပါ။</p>';
                 return;
             }
-            grid.innerHTML = items.map(p => `
+            grid.innerHTML = items.map(p => {
+                // Database field တွေနဲ့ ကိုက်ညီအောင် ညှိပေးထားပါတယ်
+                const originalPrice = p.original_price || p['Original Price'] || 0;
+                const finalPrice = p.price || p.final_price || p['Final Price'] || 0;
+                const discount = p.discount_percent || p['Discount Percentage'] || 0;
+                const image = p.imageUrl || p.image || 'https://via.placeholder.com/300';
+
+                return `
                 <div class="card">
-                    ${p.discount_percent > 0 ? `<div class="discount-tag">-${p.discount_percent}% Off</div>` : ''}
-                    <img src="${p.imageUrl || 'https://via.placeholder.com/300'}" alt="${p.name}">
+                    ${discount > 0 ? `<div class="discount-tag">-${discount}% Off</div>` : ''}
+                    <img src="${image}" alt="${p.name || 'Shoe'}">
                     <div class="content">
-                        <div style="font-weight:bold; margin-bottom:5px; font-size:16px;">${p.name}</div>
+                        <div style="font-weight:bold; margin-bottom:5px; font-size:16px;">${p.name || 'Unnamed Product'}</div>
                         <div style="margin-bottom:10px;">
-                            <span style="text-decoration:line-through; color:#999; font-size:13px;">${p.original_price} Ks</span><br>
-                            <span class="discount-price">${p.price} Ks</span>
+                            ${originalPrice > 0 ? `<span style="text-decoration:line-through; color:#999; font-size:13px;">${originalPrice} Ks</span><br>` : ''}
+                            <span class="discount-price">${finalPrice} Ks</span>
                         </div>
                         <button class="buy-btn" onclick="openOrderModal('${p.name}')">ဝယ်ယူမည်</button>
                     </div>
                 </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         // --- Filter & Search Functions ---
@@ -158,7 +167,7 @@
 
         function searchProducts() {
             const term = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = allProducts.filter(p => p.name.toLowerCase().includes(term));
+            const filtered = allProducts.filter(p => (p.name || "").toLowerCase().includes(term));
             renderProducts(filtered);
         }
 
