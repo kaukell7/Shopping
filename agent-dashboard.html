@@ -12,7 +12,7 @@
         
         .sidebar { width: 260px; background: var(--sidebar); color: white; min-height: 100vh; padding: 2rem 1rem; position: fixed; }
         .sidebar h2 { padding-left: 1rem; margin-bottom: 2rem; color: #fff; }
-        .nav-item { padding: 0.8rem 1rem; border-radius: 8px; color: #cbd5e1; text-decoration: none; margin-bottom: 0.5rem; display: flex; align-items: center; transition: 0.3s; }
+        .nav-item { padding: 0.8rem 1rem; border-radius: 8px; color: #cbd5e1; text-decoration: none; margin-bottom: 0.5rem; display: flex; align-items: center; transition: 0.3s; cursor: pointer; }
         .nav-item:hover, .nav-item.active { background: var(--primary); color: white; }
 
         .main-content { margin-left: 280px; padding: 2.5rem; width: 100%; }
@@ -36,7 +36,9 @@
         <a href="#" class="nav-item active"><i class="fas fa-home"></i> &nbsp; Dashboard</a>
         <a href="#" class="nav-item"><i class="fas fa-shopping-cart"></i> &nbsp; My Orders</a>
         <a href="#" class="nav-item"><i class="fas fa-user-cog"></i> &nbsp; Profile Settings</a>
-        <a href="super-admin.html" class="nav-item" style="margin-top: 20px; opacity: 0.7;"><i class="fas fa-sign-out-alt"></i> &nbsp; Logout</a>
+        <a href="#" class="nav-item" onclick="handleLogout()" style="margin-top: 20px; opacity: 0.7;">
+            <i class="fas fa-sign-out-alt"></i> &nbsp; Logout
+        </a>
     </div>
 
     <div class="main-content">
@@ -77,15 +79,28 @@
     </div>
 
     <script>
-        // ဒီအပိုင်းမှာ Agent တစ်ယောက်ချင်းစီရဲ့ data ကို 
-        // Login ဝင်ထားတဲ့ အချက်အလက်ပေါ်မူတည်ပြီး Firebase ကနေ ပြန်ဆွဲပြရမှာဖြစ်ပါတယ်
-        
-        // ဥပမာပြသရန် -
+        // စာမျက်နှာ စဖွင့်သည်နှင့် Login ဝင်ထားသော data ရှိမရှိ စစ်ဆေးခြင်း
         window.onload = function() {
-            // လက်ရှိမှာတော့ ဥပမာအနေနဲ့သာ ပြထားပါတယ်
-            document.getElementById('shopName').innerText = "Sample Shop";
-            document.getElementById('shopContact').innerText = "agent@gmail.com";
+            const agentData = JSON.parse(localStorage.getItem('currentAgent'));
+
+            if (agentData) {
+                // Login ဝင်ထားလျှင် အေးဂျင့်၏ data များကို ပြသပေးခြင်း
+                document.getElementById('welcomeAgent').innerText = `Welcome back, ${agentData.shop_name}!`;
+                document.getElementById('shopName').innerText = agentData.shop_name;
+                document.getElementById('shopContact').innerText = agentData.gmail_phone;
+            } else {
+                // Login မဝင်ထားလျှင် login.html သို့ ပြန်ပို့ခြင်း
+                window.location.href = "login.html";
+            }
         };
+
+        // Logout လုပ်ရန် function
+        function handleLogout() {
+            if(confirm("အကောင့်ထဲက ထွက်မှာ သေချာပါသလား?")) {
+                localStorage.removeItem('currentAgent'); // သိမ်းထားသော data ကို ဖျက်ခြင်း
+                window.location.href = "login.html"; // Login page သို့ ပြန်သွားခြင်း
+            }
+        }
     </script>
 </body>
 </html>
