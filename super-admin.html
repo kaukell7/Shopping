@@ -40,7 +40,7 @@
         <a href="super-admin.html" class="nav-item active">
             <i class="fas fa-plus-circle"></i> Add Agent
         </a>
-        <a href="user_list.html" class="nav-item">
+        <a href="user-list.html" class="nav-item">
             <i class="fas fa-users"></i> User List
         </a>
         <a href="analytics.html" class="nav-item">
@@ -99,13 +99,12 @@
             }
 
             try {
-                // ၁။ ဖုန်းနံပါတ် သို့မဟုတ် Gmail ရှိပြီးသားလား အရင်စစ်ဆေးသည်
+                // ၁။ Database ထဲမှာ ဖုန်း သို့မဟုတ် Gmail ရှိနှင့်ပြီးသားလား အရင်စစ်ဆေးသည်
                 const checkDuplicate = await db.collection("agents")
                     .where("gmail_phone", "==", contact)
                     .get();
 
                 if (!checkDuplicate.empty) {
-                    // အကယ်၍ ရှိနေပြီးသားဆိုလျှင် သတိပေးချက်ပြပြီး ဆက်မလုပ်တော့ပါ
                     return alert("ဤ Gmail သို့မဟုတ် ဖုန်းနံပါတ်ဖြင့် အကောင့်ဖွင့်ထားပြီးသား ဖြစ်ပါသည်။");
                 }
 
@@ -119,7 +118,7 @@
                 });
 
                 alert("Agent အကောင့် အောင်မြင်စွာ ဖွင့်ပြီးပါပြီ");
-                window.location.href = "user_list.html"; 
+                window.location.href = "user-list.html"; 
             } catch (error) {
                 console.error("Error: ", error);
                 alert("ဒေတာ သိမ်းဆည်းရာမှာ အမှားအယွင်း ရှိနေပါတယ်");
