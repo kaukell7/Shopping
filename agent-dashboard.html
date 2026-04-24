@@ -10,12 +10,15 @@
         :root { --primary: #4f46e5; --bg: #f8fafc; --sidebar: #1e293b; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); margin: 0; display: flex; }
         
-        .sidebar { width: 260px; background: var(--sidebar); color: white; min-height: 100vh; padding: 2rem 1rem; position: fixed; }
+        /* Sidebar Style */
+        .sidebar { width: 260px; background: var(--sidebar); color: white; min-height: 100vh; padding: 2rem 1rem; position: fixed; z-index: 1000; }
         .sidebar h2 { padding-left: 1rem; margin-bottom: 2rem; color: #fff; }
-        .nav-item { padding: 0.8rem 1rem; border-radius: 8px; color: #cbd5e1; text-decoration: none; margin-bottom: 0.5rem; display: flex; align-items: center; transition: 0.3s; cursor: pointer; }
+        .nav-item { padding: 0.8rem 1rem; border-radius: 8px; color: #cbd5e1; text-decoration: none; margin-bottom: 0.5rem; display: flex; align-items: center; transition: 0.3s; cursor: pointer; border: none; background: transparent; width: 100%; font-size: 1rem; text-align: left; }
         .nav-item:hover, .nav-item.active { background: var(--primary); color: white; }
+        .nav-item i { width: 20px; margin-right: 10px; }
 
-        .main-content { margin-left: 280px; padding: 2.5rem; width: 100%; }
+        /* Main Content */
+        .main-content { margin-left: 280px; padding: 2.5rem; width: calc(100% - 280px); }
         .welcome-card { background: linear-gradient(135deg, #4f46e5, #818cf8); color: white; padding: 2rem; border-radius: 16px; margin-bottom: 2rem; }
         
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
@@ -33,12 +36,18 @@
 
     <div class="sidebar">
         <h2>Spider.io</h2>
-        <a href="#" class="nav-item active"><i class="fas fa-home"></i> &nbsp; Dashboard</a>
-        <a href="#" class="nav-item"><i class="fas fa-shopping-cart"></i> &nbsp; My Orders</a>
-        <a href="#" class="nav-item"><i class="fas fa-user-cog"></i> &nbsp; Profile Settings</a>
-        <a href="#" class="nav-item" onclick="handleLogout()" style="margin-top: 20px; opacity: 0.7;">
-            <i class="fas fa-sign-out-alt"></i> &nbsp; Logout
+        <a href="agent-dashboard.html" class="nav-item active">
+            <i class="fas fa-home"></i> Dashboard
         </a>
+        <a href="inventory.html" class="nav-item">
+            <i class="fas fa-box-open"></i> My Products
+        </a>
+        <a href="profile-settings.html" class="nav-item">
+            <i class="fas fa-user-cog"></i> Profile Settings
+        </a>
+        <button class="nav-item" onclick="handleLogout()" style="margin-top: 20px; opacity: 0.7;">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
     </div>
 
     <div class="main-content">
@@ -67,24 +76,24 @@
             <div class="card">
                 <h3>Quick Stats</h3>
                 <div class="info-row">
-                    <span class="info-label">Total Sales:</span>
-                    <span class="info-value">0 Ks</span>
+                    <span class="info-label">Total Products:</span>
+                    <span class="info-value" id="totalProducts">0</span>
                 </div>
                 <div class="info-row">
-                    <span class="info-label">Pending Orders:</span>
-                    <span class="info-value">0</span>
+                    <span class="info-label">Total Sales:</span>
+                    <span class="info-value">0 Ks</span>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // စာမျက်နှာ စဖွင့်သည်နှင့် Login ဝင်ထားသော data ရှိမရှိ စစ်ဆေးခြင်း
+        // စာမျက်နှာ စဖွင့်သည်နှင့် Login Data စစ်ဆေးခြင်း
         window.onload = function() {
             const agentData = JSON.parse(localStorage.getItem('currentAgent'));
 
             if (agentData) {
-                // Login ဝင်ထားလျှင် အေးဂျင့်၏ data များကို ပြသပေးခြင်း
+                // Login ဝင်ထားလျှင် Data ပြသခြင်း
                 document.getElementById('welcomeAgent').innerText = `Welcome back, ${agentData.shop_name}!`;
                 document.getElementById('shopName').innerText = agentData.shop_name;
                 document.getElementById('shopContact').innerText = agentData.gmail_phone;
@@ -94,11 +103,11 @@
             }
         };
 
-        // Logout လုပ်ရန် function
+        // Logout Function
         function handleLogout() {
             if(confirm("အကောင့်ထဲက ထွက်မှာ သေချာပါသလား?")) {
-                localStorage.removeItem('currentAgent'); // သိမ်းထားသော data ကို ဖျက်ခြင်း
-                window.location.href = "login.html"; // Login page သို့ ပြန်သွားခြင်း
+                localStorage.removeItem('currentAgent');
+                window.location.href = "login.html";
             }
         }
     </script>
