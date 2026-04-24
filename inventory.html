@@ -25,7 +25,6 @@
         input[type="text"], input[type="number"] { width: 100%; padding: 0.9rem; border: 1px solid #e2e8f0; border-radius: 8px; box-sizing: border-box; font-size: 0.9rem; }
         input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
 
-        /* Image Upload Styling */
         .image-upload-wrapper { position: relative; width: 150px; height: 150px; border: 2px dashed #cbd5e1; border-radius: 12px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.2s; overflow: hidden; background-color: #f8fafc; }
         .image-upload-wrapper:hover { border-color: var(--primary); background-color: #eef2ff; }
         .image-preview { width: 100%; height: 100%; object-fit: cover; display: none; }
@@ -33,9 +32,11 @@
         .upload-placeholder i { font-size: 2rem; color: #94a3b8; }
         #imageInput { display: none; }
 
-        .btn-create { background: var(--primary); color: white; padding: 0.9rem 2rem; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 0.6rem; transition: 0.3s; font-size: 0.9rem; }
+        .btn-create { background: var(--primary); color: white; padding: 0.9rem 2rem; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 0.6rem; transition: 0.3s; font-size: 0.9rem; width: 100%; justify-content: center; }
         .btn-create:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3); }
         .btn-create:disabled { background-color: #a5b4fc; cursor: not-allowed; }
+
+        .readonly-input { background-color: #f1f5f9; font-weight: 700; color: #4f46e5; border: 1px solid #cbd5e1 !important; }
     </style>
 </head>
 <body>
@@ -74,10 +75,20 @@
                     <label>Product Name</label>
                     <input type="text" id="shopName" placeholder="Enter product name" required>
                 </div>
-                
+
                 <div class="form-group">
-                    <label>Price (Ks)</label>
-                    <input type="number" id="password" placeholder="Enter price" required>
+                    <label>Original Price (Ks)</label>
+                    <input type="number" id="originalPrice" placeholder="50000" required oninput="calculateDiscount()">
+                </div>
+
+                <div class="form-group">
+                    <label>Discount Percentage (%)</label>
+                    <input type="number" id="discountPercent" placeholder="20" oninput="calculateDiscount()">
+                </div>
+
+                <div class="form-group">
+                    <label>Final Price (ကျသင့်ငွေ)</label>
+                    <input type="number" id="finalPrice" class="readonly-input" readonly placeholder="0">
                 </div>
 
                 <button type="submit" class="btn-create" id="uploadBtn">
@@ -89,29 +100,35 @@
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script> <script>
-        // Firebase Configuration (Go back to super-admin.html and paste your identical firebaseConfig object here)
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script> 
+    
+    <script>
         const firebaseConfig = {
-            // Paste your actual config object here exactly like you have in your super-admin.html file
-            // You can find this in your Firebase console settings or in any other file where you've set up firebase
             apiKey: "YOUR_ACTUAL_API_KEY",
             authDomain: "YOUR_ACTUAL_AUTH_DOMAIN",
             projectId: "YOUR_ACTUAL_PROJECT_ID",
-            storageBucket: "my-shop-admin-cedb1.appspot.com", // This line is critical for image uploads. Please double-check it.
+            storageBucket: "my-shop-admin-cedb1.appspot.com",
             messagingSenderId: "YOUR_ACTUAL_MESSAGING_SENDER_ID",
             appId: "YOUR_ACTUAL_APP_ID"
         };
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.firestore();
-        const storage = firebase.storage(); // Initialize Firebase Storage
+        const storage = firebase.storage();
 
-        // Form Submission Handling
-        document.getElementById('productForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            createProduct();
-        });
+        // Discount Calculation Logic
+        function calculateDiscount() {
+            const original = parseFloat(document.getElementById('originalPrice').value) || 0;
+            const percent = parseFloat(document.getElementById('discountPercent').value) || 0;
+            const finalInput = document.getElementById('finalPrice');
 
-        // Function to show image preview before uploading
+            if (percent > 0) {
+                const discountAmount = (original * percent) / 100;
+                finalInput.value = Math.round(original - discountAmount);
+            } else {
+                finalInput.value = original;
+            }
+        }
+
         function previewImage(input) {
             const preview = document.getElementById('imagePreview');
             const placeholder = document.getElementById('uploadPlaceholder');
@@ -132,68 +149,63 @@
             }
         }
 
+        document.getElementById('productForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            createProduct();
+        });
+
         async function createProduct() {
             const name = document.getElementById('shopName').value.trim();
-            const price = document.getElementById('password').value.trim();
+            const originalPrice = document.getElementById('originalPrice').value.trim();
+            const discount = document.getElementById('discountPercent').value.trim() || 0;
+            const price = document.getElementById('finalPrice').value.trim();
             const imageInput = document.getElementById('imageInput');
             const uploadBtn = document.getElementById('uploadBtn');
             const file = imageInput.files[0];
-            const agentData = JSON.parse(localStorage.getItem('currentAgent')); // Get current agent's unique ID
+            const agentData = JSON.parse(localStorage.getItem('currentAgent'));
 
-            // 1. Check for logged-in agent. Critical step.
             if (!agentData) {
                 alert("You need to be logged in to create products.");
-                window.location.href = 'login.html'; // Redirect to login
+                window.location.href = 'login.html';
                 return;
             }
 
-            // 2. Validate input fields and image file
-            if (!name || !price || !file) {
-                alert("Please fill in all fields and upload a product image.");
+            if (!name || !originalPrice || !file) {
+                alert("Please fill in the name, original price, and upload an image.");
                 return;
             }
 
-            // 3. Disable the upload button during upload to prevent multiple submissions
             uploadBtn.disabled = true;
             uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
 
             try {
-                // 4. Firebase Storage: Create a unique path for the image (agentId/timestamp_filename)
                 const storageRef = storage.ref(`products/${agentData.gmail_phone}/${Date.now()}_${file.name}`);
-                
-                // 5. Start the image upload
                 const task = storageRef.put(file);
-
-                // 6. Monitor upload progress (optional but very useful)
-                // You can add progress bars here. We'll skip it for simplicity but keep the handle for future improvement.
-
-                // 7. Wait for completion and then get the public download URL
                 await task;
-                const imageUrl = await storageRef.getDownloadURL(); // This is critical, we save this link in firestore
+                const imageUrl = await storageRef.getDownloadURL();
 
-                // 8. FireStore: Save product data, linking the current agent
-                // We reference the gmail_phone of the agent that creates the product so each agent can manage its own inventory.
                 await db.collection("products").add({
                     name: name,
-                    price: price,
-                    imageUrl: imageUrl, // Save the image link to firestore
+                    original_price: originalPrice,
+                    discount_percent: discount + "%",
+                    price: price, // Final calculated price saved here
+                    imageUrl: imageUrl,
                     status: "Available",
-                    agentGmailPhone: agentData.gmail_phone, // Foreign key-style reference to current agent
+                    agentGmailPhone: agentData.gmail_phone,
                     created_at: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
-                // 9. Success! Redirect and clear the form
-                alert("Product created successfully!");
+                alert("Product created successfully with discount!");
                 document.getElementById('productForm').reset();
-                previewImage(imageInput); // Reset the image preview too
-                // Optional: Redirect back to the dashboard or to an inventory list page if you create one
-                // window.location.href = "agent-dashboard.html"; 
+                previewImage(imageInput);
+                uploadBtn.disabled = false;
+                uploadBtn.innerHTML = '<i class="fas fa-plus"></i> Upload Product';
 
             } catch (error) {
                 console.error("Error creating product: ", error);
-                alert("An error occurred during product creation. Please check the console for details.");
-                uploadBtn.disabled = false; // Re-enable the button if upload fails so user can try again
-                uploadBtn.innerHTML = '<i class="fas fa-plus"></i> Create Product';
+                alert("Error during upload.");
+                uploadBtn.disabled = false;
+                uploadBtn.innerHTML = '<i class="fas fa-plus"></i> Upload Product';
             }
         }
     </script>
