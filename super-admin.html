@@ -3,32 +3,187 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Admin - Create Agent</title>
-    <link rel="stylesheet" href="super-admin.CSS"> 
+    <title>Agent Management Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-sub: #64748b;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Style */
+        .sidebar {
+            width: 260px;
+            background: var(--text-main);
+            color: white;
+            padding: 2rem 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar h2 {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            padding-left: 1rem;
+        }
+
+        .nav-item {
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            color: #cbd5e1;
+            text-decoration: none;
+            margin-bottom: 0.5rem;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-item i { margin-right: 12px; }
+        .nav-item.active, .nav-item:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1200px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+        }
+
+        /* Form Card */
+        .card {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            margin-bottom: 2.5rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            outline: none;
+            box-sizing: border-box;
+            transition: 0.2s;
+        }
+
+        input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
+
+        .btn-create {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-create:hover { background: var(--primary-hover); }
+
+        /* Agents Grid */
+        .agents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .agent-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            position: relative;
+        }
+
+        .agent-card h3 { margin: 0 0 1rem 0; font-size: 1.1rem; color: var(--primary); }
+        .agent-info { font-size: 0.9rem; color: var(--text-sub); margin-bottom: 0.5rem; }
+        .agent-info strong { color: var(--text-main); }
+    </style>
 </head>
 <body>
-    <div class="admin-container">
-        <h1>Super Admin Control Panel</h1>
-        
-        <div class="create-agent-section">
-            <h3>Add New Agent Account</h3>
-            <input type="text" id="agentName" placeholder="Agent Shop Name (e.g. Ali Shoes)">
-            <input type="text" id="agentId" placeholder="Unique ID (e.g. ali_001)">
-            <input type="password" id="agentPass" placeholder="Set Password">
-            <button onclick="saveAgent()">Create & Save to Database</button>
+
+    <div class="sidebar">
+        <h2>Spider.io</h2>
+        <a href="#" class="nav-item active"><i class="fas fa-users"></i> Agents</a>
+        <a href="#" class="nav-item"><i class="fas fa-chart-line"></i> Analytics</a>
+        <a href="#" class="nav-item"><i class="fas fa-cog"></i> Settings</a>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h1>Agent Management</h1>
         </div>
 
-        <hr>
-
-        <div class="agent-list">
-            <h3>Existing Agents</h3>
-            <div id="displayAgents"></div>
+        <div class="card">
+            <h3 style="margin-top:0">Register New Agent</h3>
+            <div class="form-grid">
+                <div class="input-group">
+                    <label>Shop Name</label>
+                    <input type="text" id="agentName" placeholder="e.g. Ali Shoes">
+                </div>
+                <div class="input-group">
+                    <label>Unique ID</label>
+                    <input type="text" id="agentId" placeholder="e.g. ali_001">
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="agentPass" placeholder="Set password">
+                </div>
+            </div>
+            <button class="btn-create" onclick="saveAgent()">
+                <i class="fas fa-plus"></i> Create Agent
+            </button>
         </div>
+
+        <h2>Existing Agents</h2>
+        <div id="displayAgents" class="agents-grid">
+            </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-
     <script src="super-admin.JavaScript"></script>
+
 </body>
 </html>
