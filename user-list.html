@@ -44,7 +44,8 @@
     <div class="sidebar">
         <h2>Spider.io</h2>
         <a href="super-admin.html" class="nav-item"><i class="fas fa-plus-circle"></i> &nbsp; Add Agent</a>
-        <a href="user-list.html" class="nav-item active"><i class="fas fa-users"></i> &nbsp; User List</a>
+        <a href="user_list.html" class="nav-item active"><i class="fas fa-users"></i> &nbsp; User List</a>
+        <a href="analytics.html" class="nav-item"><i class="fas fa-chart-line"></i> &nbsp; Analytics</a>
     </div>
 
     <div class="main-content">
@@ -109,10 +110,11 @@
                 const statusClass = data.status === "Disabled" ? "status-disabled" : "status-active";
                 const date = data.created_at ? new Date(data.created_at.seconds * 1000).toLocaleDateString() : "N/A";
                 
+                // Super Admin မှ သိမ်းလိုက်သော gmail_phone field အမည်အား ပြန်လည်ထုတ်ပြရန် ပြင်ဆင်သည်
                 tableBody.innerHTML += `
                     <tr>
                         <td>${data.name}</td>
-                        <td>${data.contact || 'N/A'}</td>
+                        <td>${data.gmail_phone || data.contact || 'N/A'}</td>
                         <td>${data.password}</td>
                         <td><span class="${statusClass}">${data.status || 'Active'}</span></td>
                         <td>${date}</td>
