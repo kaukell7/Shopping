@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Settings - Spider.io</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --primary: #4f46e5; --bg: #f8fafc; --sidebar: #1e293b; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); margin: 0; display: flex; }
+        .sidebar { width: 260px; background: var(--sidebar); color: white; min-height: 100vh; padding: 2rem 1rem; position: fixed; }
+        .main-content { margin-left: 280px; padding: 2.5rem; width: calc(100% - 280px); }
+        .card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
+        .nav-item { padding: 0.8rem 1rem; border-radius: 8px; color: #cbd5e1; text-decoration: none; display: flex; align-items: center; margin-bottom: 0.5rem; }
+        .nav-item.active { background: var(--primary); color: white; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Spider.io</h2>
+        <a href="agent-dashboard.html" class="nav-item"><i class="fas fa-home"></i> &nbsp; Dashboard</a>
+        <a href="inventory.html" class="nav-item"><i class="fas fa-box-open"></i> &nbsp; My Products</a>
+        <a href="profile-settings.html" class="nav-item active"><i class="fas fa-user-cog"></i> &nbsp; Profile Settings</a>
+    </div>
+
+    <div class="main-content">
+        <h1>Profile Settings</h1>
+        <div class="card">
+            <h3>Update Shop Information</h3>
+            <p>Settings များကို ဤနေရာတွင် ပြင်ဆင်နိုင်ရန် ဆက်လက်လုပ်ဆောင်နေဆဲဖြစ်ပါသည်။</p>
+        </div>
+    </div>
+</body>
+</html>
