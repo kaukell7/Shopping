@@ -12,9 +12,10 @@
         .login-card h2 { margin-bottom: 1.5rem; color: #1e293b; }
         .input-group { text-align: left; margin-bottom: 1rem; }
         .input-group label { display: block; margin-bottom: 5px; color: #64748b; font-size: 0.9rem; }
-        input { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; box-sizing: border-box; }
-        .login-btn { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; margin-top: 1rem; }
-        .error-msg { color: #ef4444; font-size: 0.85rem; margin-top: 10px; display: none; }
+        input { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; box-sizing: border-box; font-family: inherit; }
+        .login-btn { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; margin-top: 1rem; transition: 0.3s; }
+        .login-btn:hover { background: #4338ca; }
+        .error-msg { color: #ef4444; font-size: 0.85rem; margin-top: 15px; display: none; }
     </style>
 </head>
 <body>
@@ -34,7 +35,9 @@
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
     <script>
+        // Firebase Configuration (Admin page ထဲကအတိုင်း တစ်ထပ်တည်းဖြစ်ရပါမယ်)
         const firebaseConfig = {
             apiKey: "AIzaSyCt1SMVSMqdX3u2viQ-n_BVwp6KgQwDLOM",
             authDomain: "my-shop-admin-cedb1.firebaseapp.com",
@@ -47,22 +50,36 @@
         const db = firebase.firestore();
 
         async function handleLogin() {
-            const id = document.getElementById('loginId').value;
-            const pass = document.getElementById('loginPass').value;
+            const id = document.getElementById('loginId').value.trim();
+            const pass = document.getElementById('loginPass').value.trim();
+            const errorMsg = document.getElementById('error');
 
-            // Firebase ထဲမှာ အေးဂျင့်ရှိမရှိ စစ်ဆေးခြင်း
-            const snapshot = await db.collection("agents")
-                .where("gmail_phone", "==", id)
-                .where("password", "==", pass)
-                .get();
+            if (!id || !pass) {
+                errorMsg.innerText = "အချက်အလက်များကို ပြည့်စုံစွာဖြည့်ပါ။";
+                errorMsg.style.display = 'block';
+                return;
+            }
 
-            if (!snapshot.empty) {
-                const agentData = snapshot.docs[0].data();
-                // Agent အချက်အလက်များကို ခေတ္တသိမ်းဆည်းပြီး Dashboard သို့ သွားရန်
-                localStorage.setItem('currentAgent', JSON.stringify(agentData));
-                window.location.href = "agent-dashboard.html";
-            } else {
-                document.getElementById('error').style.display = 'block';
+            try {
+                // Database ထဲမှာ အေးဂျင့်ရှိမရှိ စစ်ဆေးခြင်း
+                const snapshot = await db.collection("agents")
+                    .where("gmail_phone", "==", id)
+                    .where("password", "==", pass)
+                    .get();
+
+                if (!snapshot.empty) {
+                    const agentData = snapshot.docs[0].data();
+                    // Agent data ကို localStorage တွင်သိမ်းဆည်းခြင်း
+                    localStorage.setItem('currentAgent', JSON.stringify(agentData));
+                    window.location.href = "agent-dashboard.html";
+                } else {
+                    errorMsg.innerText = "အကောင့်ဝင်ရန် အချက်အလက် မှားယွင်းနေပါသည်။";
+                    errorMsg.style.display = 'block';
+                }
+            } catch (err) {
+                console.error("Login Error: ", err);
+                errorMsg.innerText = "Database ချိတ်ဆက်မှု အမှားအယွင်းရှိနေပါသည်။";
+                errorMsg.style.display = 'block';
             }
         }
     </script>
