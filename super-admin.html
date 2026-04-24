@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agent Management Dashboard</title>
+    <title>User List - Spider.io</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
             --primary: #4f46e5;
-            --primary-hover: #4338ca;
             --bg: #f8fafc;
             --card-bg: #ffffff;
             --text-main: #1e293b;
@@ -20,27 +19,21 @@
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: var(--bg);
-            color: var(--text-main);
             margin: 0;
             display: flex;
-            min-height: 100vh;
         }
 
         /* Sidebar Style */
         .sidebar {
             width: 260px;
-            background: var(--text-main);
+            background: #1e293b;
             color: white;
+            min-height: 100vh;
             padding: 2rem 1rem;
-            display: flex;
-            flex-direction: column;
+            position: fixed;
         }
 
-        .sidebar h2 {
-            font-size: 1.5rem;
-            margin-bottom: 2rem;
-            padding-left: 1rem;
-        }
+        .sidebar h2 { margin-bottom: 2rem; padding-left: 1rem; }
 
         .nav-item {
             padding: 0.8rem 1rem;
@@ -48,142 +41,150 @@
             color: #cbd5e1;
             text-decoration: none;
             margin-bottom: 0.5rem;
-            transition: 0.3s;
             display: flex;
             align-items: center;
+            transition: 0.3s;
         }
 
-        .nav-item i { margin-right: 12px; }
-        .nav-item.active, .nav-item:hover {
-            background: var(--primary);
-            color: white;
-        }
+        .nav-item:hover, .nav-item.active { background: var(--primary); color: white; }
 
-        /* Main Content */
+        /* Content Area */
         .main-content {
-            flex: 1;
+            margin-left: 280px;
             padding: 2rem;
-            max-width: 1200px;
+            width: 100%;
         }
 
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2.5rem;
+            margin-bottom: 2rem;
         }
 
-        /* Form Card */
-        .card {
+        /* Table Design */
+        .table-container {
             background: var(--card-bg);
-            padding: 2rem;
-            border-radius: 16px;
+            border-radius: 12px;
             box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-            margin-bottom: 2.5rem;
+            overflow: hidden;
         }
 
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .input-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        input {
+        table {
             width: 100%;
-            padding: 0.8rem;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            outline: none;
-            box-sizing: border-box;
-            transition: 0.2s;
+            border-collapse: collapse;
+            text-align: left;
         }
 
-        input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
+        th {
+            background: #f1f5f9;
+            padding: 1rem;
+            font-weight: 600;
+            color: var(--text-main);
+            border-bottom: 1px solid #e2e8f0;
+        }
 
-        .btn-create {
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            color: var(--text-sub);
+        }
+
+        tr:hover { background: #f8fafc; }
+
+        .status-badge {
+            background: #dcfce7;
+            color: #166534;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .btn-back {
             background: var(--primary);
             color: white;
-            border: none;
-            padding: 0.8rem 2rem;
+            padding: 0.6rem 1.2rem;
             border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.3s;
+            text-decoration: none;
+            font-size: 0.9rem;
         }
-
-        .btn-create:hover { background: var(--primary-hover); }
-
-        /* Agents Grid */
-        .agents-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .agent-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
-            position: relative;
-        }
-
-        .agent-card h3 { margin: 0 0 1rem 0; font-size: 1.1rem; color: var(--primary); }
-        .agent-info { font-size: 0.9rem; color: var(--text-sub); margin-bottom: 0.5rem; }
-        .agent-info strong { color: var(--text-main); }
     </style>
 </head>
 <body>
 
     <div class="sidebar">
         <h2>Spider.io</h2>
-        <a href="#" class="nav-item active"><i class="fas fa-users"></i> Agents</a>
+        <a href="super-admin.html" class="nav-item"><i class="fas fa-plus-circle"></i> Add Agent</a>
+        <a href="#" class="nav-item active"><i class="fas fa-users"></i> User List</a>
         <a href="#" class="nav-item"><i class="fas fa-chart-line"></i> Analytics</a>
-        <a href="#" class="nav-item"><i class="fas fa-cog"></i> Settings</a>
     </div>
 
     <div class="main-content">
         <div class="header">
-            <h1>Agent Management</h1>
+            <h1>Agent User List</h1>
+            <a href="super-admin.html" class="btn-back"><i class="fas fa-arrow-left"></i> Back to Register</a>
         </div>
 
-        <div class="card">
-            <h3 style="margin-top:0">Register New Agent</h3>
-            <div class="form-grid">
-                <div class="input-group">
-                    <label>Shop Name</label>
-                    <input type="text" id="agentName" placeholder="e.g. Ali Shoes">
-                </div>
-                <div class="input-group">
-                    <label>Unique ID</label>
-                    <input type="text" id="agentId" placeholder="e.g. ali_001">
-                </div>
-                <div class="input-group">
-                    <label>Password</label>
-                    <input type="password" id="agentPass" placeholder="Set password">
-                </div>
-            </div>
-            <button class="btn-create" onclick="saveAgent()">
-                <i class="fas fa-plus"></i> Create Agent
-            </button>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Shop Name</th>
+                        <th>Agent ID</th>
+                        <th>Password</th>
+                        <th>Status</th>
+                        <th>Created Date</th>
+                    </tr>
+                </thead>
+                <tbody id="userTableBody">
+                    </tbody>
+            </table>
         </div>
-
-        <h2>Existing Agents</h2>
-        <div id="displayAgents" class="agents-grid">
-            </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-    <script src="super-admin.JavaScript"></script>
 
+    <script>
+        // Firebase Config (သင်၏ Config ကို ဤနေရာတွင် အစားထိုးပါ)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCt1SMVSMqdX3u2viQ-n_BVwp6KgQwDLOM",
+            authDomain: "my-shop-admin-cedb1.firebaseapp.com",
+            projectId: "my-shop-admin-cedb1",
+            storageBucket: "my-shop-admin-cedb1.firebasestorage.app",
+            messagingSenderId: "1073972515996",
+            appId: "1:1073972515996:web:28049f5e5977e3a8e74959"
+        };
+
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        const db = firebase.firestore();
+
+        // Load Users from Firestore
+        function loadUsers() {
+            const tableBody = document.getElementById('userTableBody');
+            
+            db.collection("agents").orderBy("created_at", "desc").onSnapshot((querySnapshot) => {
+                tableBody.innerHTML = "";
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const date = data.created_at ? new Date(data.created_at.seconds * 1000).toLocaleDateString() : "N/A";
+                    
+                    const row = `
+                        <tr>
+                            <td style="font-weight:600; color:#1e293b;">${data.name}</td>
+                            <td>${data.tenantId}</td>
+                            <td><code>${data.password}</code></td>
+                            <td><span class="status-badge">Active</span></td>
+                            <td>${date}</td>
+                        </tr>
+                    `;
+                    tableBody.innerHTML += row;
+                });
+            });
+        }
+
+        window.onload = loadUsers;
+    </script>
 </body>
 </html>
