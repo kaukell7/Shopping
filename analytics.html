@@ -10,12 +10,15 @@
         :root { --primary: #4f46e5; --bg: #1e293b; --card-bg: #ffffff; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; margin: 0; display: flex; }
         .sidebar { width: 260px; background: var(--bg); color: white; min-height: 100vh; padding: 2rem 1rem; position: fixed; }
-        .nav-item { padding: 0.8rem 1rem; border-radius: 8px; color: #cbd5e1; text-decoration: none; margin-bottom: 0.5rem; display: flex; align-items: center; }
+        .sidebar h2 { padding-left: 1rem; margin-bottom: 2rem; font-size: 1.5rem; }
+        .nav-item { padding: 0.8rem 1rem; border-radius: 8px; color: #cbd5e1; text-decoration: none; margin-bottom: 0.5rem; display: flex; align-items: center; transition: 0.3s; }
+        .nav-item:hover { background: rgba(255,255,255,0.1); color: white; }
         .nav-item.active { background: var(--primary); color: white; }
         .main-content { margin-left: 280px; padding: 2.5rem; width: 100%; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; }
-        .stat-card { background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-        .stat-value { font-size: 2rem; font-weight: 700; color: var(--primary); margin: 10px 0; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+        .stat-card { background: white; padding: 1.8rem; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
+        .stat-card h3 { margin: 0; color: #64748b; font-size: 0.95rem; font-weight: 600; }
+        .stat-value { font-size: 2.5rem; font-weight: 700; color: var(--primary); margin: 10px 0; }
     </style>
 </head>
 <body>
@@ -25,6 +28,7 @@
         <a href="user-list.html" class="nav-item"><i class="fas fa-users"></i> &nbsp; User List</a>
         <a href="analytics.html" class="nav-item active"><i class="fas fa-chart-line"></i> &nbsp; Analytics</a>
     </div>
+
     <div class="main-content">
         <h1>Overview Analytics</h1>
         <div class="stats-grid">
@@ -34,11 +38,11 @@
             </div>
             <div class="stat-card">
                 <h3>Active Accounts</h3>
-                <div id="activeAgents" class="stat-value">0</div>
+                <div id="activeAgents" class="stat-value" style="color: #059669;">0</div>
             </div>
             <div class="stat-card">
                 <h3>Disabled Accounts</h3>
-                <div id="disabledAgents" class="stat-value">0</div>
+                <div id="disabledAgents" class="stat-value" style="color: #ef4444;">0</div>
             </div>
         </div>
     </div>
@@ -57,15 +61,18 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // Firebase မှ ဒေတာများကို တွက်ချက်ခြင်း
+        // Real-time Dashboard Update
         db.collection("agents").onSnapshot((querySnapshot) => {
             let total = querySnapshot.size;
             let active = 0;
             let disabled = 0;
             
             querySnapshot.forEach((doc) => {
-                if(doc.data().status === "Disabled") disabled++;
-                else active++;
+                if(doc.data().status === "Disabled") {
+                    disabled++;
+                } else {
+                    active++;
+                }
             });
 
             document.getElementById('totalAgents').innerText = total;
