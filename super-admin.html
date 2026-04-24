@@ -45,11 +45,6 @@
             display: flex;
             align-items: center;
             transition: 0.3s;
-            cursor: pointer;
-            border: none;
-            background: transparent;
-            width: 100%;
-            font-size: 1rem;
         }
 
         .nav-item:hover, .nav-item.active { background: var(--primary); color: white; }
@@ -68,6 +63,7 @@
             margin-bottom: 2rem;
         }
 
+        /* Table Design */
         .table-container {
             background: var(--card-bg);
             border-radius: 12px;
@@ -94,6 +90,8 @@
             border-bottom: 1px solid #e2e8f0;
             color: var(--text-sub);
         }
+
+        tr:hover { background: #f8fafc; }
 
         .status-badge {
             background: #dcfce7;
@@ -146,7 +144,8 @@
                         <th>Created Date</th>
                     </tr>
                 </thead>
-                <tbody id="userTableBody"></tbody>
+                <tbody id="userTableBody">
+                    </tbody>
             </table>
         </div>
     </div>
