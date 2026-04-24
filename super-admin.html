@@ -21,7 +21,6 @@
         .main-content { margin-left: 280px; padding: 2rem; width: calc(100% - 280px); }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
 
-        /* Table Design */
         .table-container { background: var(--card-bg); border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); overflow: hidden; }
         table { width: 100%; border-collapse: collapse; text-align: left; }
         th { background: #f1f5f9; padding: 1rem; font-weight: 600; color: var(--text-main); border-bottom: 1px solid #e2e8f0; }
@@ -93,7 +92,7 @@
                     const row = `
                         <tr>
                             <td style="font-weight:600; color:#1e293b;">${data.name || 'N/A'}</td>
-                            <td>${data.contact || data.tenantId || 'N/A'}</td>
+                            <td>${data.contact || 'N/A'}</td>
                             <td><code>${data.password || '****'}</code></td>
                             <td><span class="status-badge">Active</span></td>
                             <td>${date}</td>
