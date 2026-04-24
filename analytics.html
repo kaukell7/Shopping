@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics - Spider.io</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --primary: #4f46e5; --bg: #1e293b; --card-bg: #ffffff; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; margin: 0; display: flex; }
+        .sidebar { width: 260px; background: var(--bg); color: white; min-height: 100vh; padding: 2rem 1rem; position: fixed; }
+        .nav-item { padding: 0.8rem 1rem; border-radius: 8px; color: #cbd5e1; text-decoration: none; margin-bottom: 0.5rem; display: flex; align-items: center; }
+        .nav-item.active { background: var(--primary); color: white; }
+        .main-content { margin-left: 280px; padding: 2.5rem; width: 100%; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; }
+        .stat-card { background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .stat-value { font-size: 2rem; font-weight: 700; color: var(--primary); margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Spider.io</h2>
+        <a href="super-admin.html" class="nav-item"><i class="fas fa-plus-circle"></i> &nbsp; Add Agent</a>
+        <a href="user-list.html" class="nav-item"><i class="fas fa-users"></i> &nbsp; User List</a>
+        <a href="analytics.html" class="nav-item active"><i class="fas fa-chart-line"></i> &nbsp; Analytics</a>
+    </div>
+    <div class="main-content">
+        <h1>Overview Analytics</h1>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Agents</h3>
+                <div id="totalAgents" class="stat-value">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Active Accounts</h3>
+                <div id="activeAgents" class="stat-value">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Disabled Accounts</h3>
+                <div id="disabledAgents" class="stat-value">0</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCt1SMVSMqdX3u2viQ-n_BVwp6KgQwDLOM",
+            authDomain: "my-shop-admin-cedb1.firebaseapp.com",
+            projectId: "my-shop-admin-cedb1",
+            storageBucket: "my-shop-admin-cedb1.firebasestorage.app",
+            messagingSenderId: "1073972515996",
+            appId: "1:1073972515996:web:28049f5e5977e3a8e74959"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Firebase မှ ဒေတာများကို တွက်ချက်ခြင်း
+        db.collection("agents").onSnapshot((querySnapshot) => {
+            let total = querySnapshot.size;
+            let active = 0;
+            let disabled = 0;
+            
+            querySnapshot.forEach((doc) => {
+                if(doc.data().status === "Disabled") disabled++;
+                else active++;
+            });
+
+            document.getElementById('totalAgents').innerText = total;
+            document.getElementById('activeAgents').innerText = active;
+            document.getElementById('disabledAgents').innerText = disabled;
+        });
+    </script>
+</body>
+</html>
