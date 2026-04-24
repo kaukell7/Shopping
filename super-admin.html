@@ -15,7 +15,7 @@
             <input type="text" id="agentName" placeholder="Agent Shop Name (e.g. Ali Shoes)">
             <input type="text" id="agentId" placeholder="Unique ID (e.g. ali_001)">
             <input type="password" id="agentPass" placeholder="Set Password">
-            <button onclick="saveAgent()">Create & Save to MongoDB</button>
+            <button onclick="saveAgent()">Create & Save to Database</button>
         </div>
 
         <hr>
@@ -25,6 +25,9 @@
             <div id="displayAgents"></div>
         </div>
     </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
     <script src="super-admin.JavaScript"></script>
 </body>
