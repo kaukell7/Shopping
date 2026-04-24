@@ -31,7 +31,7 @@
             min-height: 100vh;
             padding: 2rem 1rem;
             position: fixed;
-            z-index: 1000; /* Sidebar ကို အပေါ်ဆုံးမှာရှိနေစေရန် */
+            z-index: 1000;
         }
 
         .sidebar h2 { margin-bottom: 2rem; padding-left: 1rem; }
@@ -46,6 +46,10 @@
             align-items: center;
             transition: 0.3s;
             cursor: pointer;
+            border: none;
+            background: transparent;
+            width: 100%;
+            font-size: 1rem;
         }
 
         .nav-item:hover, .nav-item.active { background: var(--primary); color: white; }
@@ -64,7 +68,6 @@
             margin-bottom: 2rem;
         }
 
-        /* Table Design */
         .table-container {
             background: var(--card-bg);
             border-radius: 12px;
@@ -91,8 +94,6 @@
             border-bottom: 1px solid #e2e8f0;
             color: var(--text-sub);
         }
-
-        tr:hover { background: #f8fafc; }
 
         .status-badge {
             background: #dcfce7;
@@ -145,8 +146,7 @@
                         <th>Created Date</th>
                     </tr>
                 </thead>
-                <tbody id="userTableBody">
-                    </tbody>
+                <tbody id="userTableBody"></tbody>
             </table>
         </div>
     </div>
@@ -169,13 +169,11 @@
 
         function loadUsers() {
             const tableBody = document.getElementById('userTableBody');
-            
             db.collection("agents").orderBy("created_at", "desc").onSnapshot((querySnapshot) => {
                 tableBody.innerHTML = "";
                 querySnapshot.forEach((doc) => {
                     const data = doc.data();
                     const date = data.created_at ? new Date(data.created_at.seconds * 1000).toLocaleDateString() : "N/A";
-                    
                     const row = `
                         <tr>
                             <td style="font-weight:600; color:#1e293b;">${data.name}</td>
@@ -189,7 +187,6 @@
                 });
             });
         }
-
         window.onload = loadUsers;
     </script>
 </body>
