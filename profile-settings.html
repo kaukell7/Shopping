@@ -9,49 +9,65 @@
     <style>
         :root { --primary: #4f46e5; --bg: #f8fafc; --sidebar: #1e293b; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); margin: 0; display: flex; }
-        .sidebar { width: 260px; background: var(--sidebar); color: white; min-height: 100vh; padding: 2rem 1rem; position: fixed; }
+        .sidebar { width: 260px; background: var(--sidebar); color: white; min-height: 100vh; padding: 2rem 1rem; position: fixed; z-index: 1000; }
+        .sidebar h2 { padding-left: 1rem; margin-bottom: 2rem; color: #fff; }
+        .nav-item { padding: 0.8rem 1rem; border-radius: 8px; color: #cbd5e1; text-decoration: none; display: flex; align-items: center; margin-bottom: 0.5rem; transition: 0.3s; }
+        .nav-item:hover, .nav-item.active { background: var(--primary); color: white; }
         .main-content { margin-left: 280px; padding: 2.5rem; width: calc(100% - 280px); }
-        .card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; max-width: 600px; }
-        .nav-item { padding: 0.8rem 1rem; border-radius: 8px; color: #cbd5e1; text-decoration: none; display: flex; align-items: center; margin-bottom: 0.5rem; }
-        .nav-item.active { background: var(--primary); color: white; }
+        .card { background: white; padding: 2.5rem; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; max-width: 600px; }
         .form-group { margin-bottom: 1.5rem; }
-        label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: #64748b; }
-        input { width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; box-sizing: border-box; font-size: 1rem; }
-        input:disabled { background: #f1f5f9; cursor: not-allowed; }
-        .btn-save { background: var(--primary); color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.3s; }
-        .btn-save:hover { background: #4338ca; }
-        #statusMsg { margin-top: 1rem; font-size: 0.9rem; font-weight: 600; }
+        label { display: block; margin-bottom: 0.6rem; font-weight: 600; color: #1e293b; font-size: 0.9rem; }
+        input { width: 100%; padding: 0.9rem; border: 1px solid #e2e8f0; border-radius: 8px; box-sizing: border-box; font-size: 1rem; outline: none; }
+        input:focus { border-color: var(--primary); }
+        input:disabled { background: #f1f5f9; cursor: not-allowed; color: #64748b; }
+        .btn-save { background: var(--primary); color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.3s; width: 100%; font-size: 1rem; }
+        .btn-save:hover { background: #4338ca; transform: translateY(-1px); }
+        .btn-save:disabled { background: #94a3b8; cursor: not-allowed; }
+        #statusMsg { margin-top: 1.2rem; font-size: 0.95rem; font-weight: 600; text-align: center; min-height: 20px; }
     </style>
 </head>
 <body>
+
     <div class="sidebar">
         <h2>Spider.io</h2>
-        <a href="agent-dashboard.html" class="nav-item"><i class="fas fa-home"></i> &nbsp; Dashboard</a>
-        <a href="inventory.html" class="nav-item"><i class="fas fa-box-open"></i> &nbsp; My Products</a>
-        <a href="profile-settings.html" class="nav-item active"><i class="fas fa-user-cog"></i> &nbsp; Profile Settings</a>
+        <a href="agent-dashboard.html" class="nav-item">
+            <i class="fas fa-home"></i> &nbsp; Dashboard
+        </a>
+        <a href="inventory.html" class="nav-item">
+            <i class="fas fa-box-open"></i> &nbsp; My Products
+        </a>
+        <a href="profile-settings.html" class="nav-item active">
+            <i class="fas fa-user-cog"></i> &nbsp; Profile Settings
+        </a>
+        <a href="index.html" class="nav-item" style="margin-top: 20px; opacity: 0.8;">
+            <i class="fas fa-arrow-left"></i> &nbsp; Back to Shop
+        </a>
     </div>
 
     <div class="main-content">
-        <h1>Profile Settings</h1>
+        <h1>Account Settings</h1>
         <div class="card">
             <h3>Update Shop Information</h3>
             
             <div class="form-group">
-                <label>Shop Name (အေးဂျင့်အမည်)</label>
-                <input type="text" id="shopName" placeholder="Enter shop name">
+                <label>Shop Name (ဆိုင်အမည်)</label>
+                <input type="text" id="shopName" placeholder="Enter your shop name">
             </div>
 
             <div class="form-group">
                 <label>Gmail / Phone (ပြင်၍မရပါ)</label>
-                <input type="text" id="shopContact" disabled>
+                <input type="text" id="shopContact" disabled title="Contact information cannot be changed">
             </div>
 
             <div class="form-group">
-                <label>New Password (ပြင်လိုလျှင်သာဖြည့်ပါ)</label>
-                <input type="password" id="shopPass" placeholder="Leave blank to keep current">
+                <label>New Password (လျှို့ဝှက်နံပါတ်အသစ်)</label>
+                <input type="password" id="shopPass" placeholder="မပြင်လိုလျှင် အလွတ်ထားပါ">
+                <small style="color: #64748b; margin-top: 5px; display: block;">Password ပြောင်းလိုမှသာ ဖြည့်သွင်းပါ။</small>
             </div>
 
-            <button class="btn-save" onclick="updateProfile()">Save Changes</button>
+            <button class="btn-save" id="saveBtn" onclick="updateProfile()">
+                <i class="fas fa-save"></i> Save Changes
+            </button>
             <p id="statusMsg"></p>
         </div>
     </div>
@@ -60,7 +76,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
     <script>
-        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCt1SMVSMqdX3u2viQ-n_BVwp6KgQwDLOM",
             authDomain: "my-shop-admin-cedb1.firebaseapp.com",
@@ -69,52 +84,74 @@
             messagingSenderId: "1073972515996",
             appId: "1:1073972515996:web:28049f5e5977e3a8e74959"
         };
-        firebase.initializeApp(firebaseConfig);
+        
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.firestore();
 
-        // localStorage မှ လက်ရှိ User အချက်အလက်ယူခြင်း
+        // localStorage မှ လက်ရှိ Login ဝင်ထားသော Agent အချက်အလက်ယူခြင်း
         const currentAgent = JSON.parse(localStorage.getItem('currentAgent'));
 
-        // စာမျက်နှာစဖွင့်ချိန်တွင် လက်ရှိဒေတာများကို ဖြည့်ထားပေးရန်
-        if (currentAgent) {
-            document.getElementById('shopName').value = currentAgent.name || "";
-            document.getElementById('shopContact').value = currentAgent.gmail_phone || "";
-        } else {
-            window.location.href = "login.html";
-        }
+        window.onload = function() {
+            if (currentAgent) {
+                document.getElementById('shopName').value = currentAgent.name || currentAgent.shop_name || "";
+                document.getElementById('shopContact').value = currentAgent.gmail_phone || "";
+            } else {
+                window.location.href = "index.html"; // Login မရှိရင် ပြန်ပို့မယ်
+            }
+        };
 
         async function updateProfile() {
             const newName = document.getElementById('shopName').value.trim();
             const newPass = document.getElementById('shopPass').value.trim();
             const statusMsg = document.getElementById('statusMsg');
+            const saveBtn = document.getElementById('saveBtn');
 
             if (!newName) {
                 statusMsg.style.color = "#ef4444";
-                statusMsg.innerText = "ဆိုင်အမည် ဖြည့်စွက်ပေးပါ။";
+                statusMsg.innerText = "⚠️ ဆိုင်အမည် ဖြည့်စွက်ပေးရန် လိုအပ်ပါသည်။";
                 return;
             }
 
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+            statusMsg.innerText = "";
+
             try {
-                // Firestore ရှိ agents collection တွင်သွားပြင်ခြင်း
                 const updateData = { name: newName };
                 if (newPass) updateData.password = newPass;
 
-                await db.collection("agents").doc(currentAgent.uid).update(updateData);
+                // Firestore မှာ Gmail/Phone ကို သုံးပြီး ရှာဖွေပြီး Update လုပ်ခြင်း
+                // (UID မသေချာသည့် အခြေအနေအတွက် ပိုစိတ်ချရသော နည်းလမ်းဖြစ်သည်)
+                const querySnapshot = await db.collection("agents")
+                    .where("gmail_phone", "==", currentAgent.gmail_phone)
+                    .get();
 
-                // LocalStorage ကိုပါ update လုပ်ပေးခြင်း (Dashboard တွင် ချက်ချင်းပေါ်စေရန်)
+                if (querySnapshot.empty) {
+                    throw new Error("အေးဂျင့် အကောင့်ကို ရှာမတွေ့ပါ။");
+                }
+
+                // ပထမဆုံးတွေ့တဲ့ Document ကို Update လုပ်မယ်
+                const docId = querySnapshot.docs[0].id;
+                await db.collection("agents").doc(docId).update(updateData);
+
+                // LocalStorage ကို Update လုပ်ခြင်း
                 currentAgent.name = newName;
+                if(newPass) currentAgent.password = newPass;
                 localStorage.setItem('currentAgent', JSON.stringify(currentAgent));
 
                 statusMsg.style.color = "#22c55e";
-                statusMsg.innerText = "အချက်အလက်များ အောင်မြင်စွာ ပြင်ဆင်ပြီးပါပြီ။";
+                statusMsg.innerText = "✅ အချက်အလက်များ အောင်မြင်စွာ ပြင်ဆင်ပြီးပါပြီ။";
                 
-                // 2 စက္ကန့်အကြာတွင် Dashboard သို့ ပြန်သွားရန်
-                setTimeout(() => { window.location.href = "agent-dashboard.html"; }, 2000);
+                setTimeout(() => { 
+                    window.location.href = "agent-dashboard.html"; 
+                }, 1500);
 
             } catch (error) {
                 console.error("Update error: ", error);
                 statusMsg.style.color = "#ef4444";
-                statusMsg.innerText = "ပြင်ဆင်မှု မအောင်မြင်ပါ။ Error: " + error.message;
+                statusMsg.innerText = "❌ ပြင်ဆင်မှု မအောင်မြင်ပါ။ Error: " + error.message;
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
             }
         }
     </script>
