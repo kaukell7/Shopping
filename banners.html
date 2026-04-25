@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banner Settings - Spider.io</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --primary: #4f46e5; --bg: #f8fafc; --sidebar: #1e293b; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); margin: 0; display: flex; }
+        .sidebar { width: 260px; background: var(--sidebar); color: white; min-height: 100vh; padding: 2rem 1rem; position: fixed; }
+        .sidebar h2 { padding-left: 1rem; margin-bottom: 2rem; }
+        .nav-item { padding: 0.8rem 1rem; border-radius: 8px; color: #cbd5e1; text-decoration: none; display: flex; align-items: center; margin-bottom: 0.5rem; transition: 0.3s; }
+        .nav-item:hover, .nav-item.active { background: var(--primary); color: white; }
+        .main-content { margin-left: 280px; padding: 2.5rem; width: calc(100% - 280px); }
+        .card { background: white; padding: 2.5rem; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; max-width: 700px; }
+        .form-group { margin-bottom: 1.5rem; }
+        label { display: block; margin-bottom: 0.6rem; font-weight: 600; color: #1e293b; }
+        input { width: 100%; padding: 0.9rem; border: 1px solid #e2e8f0; border-radius: 8px; box-sizing: border-box; outline: none; }
+        .btn-update { background: var(--primary); color: white; border: none; padding: 1rem; border-radius: 8px; font-weight: 700; cursor: pointer; width: 100%; margin-top: 10px; transition: 0.3s; }
+        .btn-update:hover { background: #4338ca; }
+        .banner-preview { width: 100%; height: 200px; border-radius: 12px; object-fit: cover; margin-top: 10px; border: 1px dashed #cbd5e1; background: #f1f5f9; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        #previewImg { width: 100%; height: 100%; object-fit: cover; display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>Spider.io</h2>
+        <a href="agent-dashboard.html" class="nav-item">
+            <i class="fas fa-home"></i> &nbsp; Dashboard
+        </a>
+        <a href="inventory.html" class="nav-item">
+            <i class="fas fa-box-open"></i> &nbsp; My Products
+        </a>
+        <a href="banners.html" class="nav-item active">
+            <i class="fas fa-ad"></i> &nbsp; Shop Banner
+        </a>
+        <a href="profile-settings.html" class="nav-item">
+            <i class="fas fa-user-cog"></i> &nbsp; Profile Settings
+        </a>
+    </div>
+
+    <div class="main-content">
+        <h1>Banner Management</h1>
+        <div class="card">
+            <h3>Update Shop Banner (New Collection)</h3>
+            <div class="form-group">
+                <label>Banner Image URL (ImgBB Link)</label>
+                <input type="text" id="bannerUrl" placeholder="ပုံ Link ကို ဒီမှာထည့်ပါ" oninput="previewBanner()">
+                <div class="banner-preview" id="previewBox">
+                    <span id="placeholderText">No Image Selected</span>
+                    <img src="" id="previewImg">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Banner Title (စာတန်းအကြီး)</label>
+                <input type="text" id="bannerTitle" placeholder="ဥပမာ - NEW COLLECTION!">
+            </div>
+
+            <div class="form-group">
+                <label>Banner Description (စာတန်းအသေး)</label>
+                <input type="text" id="bannerDesc" placeholder="ဥပမာ - ဒီတစ်ပတ်အတွက် အထူးလျော့စျေး ၂၀%">
+            </div>
+
+            <button class="btn-update" onclick="updateBanner()">Save Changes</button>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCt1SMVSMqdX3u2viQ-n_BVwp6KgQwDLOM",
+            authDomain: "my-shop-admin-cedb1.firebaseapp.com",
+            projectId: "my-shop-admin-cedb1",
+            storageBucket: "my-shop-admin-cedb1.firebasestorage.app",
+            messagingSenderId: "1073972515996",
+            appId: "1:1073972515996:web:28049f5e5977e3a8e74959"
+        };
+        
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        const db = firebase.firestore();
+
+        const agentData = JSON.parse(localStorage.getItem('currentAgent'));
+        const agentName = agentData ? (agentData.name || agentData.shop_name) : "Guest";
+
+        function previewBanner() {
+            const url = document.getElementById('bannerUrl').value;
+            const img = document.getElementById('previewImg');
+            const txt = document.getElementById('placeholderText');
+            if(url) {
+                img.src = url; 
+                img.style.display = 'block'; 
+                txt.style.display = 'none';
+            }
+        }
+
+        async function updateBanner() {
+            if(!agentData) return alert("Please login first");
+            
+            try {
+                await db.collection("shop_banners").doc(agentName).set({
+                    imageUrl: document.getElementById('bannerUrl').value,
+                    title: document.getElementById('bannerTitle').value,
+                    desc: document.getElementById('bannerDesc').value,
+                    updated_at: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                alert("Banner Updated Successfully!");
+            } catch (error) {
+                alert("Error: " + error.message);
+            }
+        }
+
+        // ရှိပြီးသား Banner အချက်အလက်ကို ပြန်ဆွဲတင်ခြင်း
+        db.collection("shop_banners").doc(agentName).get().then(doc => {
+            if(doc.exists) {
+                const data = doc.data();
+                document.getElementById('bannerUrl').value = data.imageUrl || '';
+                document.getElementById('bannerTitle').value = data.title || '';
+                document.getElementById('bannerDesc').value = data.desc || '';
+                previewBanner();
+            }
+        });
+    </script>
+</body>
+</html>
