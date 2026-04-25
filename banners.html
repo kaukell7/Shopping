@@ -20,8 +20,28 @@
         input { width: 100%; padding: 0.9rem; border: 1px solid #e2e8f0; border-radius: 8px; box-sizing: border-box; outline: none; }
         .btn-update { background: var(--primary); color: white; border: none; padding: 1rem; border-radius: 8px; font-weight: 700; cursor: pointer; width: 100%; margin-top: 10px; transition: 0.3s; }
         .btn-update:hover { background: #4338ca; }
-        .banner-preview { width: 100%; height: 200px; border-radius: 12px; object-fit: cover; margin-top: 10px; border: 1px dashed #cbd5e1; background: #f1f5f9; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        #previewImg { width: 100%; height: 100%; object-fit: cover; display: none; }
+        
+        /* ပြင်ဆင်ထားသော Preview Box CSS */
+        .banner-preview { 
+            width: 100%; 
+            height: 200px; 
+            border-radius: 12px; 
+            margin-top: 10px; 
+            /* border ကို ဖြုတ်လိုက်သည် */
+            background: #f1f5f9; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            overflow: hidden; 
+        }
+        
+        /* ပုံအပြည့်မြင်ရအောင် contain သို့ ပြောင်းထားသည် */
+        #previewImg { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: contain; 
+            display: none; 
+        }
         
         .url-list { margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px; }
         .url-item { display: flex; align-items: center; justify-content: space-between; background: #f8fafc; padding: 10px 12px; border-radius: 8px; margin-bottom: 8px; font-size: 13px; border: 1px solid #e2e8f0; }
@@ -146,19 +166,16 @@
             `).join('');
         }
 
-        // ပုံဖျက်လိုက်သည်နှင့် Database ပါ တစ်ခါတည်း Update လုပ်ရန် ပြင်ဆင်ထားသည်
         async function removeFromQueue(index) {
             if(confirm("ဤပုံကို ဖျက်လိုပါသလား?")) {
                 imageQueue.splice(index, 1);
                 renderQueue();
 
-                // Database ထဲသို့ပါ တစ်ခါတည်း လှမ်းသိမ်းခြင်း
                 try {
                     await db.collection("shop_banners").doc(agentName).update({
                         imageUrls: imageQueue,
                         updated_at: firebase.firestore.FieldValue.serverTimestamp()
                     });
-                    console.log("Database updated after deletion.");
                 } catch (error) {
                     console.error("Auto-save failed:", error);
                 }
@@ -189,7 +206,6 @@
             }
         }
 
-        // Real-time listener: Database ပြောင်းလဲမှုများကို အလိုအလျောက် စောင့်ကြည့်ဖတ်ရှုခြင်း
         db.collection("shop_banners").doc(agentName).onSnapshot(doc => {
             if(doc.exists) {
                 const data = doc.data();
