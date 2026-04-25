@@ -27,7 +27,6 @@
         .btn-setting { color: #94a3b8; cursor: pointer; transition: 0.3s; font-size: 1.2rem; border: none; background: none; }
         .btn-setting:hover { color: var(--primary); transform: rotate(45deg); }
 
-        /* Modal */
         .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); }
         .modal-content { background: white; margin: 8% auto; padding: 2.5rem; border-radius: 20px; width: 420px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
         .modal-header { margin-bottom: 2rem; font-weight: 700; font-size: 1.3rem; display: flex; justify-content: space-between; align-items: center; }
@@ -109,7 +108,6 @@
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.firestore();
 
-        // Real-time Data Loading
         db.collection("agents").orderBy("created_at", "desc").onSnapshot((querySnapshot) => {
             const tableBody = document.getElementById('agentTableBody');
             tableBody.innerHTML = "";
@@ -133,6 +131,11 @@
                         </td>
                     </tr>`;
             });
+        }, (error) => {
+            console.error("Firestore Error: ", error);
+            if(error.message.includes("permissions")) {
+                alert("Database Rules ကို Firebase Console မှာ 'allow read, write: if true;' လို့ ပြင်ပေးဖို့ လိုပါတယ်");
+            }
         });
 
         function openModal(id, currentPass, status) {
@@ -163,9 +166,13 @@
             const newPass = document.getElementById('newPassword').value;
             if(!newPass) return alert("စကားဝှက်အသစ် ရိုက်ထည့်ပါ");
             
-            await db.collection("agents").doc(id).update({ password: newPass });
-            alert("Password updated successfully!");
-            closeModal();
+            try {
+                await db.collection("agents").doc(id).update({ password: newPass });
+                alert("Password updated successfully!");
+                closeModal();
+            } catch (e) {
+                alert("Error: Missing permissions. Firebase Rules ကို စစ်ဆေးပါ");
+            }
         }
 
         async function toggleAccountStatus() {
@@ -174,12 +181,15 @@
             const newStatus = btnText.includes("Disable") ? "Disabled" : "Active";
             
             if(confirm(`ဒီအကောင့်ကို ${newStatus} လုပ်မှာ သေချာပါသလား?`)) {
-                await db.collection("agents").doc(id).update({ status: newStatus });
-                closeModal();
+                try {
+                    await db.collection("agents").doc(id).update({ status: newStatus });
+                    closeModal();
+                } catch (e) {
+                    alert("Error: Database permission error");
+                }
             }
         }
 
-        // Close modal when clicking outside
         window.onclick = function(event) {
             if (event.target == document.getElementById('editModal')) closeModal();
         }
