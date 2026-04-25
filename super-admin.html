@@ -22,11 +22,12 @@
         
         .input-group { display: flex; flex-direction: column; gap: 0.6rem; }
         label { font-weight: 600; font-size: 0.9rem; color: var(--text-main); }
-        input { padding: 0.9rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.9rem; }
+        input { padding: 0.9rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.9rem; transition: 0.3s; }
+        input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
 
-        .btn-create { background: var(--primary); color: white; padding: 0.9rem 2rem; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 0.6rem; }
+        .btn-create { background: var(--primary); color: white; padding: 0.9rem 2rem; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 0.6rem; transition: 0.2s; }
+        .btn-create:hover { background: #4338ca; }
 
-        /* Table Style */
         table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
         th { text-align: left; padding: 1rem; border-bottom: 2px solid #f1f5f9; color: var(--text-sub); font-size: 0.85rem; text-transform: uppercase; }
         td { padding: 1rem; border-bottom: 1px solid #f1f5f9; font-size: 0.95rem; }
@@ -34,7 +35,7 @@
         .status-active { background: #dcfce7; color: #166534; }
         .status-disabled { background: #fee2e2; color: #991b1b; }
         
-        .action-btn { border: none; background: none; cursor: pointer; padding: 5px; font-size: 1rem; transition: 0.2s; }
+        .action-btn { border: none; background: none; cursor: pointer; padding: 5px; font-size: 1rem; transition: 0.2s; margin-right: 8px; }
         .btn-toggle { color: var(--primary); }
         .btn-delete { color: var(--danger); }
     </style>
@@ -44,7 +45,7 @@
     <div class="sidebar">
         <h2>Spider.io</h2>
         <a href="super-admin.html" class="nav-item active"><i class="fas fa-plus-circle"></i> &nbsp; Add Agent</a>
-        <a href="user-list.html" class="nav-item"><i class="fas fa-users"></i> &nbsp; User List</a>
+        <a href="user_list.html" class="nav-item"><i class="fas fa-users"></i> &nbsp; User List</a>
         <a href="analytics.html" class="nav-item"><i class="fas fa-chart-line"></i> &nbsp; Analytics</a>
     </div>
 
@@ -74,18 +75,19 @@
 
         <div class="card">
             <h3>Manage Agents</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Shop Name</th>
-                        <th>Contact</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="agentTableBody">
-                    </tbody>
-            </table>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Shop Name</th>
+                            <th>Contact</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="agentTableBody"></tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -104,7 +106,6 @@
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.firestore();
 
-        // ၁။ Agent အသစ်ဖွင့်ခြင်း
         async function createAgent() {
             const name = document.getElementById('shopName').value.trim();
             const contact = document.getElementById('contact').value.trim();
@@ -117,7 +118,10 @@
                 if (!checkDuplicate.empty) return alert("ဤ Gmail/ဖုန်းဖြင့် အကောင့်ရှိနှင့်ပြီးသားပါ။");
 
                 await db.collection("agents").add({
-                    name, gmail_phone: contact, password, status: "Active",
+                    name, 
+                    gmail_phone: contact, 
+                    password, 
+                    status: "Active",
                     created_at: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
@@ -125,10 +129,16 @@
                 document.getElementById('shopName').value = '';
                 document.getElementById('contact').value = '';
                 document.getElementById('password').value = '';
-            } catch (error) { alert("Error: " + error.message); }
+                
+                // အောင်မြင်ရင် user_list.html ကို တိုက်ရိုက်သွားလိုပါက အောက်ပါ code ကို သုံးနိုင်ပါတယ်
+                // window.location.href = "user_list.html";
+
+            } catch (error) { 
+                console.error(error);
+                alert("Error: Missing Permissions. Firebase Console တွင် Rules ကို စစ်ဆေးပါ။"); 
+            }
         }
 
-        // ၂။ Agent စာရင်းကို Real-time ပြသခြင်း
         db.collection("agents").orderBy("created_at", "desc").onSnapshot((snapshot) => {
             const tbody = document.getElementById('agentTableBody');
             tbody.innerHTML = '';
@@ -138,8 +148,8 @@
                 tbody.innerHTML += `
                     <tr>
                         <td><strong>${agent.name}</strong></td>
-                        <td>${agent.gmail_phone}</td>
-                        <td><span class="status-badge ${agent.status === 'Active' ? 'status-active' : 'status-disabled'}">${agent.status}</span></td>
+                        <td>${agent.gmail_phone || agent.contact}</td>
+                        <td><span class="status-badge ${agent.status === 'Active' ? 'status-active' : 'status-disabled'}">${agent.status || 'Active'}</span></td>
                         <td>
                             <button class="action-btn btn-toggle" onclick="toggleStatus('${id}', '${agent.status}')" title="Change Status">
                                 <i class="fas fa-sync-alt"></i>
@@ -153,7 +163,6 @@
             });
         });
 
-        // ၃။ အကောင့် ပိတ်/ဖွင့် လုပ်ခြင်း
         async function toggleStatus(id, currentStatus) {
             const newStatus = currentStatus === "Active" ? "Disabled" : "Active";
             if(confirm(`အေးဂျင့်ကို ${newStatus} လုပ်မှာ သေချာပါသလား?`)) {
@@ -161,7 +170,6 @@
             }
         }
 
-        // ၄။ အေးဂျင့်ကို ဖျက်ခြင်း
         async function deleteAgent(id) {
             if(confirm("ဤအေးဂျင့်ကို ဖျက်ပစ်ရန် သေချာပါသလား? ပြန်ယူ၍ မရနိုင်ပါ။")) {
                 await db.collection("agents").doc(id).delete();
