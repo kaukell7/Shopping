@@ -23,11 +23,11 @@
         .banner-preview { width: 100%; height: 200px; border-radius: 12px; object-fit: cover; margin-top: 10px; border: 1px dashed #cbd5e1; background: #f1f5f9; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         #previewImg { width: 100%; height: 100%; object-fit: cover; display: none; }
         
-        /* အသစ်ထည့်ထားသော Style များ */
         .url-list { margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px; }
         .url-item { display: flex; align-items: center; justify-content: space-between; background: #f8fafc; padding: 8px 12px; border-radius: 8px; margin-bottom: 8px; font-size: 13px; border: 1px solid #e2e8f0; }
-        .btn-add { background: #10b981; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 600; margin-top: 8px; }
+        .btn-add { background: #10b981; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 600; }
         .remove-btn { color: #ef4444; cursor: pointer; padding: 5px; }
+        .remove-btn:hover { color: #b91c1c; }
     </style>
 </head>
 <body>
@@ -67,7 +67,8 @@
 
                 <div class="url-list" id="urlList">
                     <label style="font-size: 14px; color: #64748b;">Selected Images:</label>
-                    <div id="queuedLinks"></div>
+                    <div id="queuedLinks">
+                        </div>
                 </div>
             </div>
 
@@ -81,7 +82,7 @@
                 <input type="text" id="bannerDesc" placeholder="ဥပမာ - ဒီတစ်ပတ်အတွက် အထူးလျော့စျေး ၂၀%">
             </div>
 
-            <button class="btn-update" onclick="updateBanner()">Save All Changes</button>
+            <button class="btn-update" id="saveBtn" onclick="updateBanner()">Save All Changes</button>
         </div>
     </div>
 
@@ -100,8 +101,9 @@
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.firestore();
 
+        // Agent အမည်ကို localStorage မှယူပါ၊ မရှိပါက "kid kid" ကို သုံးပါ
         const agentData = JSON.parse(localStorage.getItem('currentAgent'));
-        const agentName = agentData ? (agentData.name || agentData.shop_name) : "Guest";
+        const agentName = agentData ? (agentData.name || agentData.shop_name) : "kid kid";
 
         let imageQueue = [];
 
@@ -120,17 +122,22 @@
         }
 
         function addToQueue() {
-            const url = document.getElementById('bannerUrl').value;
-            if(!url) return alert("Please enter a URL first");
+            const urlInput = document.getElementById('bannerUrl');
+            const url = urlInput.value.trim();
+            if(!url) return alert("ကျေးဇူးပြု၍ ပုံ Link ထည့်ပါဦး");
             
             imageQueue.push(url);
-            document.getElementById('bannerUrl').value = '';
+            urlInput.value = '';
             previewBanner();
             renderQueue();
         }
 
         function renderQueue() {
             const container = document.getElementById('queuedLinks');
+            if(imageQueue.length === 0) {
+                container.innerHTML = `<p style="font-size:12px; color:#94a3b8;">တင်ထားသောပုံမရှိသေးပါ</p>`;
+                return;
+            }
             container.innerHTML = imageQueue.map((url, index) => `
                 <div class="url-item">
                     <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 80%;">${url}</span>
@@ -140,36 +147,43 @@
         }
 
         function removeFromQueue(index) {
-            imageQueue.splice(index, 1);
-            renderQueue();
+            if(confirm("ဤပုံကို ဖျက်လိုပါသလား?")) {
+                imageQueue.splice(index, 1);
+                renderQueue();
+            }
         }
 
         async function updateBanner() {
-            if(!agentData) return alert("Please login first");
-            if(imageQueue.length === 0) return alert("Please add at least one image link");
+            if(imageQueue.length === 0) return alert("အနည်းဆုံး ပုံတစ်ပုံထည့်ပေးပါ");
             
+            const btn = document.getElementById('saveBtn');
+            btn.innerText = "Saving...";
+            btn.disabled = true;
+
             try {
                 await db.collection("shop_banners").doc(agentName).set({
-                    imageUrls: imageQueue, // Array အနေနဲ့ သိမ်းမယ်
+                    imageUrls: imageQueue, 
                     title: document.getElementById('bannerTitle').value,
                     desc: document.getElementById('bannerDesc').value,
                     updated_at: firebase.firestore.FieldValue.serverTimestamp()
                 });
-                alert("Banners Updated Successfully!");
+                alert("Banner များ အောင်မြင်စွာ သိမ်းဆည်းပြီးပါပြီ!");
             } catch (error) {
                 alert("Error: " + error.message);
+            } finally {
+                btn.innerText = "Save All Changes";
+                btn.disabled = false;
             }
         }
 
-        // ရှိပြီးသား Banner အချက်အလက်ကို ပြန်ဆွဲတင်ခြင်း
-        db.collection("shop_banners").doc(agentName).get().then(doc => {
+        // Database မှ ရှိပြီးသား Data များကို ပြန်ဆွဲထုတ်ခြင်း
+        db.collection("shop_banners").doc(agentName).onSnapshot(doc => {
             if(doc.exists) {
                 const data = doc.data();
-                if(data.imageUrls) {
+                if(data.imageUrls && Array.isArray(data.imageUrls)) {
                     imageQueue = data.imageUrls;
                     renderQueue();
                 } else if(data.imageUrl) {
-                    // အရင်က Single URL ရှိခဲ့ရင် Array ထဲ ပြောင်းထည့်ပေးမယ်
                     imageQueue = [data.imageUrl];
                     renderQueue();
                 }
