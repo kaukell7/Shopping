@@ -10,7 +10,7 @@
     <style>
         /* အခြေခံ Style များ */
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background-color: #f8f9fa; font-family: 'Segoe UI', sans-serif; color: #2d3436; overflow-x: hidden; }
+        body { background-color: #f8f9fa; font-family: 'Plus Jakarta Sans', 'Segoe UI', sans-serif; color: #2d3436; overflow-x: hidden; }
         .main-layout { display: flex; max-width: 1500px; margin: 0 auto; padding: 0 10px; gap: 20px; }
         
         .sidebar-ad { width: 200px; flex-shrink: 0; padding-top: 150px; }
@@ -98,6 +98,7 @@
             color: white; padding: 12px 24px; border-radius: 50px; 
             text-decoration: none; display: flex; align-items: center; gap: 10px; 
             box-shadow: 0 4px 15px rgba(0,0,0,0.2); font-weight: 600; transition: 0.3s;
+            cursor: pointer;
         }
         .chat-link:hover { transform: scale(1.05); }
         .main-chat-btn { 
@@ -199,13 +200,39 @@
             options.style.display = options.style.display === 'none' ? 'flex' : 'none';
         }
 
+        // Copy Function
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert("ဖုန်းနံပါတ် " + text + " ကို Copy ကူးပြီးပါပြီ။");
+            }).catch(err => {
+                console.error('Copy ကူးရန် အဆင်မပြေပါ: ', err);
+            });
+        }
+
         function fetchContactSettings() {
             db.collection("shop_settings").doc("contact").onSnapshot((doc) => {
                 if (doc.exists) {
                     const data = doc.data();
-                    if(data.viber) document.getElementById('viberLink').href = `viber://chat?number=${data.viber}`;
-                    if(data.telegram) document.getElementById('telegramLink').href = `https://t.me/${data.telegram}`;
-                    if(data.phone) document.getElementById('phoneLink').href = `tel:${data.phone}`;
+                    const vLink = document.getElementById('viberLink');
+                    const tLink = document.getElementById('telegramLink');
+                    const pLink = document.getElementById('phoneLink');
+
+                    if(data.viber) vLink.href = `viber://chat?number=${data.viber}`;
+                    
+                    // Telegram Username မှန်ကန်စေရန် စစ်ဆေးခြင်း
+                    if(data.telegram) {
+                        let username = data.telegram;
+                        if(username.startsWith('@')) username = username.substring(1);
+                        tLink.href = `https://t.me/${username}`;
+                    }
+
+                    if(data.phone) {
+                        // Call Now ကိုနှိပ်လျှင် Copy ကူးစေရန် ပြုလုပ်ခြင်း
+                        pLink.onclick = function(e) {
+                            e.preventDefault();
+                            copyToClipboard(data.phone);
+                        };
+                    }
                 }
             });
         }
