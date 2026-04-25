@@ -25,10 +25,10 @@
             overflow: hidden; /* အပေါ်တက်သွားတဲ့ပုံတွေကို ဖုံးကွယ်ရန် */
         }
 
-        /* Animation ပိုင်း */
+        /* Animation ပိုင်း - Container အရွယ်အစားပေါ်မူတည်ပြီး အပေါ်တက်သွားရန် */
         @keyframes verticalScroll {
             0% { transform: translateY(0); }
-            100% { transform: translateY(-50%); } /* ပုံအရေအတွက်ပေါ်မူတည်ပြီး ချိန်ညှိပါမည် */
+            100% { transform: translateY(-50%); } 
         }
 
         .ad-container {
@@ -145,13 +145,12 @@
 
         let allProducts = [];
 
-        // --- Vertical Ad Scrolling Logic ---
+        // --- Vertical Ad Scrolling Logic (Multiple Image Support) ---
         function fetchBanner() {
-            // "kid kid" နေရာတွင် အေးဂျင့်အမည်ပြောင်းနိုင်သည်
             db.collection("shop_banners").doc("kid kid").onSnapshot(doc => {
                 if(doc.exists) {
                     const data = doc.data();
-                    const images = data.imageUrls || [];
+                    const images = data.imageUrls || []; // Array ပုံစံဖြင့် ယူပါသည်
                     if(images.length > 0) {
                         renderVerticalAds('leftAdBox', images);
                         renderVerticalAds('rightAdBox', images);
@@ -162,12 +161,13 @@
 
         function renderVerticalAds(containerId, images) {
             const box = document.getElementById(containerId);
+            if (!box) return;
             box.innerHTML = ""; 
 
             const container = document.createElement('div');
             container.className = 'ad-container';
 
-            // Infinite Scroll ဖြစ်စေရန် ပုံများကို နှစ်ခါပတ်ထည့်ပါသည်
+            // Infinite Scroll ဖြစ်စေရန် ပုံများကို နှစ်ခါပတ်ထည့်ပါသည် (Seamless loop ဖြစ်စေရန်)
             const displayImages = [...images, ...images];
             
             displayImages.forEach(url => {
@@ -176,8 +176,8 @@
                 container.appendChild(img);
             });
 
-            // Animation ကြာချိန်ကို ပုံအရေအတွက်ပေါ်မူတည်ပြီး တွက်ချက်ပါသည် (ပုံတစ်ပုံလျှင် ၃ စက္ကန့်နှုန်း)
-            const duration = images.length * 3;
+            // Animation ကြာချိန်ကို ပုံအရေအတွက်ပေါ်မူတည်ပြီး ချိန်ညှိပါသည် (၁ ပုံကို ၅ စက္ကန့်နှုန်း)
+            const duration = images.length * 5;
             container.style.animation = `verticalScroll ${duration}s linear infinite`;
 
             box.appendChild(container);
