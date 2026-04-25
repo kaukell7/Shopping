@@ -72,18 +72,26 @@
         </div>
 
         <div class="card">
-            <h3><i class="fas fa-image"></i> Shop Branding (Logo)</h3>
+            <h3><i class="fas fa-image"></i> Shop Branding (Logo & Name)</h3>
+            
+            <div class="form-group">
+                <label>Shop Display Name (အသုံးပြုသူများမြင်ရမည့် ဆိုင်နာမည်)</label>
+                <input type="text" id="shopDisplayName" placeholder="ဥပမာ- THE PHONE HUB">
+            </div>
+
             <div class="form-group">
                 <label>Shop Logo URL (Direct Link)</label>
-                <input type="text" id="shopLogoUrl" placeholder="Logo Link (ဥပမာ - ImgBB link) ကိုဒီမှာထည့်ပါ" oninput="previewLogo()">
+                <input type="text" id="shopLogoUrl" placeholder="Logo Link ကိုဒီမှာထည့်ပါ" oninput="previewLogo()">
             </div>
+            
             <div class="logo-preview-box">
                 <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 5px;">Logo Preview:</p>
                 <img id="currentLogoPreview" src="" alt="Logo Preview">
                 <p id="noLogoText" style="font-size: 0.85rem; color: #94a3b8;">No Logo selected</p>
             </div>
-            <button class="btn-save" id="saveLogoBtn" onclick="updateShopLogo()" style="margin-top: 1.5rem; background: #0f172a;">
-                <i class="fas fa-check-circle"></i> Update Shop Logo
+            
+            <button class="btn-save" id="saveLogoBtn" onclick="updateShopBranding()" style="margin-top: 1.5rem; background: #0f172a;">
+                <i class="fas fa-check-circle"></i> Update Shop Logo & Name
             </button>
             <p id="logoStatusMsg"></p>
         </div>
@@ -110,46 +118,53 @@
             if (currentAgent) {
                 document.getElementById('shopName').value = currentAgent.name || currentAgent.shop_name || "";
                 document.getElementById('shopContact').value = currentAgent.gmail_phone || "";
-                fetchExistingLogo(); // လက်ရှိ Logo ကို Firebase မှ ဆွဲယူပြရန်
+                fetchExistingBranding(); // Branding အချက်အလက်များ ဆွဲယူရန်
             } else {
                 window.location.href = "index.html";
             }
         };
 
-        // --- Logo Branding Functions ---
+        // --- Branding Functions (Logo & Name) - Updated ---
 
-        // Firebase မှ လက်ရှိ Logo ကို ဆွဲယူခြင်း
-        function fetchExistingLogo() {
+        // Firebase မှ Logo နှင့် ဆိုင်နာမည်ကို ဆွဲယူခြင်း
+        function fetchExistingBranding() {
             db.collection("shop_settings").doc("branding").get().then((doc) => {
-                if (doc.exists && doc.data().logoUrl) {
-                    const url = doc.data().logoUrl;
-                    document.getElementById('shopLogoUrl').value = url;
-                    previewLogo();
+                if (doc.exists) {
+                    const data = doc.data();
+                    if (data.logoUrl) {
+                        document.getElementById('shopLogoUrl').value = data.logoUrl;
+                        previewLogo();
+                    }
+                    if (data.shopName) {
+                        document.getElementById('shopDisplayName').value = data.shopName;
+                    }
                 }
             });
         }
 
-        // Logo ပုံကို ချက်ချင်း Preview ပြခြင်း
         function previewLogo() {
             const url = document.getElementById('shopLogoUrl').value.trim();
             const img = document.getElementById('currentLogoPreview');
             const txt = document.getElementById('noLogoText');
-            
             if (url) {
-                img.src = url;
-                img.style.display = "block";
-                txt.style.display = "none";
+                img.src = url; img.style.display = "block"; txt.style.display = "none";
             } else {
-                img.style.display = "none";
-                txt.style.display = "block";
+                img.style.display = "none"; txt.style.display = "block";
             }
         }
 
-        // Logo ကို Firestore တွင် သိမ်းဆည်းခြင်း
-        async function updateShopLogo() {
+        // Logo နှင့် ဆိုင်နာမည်ကို Firestore တွင် သိမ်းဆည်းခြင်း
+        async function updateShopBranding() {
             const logoUrl = document.getElementById('shopLogoUrl').value.trim();
+            const shopDisplayName = document.getElementById('shopDisplayName').value.trim();
             const msg = document.getElementById('logoStatusMsg');
             const btn = document.getElementById('saveLogoBtn');
+
+            if (!shopDisplayName) {
+                msg.style.color = "#ef4444";
+                msg.innerText = "⚠️ ဆိုင်နာမည် ဖြည့်စွက်ပေးပါ။";
+                return;
+            }
 
             if (!logoUrl) {
                 msg.style.color = "#ef4444";
@@ -161,24 +176,25 @@
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
 
             try {
+                // shopName နှင့် logoUrl နှစ်ခုလုံးကို doc("branding") ထဲတွင် သိမ်းဆည်းသည်
                 await db.collection("shop_settings").doc("branding").set({
+                    shopName: shopDisplayName,
                     logoUrl: logoUrl,
                     updated_at: firebase.firestore.FieldValue.serverTimestamp()
                 }, { merge: true });
 
                 msg.style.color = "#22c55e";
-                msg.innerText = "✅ ဆိုင် Logo အောင်မြင်စွာ ပြောင်းလဲပြီးပါပြီ။";
+                msg.innerText = "✅ ဆိုင်အချက်အလက်များ အောင်မြင်စွာ ပြောင်းလဲပြီးပါပြီ။";
             } catch (e) {
                 msg.style.color = "#ef4444";
                 msg.innerText = "❌ အမှားအယွင်းရှိပါသည်- " + e.message;
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-check-circle"></i> Update Shop Logo';
+                btn.innerHTML = '<i class="fas fa-check-circle"></i> Update Shop Logo & Name';
             }
         }
 
-        // --- Original Profile Functions ---
-
+        // --- Profile Functions ---
         async function updateProfile() {
             const newName = document.getElementById('shopName').value.trim();
             const newPass = document.getElementById('shopPass').value.trim();
