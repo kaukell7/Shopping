@@ -12,13 +12,11 @@
         body { background-color: #f8f9fa; font-family: 'Segoe UI', sans-serif; color: #2d3436; overflow-x: hidden; }
         .main-layout { display: flex; max-width: 1500px; margin: 0 auto; padding: 0 10px; gap: 20px; }
         
-        /* Sidebar Ad Box ပြင်ဆင်မှု */
         .sidebar-ad { width: 200px; flex-shrink: 0; padding-top: 150px; }
         .ad-box { 
             width: 100%; 
             height: 500px; 
             background: #ffffff; 
-            /* အစက်စက်ဘောင်များ ဖျောက်ထားပါသည် */
             border: none; 
             border-radius: 15px; 
             position: sticky; 
@@ -26,31 +24,22 @@
             overflow: hidden; 
         }
 
-        /* Animation ပိုင်း - Seamless Vertical Loop */
         @keyframes verticalScroll {
             0% { transform: translateY(0); }
             100% { transform: translateY(-50%); } 
         }
 
-        .ad-container {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-        }
+        .ad-container { display: flex; flex-direction: column; width: 100%; }
+        .ad-container img { width: 100%; height: 500px; object-fit: cover; border-radius: 12px; padding: 5px; }
 
-        .ad-container img {
-            width: 100%;
-            height: 500px;
-            object-fit: cover;
-            border-radius: 12px;
-            padding: 5px;
-        }
-
-        /* Content Wrapper */
         .content-wrapper { flex-grow: 1; max-width: 1100px; }
         .header { text-align: center; padding: 40px 0 20px 0; position: relative; }
-        .logo-container { display: flex; justify-content: center; margin-bottom: 10px; }
+        
+        /* Logo Display Box */
+        .logo-container { display: flex; justify-content: center; margin-bottom: 10px; min-height: 60px; }
         .demo-logo { width: 100px; height: 60px; background-color: #2d3436; color: white; border-radius: 10px; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 14px; }
+        #shopLogoImg { height: 60px; max-width: 180px; object-fit: contain; }
+
         .header h1 { font-size: 32px; letter-spacing: 2px; }
         .cart-container { position: absolute; right: 0; top: 45px; cursor: pointer; background: #2d3436; color: white; padding: 10px 15px; border-radius: 50px; display: flex; align-items: center; gap: 8px; z-index: 100; }
         #historyCount { background: #d63031; padding: 2px 8px; border-radius: 50%; font-size: 12px; }
@@ -70,47 +59,29 @@
         .buy-btn { background: #2d3436; color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: 600; transition: 0.2s; }
         .buy-btn:hover { background: #d63031; }
         
+        .image-modal { display: none; position: fixed; z-index: 10001; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); align-items: center; justify-content: center; cursor: pointer; }
+        .image-modal img { max-width: 90%; max-height: 90%; border-radius: 10px; }
+
         .modal { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; }
         .modal-content { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 400px; position: relative; }
         .modal-content input, .modal-content textarea { width: 100%; padding: 10px; margin-top: 10px; border-radius: 10px; border: 1px solid #ddd; }
         .close { position: absolute; right: 15px; top: 10px; font-size: 25px; cursor: pointer; }
 
-        /* ပုံကို အကြီးကြည့်ရန် Modal CSS */
-        .image-modal {
-            display: none;
-            position: fixed;
-            z-index: 10001;
-            left: 0; top: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-        .image-modal img {
-            max-width: 90%;
-            max-height: 90%;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(255,255,255,0.2);
-        }
-
-        @media (max-width: 768px) {
-            .sidebar-ad { display: none; }
-        }
+        @media (max-width: 768px) { .sidebar-ad { display: none; } }
     </style>
 </head>
 <body>
 
     <div class="main-layout">
         <aside class="sidebar-ad">
-            <div class="ad-box" id="leftAdBox">
-                <div style="padding: 20px; text-align: center; color: #ccc;">No Ads</div>
-            </div>
+            <div class="ad-box" id="leftAdBox"></div>
         </aside>
 
         <div class="content-wrapper">
             <div class="header">
-                <div class="logo-container"><div class="demo-logo">Spider.io</div></div>
+                <div class="logo-container" id="logoDisplay">
+                    <div class="demo-logo">Spider.io</div>
+                </div>
                 <h1>THE SHOE HUB</h1>
                 <p>Premium & Authentic Footwear Collection</p>
                 <div class="cart-container"><span>🛒</span><span id="historyCount">0</span></div>
@@ -134,9 +105,7 @@
         </div>
 
         <aside class="sidebar-ad">
-            <div class="ad-box" id="rightAdBox">
-                <div style="padding: 20px; text-align: center; color: #ccc;">No Ads</div>
-            </div>
+            <div class="ad-box" id="rightAdBox"></div>
         </aside>
     </div>
 
@@ -169,6 +138,18 @@
 
         let allProducts = [];
 
+        // --- Branding & Logo Logic ---
+        function fetchShopLogo() {
+            db.collection("shop_settings").doc("branding").onSnapshot((doc) => {
+                if (doc.exists && doc.data().logoUrl) {
+                    const url = doc.data().logoUrl;
+                    document.getElementById('logoDisplay').innerHTML = `
+                        <img src="${url}" id="shopLogoImg" alt="Shop Logo">
+                    `;
+                }
+            });
+        }
+
         // --- Banner Logic ---
         function fetchBanner() {
             db.collection("shop_banners").doc("kid kid").onSnapshot(doc => {
@@ -180,8 +161,6 @@
                         renderVerticalAds('rightAdBox', images);
                     }
                 }
-            }, error => {
-                console.log("Banner Error:", error);
             });
         }
 
@@ -189,22 +168,16 @@
             const box = document.getElementById(containerId);
             if (!box) return;
             box.innerHTML = ""; 
-
             const container = document.createElement('div');
             container.className = 'ad-container';
-
             const displayImages = [...images, ...images];
-            
             displayImages.forEach(url => {
                 const img = document.createElement('img');
                 img.src = url;
-                img.onerror = () => img.src = 'https://via.placeholder.com/200x500?text=Image+Error';
                 container.appendChild(img);
             });
-
             const duration = images.length * 5;
             container.style.animation = `verticalScroll ${duration}s linear infinite`;
-
             box.appendChild(container);
         }
 
@@ -222,7 +195,6 @@
                 grid.innerHTML = '<p style="text-align:center; grid-column: 1/-1;">ရောင်းရန် ပစ္စည်းမရှိသေးပါ။</p>';
                 return;
             }
-
             grid.innerHTML = items.map(p => {
                 const name = p.name || 'Unnamed Shoe';
                 const finalPrice = p.price || 0;
@@ -247,7 +219,6 @@
             }).join('');
         }
 
-        // ပုံအကြီးကြည့်ရန် Function
         function viewImage(url) {
             document.getElementById('modalImg').src = url;
             document.getElementById('imageModal').style.display = "flex";
@@ -279,6 +250,7 @@
         }
 
         window.onload = () => {
+            fetchShopLogo(); // Logo ကို ဆွဲယူရန် ခေါ်လိုက်ခြင်း
             fetchBanner();
             fetchProducts();
         };
