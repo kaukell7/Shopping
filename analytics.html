@@ -19,6 +19,7 @@
         .stat-card { background: white; padding: 1.8rem; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
         .stat-card h3 { margin: 0; color: #64748b; font-size: 0.95rem; font-weight: 600; }
         .stat-value { font-size: 2.5rem; font-weight: 700; color: var(--primary); margin: 10px 0; }
+        .section-title { margin-top: 3rem; color: #1e293b; font-size: 1.2rem; border-left: 4px solid var(--primary); padding-left: 1rem; }
     </style>
 </head>
 <body>
@@ -27,10 +28,14 @@
         <a href="super-admin.html" class="nav-item"><i class="fas fa-plus-circle"></i> &nbsp; Add Agent</a>
         <a href="user-list.html" class="nav-item"><i class="fas fa-users"></i> &nbsp; User List</a>
         <a href="analytics.html" class="nav-item active"><i class="fas fa-chart-line"></i> &nbsp; Analytics</a>
+        <hr style="opacity: 0.1; margin: 1rem 0;">
+        <a href="agent-dashboard.html" class="nav-item"><i class="fas fa-arrow-left"></i> &nbsp; Back to Dashboard</a>
     </div>
 
     <div class="main-content">
         <h1>Overview Analytics</h1>
+        
+        <div class="section-title">Agent Network Status</div>
         <div class="stats-grid">
             <div class="stat-card">
                 <h3>Total Agents</h3>
@@ -43,6 +48,18 @@
             <div class="stat-card">
                 <h3>Disabled Accounts</h3>
                 <div id="disabledAgents" class="stat-value" style="color: #ef4444;">0</div>
+            </div>
+        </div>
+
+        <div class="section-title">Platform Performance</div>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Inventory Items</h3>
+                <div id="totalProducts" class="stat-value" style="color: #6366f1;">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Platform Sales (Ks)</h3>
+                <div id="totalPlatformSales" class="stat-value" style="color: #f59e0b;">0 Ks</div>
             </div>
         </div>
     </div>
@@ -61,7 +78,7 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // Real-time Dashboard Update
+        // ၁။ အေးဂျင့်စာရင်းများကို စစ်ဆေးခြင်း
         db.collection("agents").onSnapshot((querySnapshot) => {
             let total = querySnapshot.size;
             let active = 0;
@@ -78,6 +95,22 @@
             document.getElementById('totalAgents').innerText = total;
             document.getElementById('activeAgents').innerText = active;
             document.getElementById('disabledAgents').innerText = disabled;
+        });
+
+        // ၂။ စုစုပေါင်း ပစ္စည်းအရေအတွက်ကို တွက်ချက်ခြင်း
+        db.collection("products").onSnapshot((querySnapshot) => {
+            document.getElementById('totalProducts').innerText = querySnapshot.size;
+        });
+
+        // ၃။ စုစုပေါင်း ရောင်းရငွေကို တွက်ချက်ခြင်း (Orders collection ရှိလျှင်)
+        db.collection("orders").onSnapshot((querySnapshot) => {
+            let totalSales = 0;
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                // 'total_price' field အမည်ကို သင့် database အတိုင်း ပြင်နိုင်ပါသည်
+                totalSales += Number(data.total_price || 0);
+            });
+            document.getElementById('totalPlatformSales').innerText = totalSales.toLocaleString() + " Ks";
         });
     </script>
 </body>
