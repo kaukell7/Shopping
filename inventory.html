@@ -9,34 +9,19 @@
     <style>
         :root { --primary: #4f46e5; --bg: #f8fafc; --sidebar: #1e293b; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); margin: 0; display: flex; }
-        
         .sidebar { width: 260px; background: var(--sidebar); color: white; min-height: 100vh; padding: 2rem 1rem; position: fixed; z-index: 1000; }
         .sidebar h2 { padding-left: 1rem; margin-bottom: 2rem; color: #fff; }
         .nav-item { padding: 0.8rem 1rem; border-radius: 8px; color: #cbd5e1; text-decoration: none; margin-bottom: 0.5rem; display: flex; align-items: center; transition: 0.3s; cursor: pointer; }
         .nav-item:hover, .nav-item.active { background: var(--primary); color: white; }
-
         .main-content { margin-left: 280px; padding: 2.5rem; width: calc(100% - 280px); }
-        h1 { font-weight: 700; color: #1e293b; margin-bottom: 1.5rem; }
-
         .card { background: white; padding: 2.5rem; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; max-width: 600px; }
-        
         .form-group { margin-bottom: 1.5rem; }
         label { display: block; margin-bottom: 0.6rem; font-weight: 600; color: #1e293b; font-size: 0.9rem; }
-        input[type="text"], input[type="number"] { width: 100%; padding: 0.9rem; border: 1px solid #e2e8f0; border-radius: 8px; box-sizing: border-box; font-size: 0.9rem; }
-        input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
-
-        .image-upload-wrapper { position: relative; width: 150px; height: 150px; border: 2px dashed #cbd5e1; border-radius: 12px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.2s; overflow: hidden; background-color: #f8fafc; }
-        .image-upload-wrapper:hover { border-color: var(--primary); background-color: #eef2ff; }
+        input { width: 100%; padding: 0.9rem; border: 1px solid #e2e8f0; border-radius: 8px; box-sizing: border-box; }
+        .image-upload-wrapper { width: 150px; height: 150px; border: 2px dashed #cbd5e1; border-radius: 12px; display: flex; justify-content: center; align-items: center; cursor: pointer; overflow: hidden; background-color: #f8fafc; }
         .image-preview { width: 100%; height: 100%; object-fit: cover; display: none; }
-        .upload-placeholder { color: #64748b; text-align: center; font-size: 0.8rem; display: flex; flex-direction: column; gap: 8px; align-items: center; }
-        .upload-placeholder i { font-size: 2rem; color: #94a3b8; }
-        #imageInput { display: none; }
-
-        .btn-create { background: var(--primary); color: white; padding: 0.9rem 2rem; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 0.6rem; transition: 0.3s; font-size: 0.9rem; width: 100%; justify-content: center; }
-        .btn-create:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3); }
-        .btn-create:disabled { background-color: #a5b4fc; cursor: not-allowed; }
-
-        .readonly-input { background-color: #f1f5f9; font-weight: 700; color: #4f46e5; border: 1px solid #cbd5e1 !important; }
+        .btn-create { background: var(--primary); color: white; padding: 0.9rem; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; width: 100%; }
+        .readonly-input { background-color: #f1f5f9; font-weight: 700; color: #4f46e5; }
     </style>
 </head>
 <body>
@@ -49,25 +34,18 @@
         <a href="inventory.html" class="nav-item active">
             <i class="fas fa-box-open"></i> My Products
         </a>
-        <a href="profile-settings.html" class="nav-item">
-            <i class="fas fa-user-cog"></i> Profile Settings
-        </a>
     </div>
 
     <div class="main-content">
         <h1>Add New Product</h1>
-
         <div class="card">
             <form id="productForm">
                 <div class="form-group">
                     <label>Product Image</label>
-                    <input type="file" id="imageInput" accept="image/*" onchange="previewImage(this)">
+                    <input type="file" id="imageInput" accept="image/*" onchange="previewImage(this)" style="display:none">
                     <div class="image-upload-wrapper" onclick="document.getElementById('imageInput').click()">
-                        <img src="" id="imagePreview" class="image-preview" alt="Product Image Preview">
-                        <div class="upload-placeholder" id="uploadPlaceholder">
-                            <i class="fas fa-cloud-upload-alt"></i>
-                            <span>Click to upload image</span>
-                        </div>
+                        <img src="" id="imagePreview" class="image-preview">
+                        <div id="uploadPlaceholder"><i class="fas fa-cloud-upload-alt"></i> Upload</div>
                     </div>
                 </div>
 
@@ -88,7 +66,7 @@
 
                 <div class="form-group">
                     <label>Final Price (ကျသင့်ငွေ)</label>
-                    <input type="number" id="finalPrice" class="readonly-input" readonly placeholder="0">
+                    <input type="number" id="finalPrice" class="readonly-input" readonly>
                 </div>
 
                 <button type="submit" class="btn-create" id="uploadBtn">
@@ -103,111 +81,76 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script> 
     
     <script>
+        // အရေးကြီးသည်- config ကို သင့် Project ID (spider-io) နှင့် ကိုက်အောင်ပြင်ထားပါသည်
         const firebaseConfig = {
-            apiKey: "YOUR_ACTUAL_API_KEY",
-            authDomain: "YOUR_ACTUAL_AUTH_DOMAIN",
-            projectId: "YOUR_ACTUAL_PROJECT_ID",
-            storageBucket: "my-shop-admin-cedb1.appspot.com",
-            messagingSenderId: "YOUR_ACTUAL_MESSAGING_SENDER_ID",
-            appId: "YOUR_ACTUAL_APP_ID"
+            apiKey: "AIzaSy...", // သင့် API Key အစစ်ထည့်ပါ
+            authDomain: "spider-io.firebaseapp.com",
+            projectId: "spider-io",
+            storageBucket: "spider-io.appspot.com", // ဤနေရာ မှားနေ၍ လည်နေခြင်းဖြစ်နိုင်ပါသည်
+            messagingSenderId: "...",
+            appId: "..."
         };
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.firestore();
         const storage = firebase.storage();
 
-        // Discount Calculation Logic
         function calculateDiscount() {
             const original = parseFloat(document.getElementById('originalPrice').value) || 0;
             const percent = parseFloat(document.getElementById('discountPercent').value) || 0;
             const finalInput = document.getElementById('finalPrice');
-
-            if (percent > 0) {
-                const discountAmount = (original * percent) / 100;
-                finalInput.value = Math.round(original - discountAmount);
-            } else {
-                finalInput.value = original;
-            }
+            finalInput.value = percent > 0 ? Math.round(original - (original * percent / 100)) : original;
         }
 
         function previewImage(input) {
-            const preview = document.getElementById('imagePreview');
-            const placeholder = document.getElementById('uploadPlaceholder');
             const file = input.files[0];
-
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
-                    preview.src = e.target.result;
-                    preview.style.display = 'block';
-                    placeholder.style.display = 'none';
-                }
+                reader.onload = e => {
+                    document.getElementById('imagePreview').src = e.target.result;
+                    document.getElementById('imagePreview').style.display = 'block';
+                    document.getElementById('uploadPlaceholder').style.display = 'none';
+                };
                 reader.readAsDataURL(file);
-            } else {
-                preview.src = '';
-                preview.style.display = 'none';
-                placeholder.style.display = 'flex';
             }
         }
 
-        document.getElementById('productForm').addEventListener('submit', function(e) {
+        document.getElementById('productForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            createProduct();
-        });
-
-        async function createProduct() {
-            const name = document.getElementById('shopName').value.trim();
-            const originalPrice = document.getElementById('originalPrice').value.trim();
-            const discount = document.getElementById('discountPercent').value.trim() || 0;
-            const price = document.getElementById('finalPrice').value.trim();
-            const imageInput = document.getElementById('imageInput');
             const uploadBtn = document.getElementById('uploadBtn');
-            const file = imageInput.files[0];
-            const agentData = JSON.parse(localStorage.getItem('currentAgent'));
+            const file = document.getElementById('imageInput').files[0];
+            const agentData = JSON.parse(localStorage.getItem('currentAgent')) || { gmail_phone: 'default' };
 
-            if (!agentData) {
-                alert("You need to be logged in to create products.");
-                window.location.href = 'login.html';
-                return;
-            }
-
-            if (!name || !originalPrice || !file) {
-                alert("Please fill in the name, original price, and upload an image.");
-                return;
-            }
+            if (!file) return alert("ကျေးဇူးပြု၍ ပုံအရင်ရွေးပါ");
 
             uploadBtn.disabled = true;
             uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
 
             try {
-                const storageRef = storage.ref(`products/${agentData.gmail_phone}/${Date.now()}_${file.name}`);
-                const task = storageRef.put(file);
-                await task;
+                // ၁။ ပုံကို Storage သို့ တင်ခြင်း
+                const storageRef = storage.ref(`products/${Date.now()}_${file.name}`);
+                await storageRef.put(file);
                 const imageUrl = await storageRef.getDownloadURL();
 
+                // ၂။ Database ထဲသို့ ဒေတာသွင်းခြင်း (Field names များကို index.html နှင့် ညှိထားသည်)
                 await db.collection("products").add({
-                    name: name,
-                    original_price: originalPrice,
-                    discount_percent: discount + "%",
-                    price: price, // Final calculated price saved here
+                    name: document.getElementById('shopName').value,
+                    original_price: document.getElementById('originalPrice').value,
+                    discount_percent: document.getElementById('discountPercent').value,
+                    price: document.getElementById('finalPrice').value, // Final Price ကို price အနေနှင့်သိမ်းသည်
                     imageUrl: imageUrl,
-                    status: "Available",
                     agentGmailPhone: agentData.gmail_phone,
                     created_at: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
-                alert("Product created successfully with discount!");
-                document.getElementById('productForm').reset();
-                previewImage(imageInput);
-                uploadBtn.disabled = false;
-                uploadBtn.innerHTML = '<i class="fas fa-plus"></i> Upload Product';
-
+                alert("ပစ္စည်းတင်ခြင်း အောင်မြင်ပါသည်!");
+                location.reload();
             } catch (error) {
-                console.error("Error creating product: ", error);
-                alert("Error during upload.");
+                console.error(error);
+                alert("Error: " + error.message);
                 uploadBtn.disabled = false;
-                uploadBtn.innerHTML = '<i class="fas fa-plus"></i> Upload Product';
+                uploadBtn.innerHTML = 'Upload Product';
             }
-        }
+        });
     </script>
 </body>
 </html>
