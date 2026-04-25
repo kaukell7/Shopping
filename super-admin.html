@@ -3,57 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Agent - Spider.io</title>
+    <title>Super Admin - Spider.io</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        :root { --primary: #4f46e5; --bg: #1e293b; --card-bg: #ffffff; --text-main: #1e293b; --text-sub: #64748b; }
+        :root { --primary: #4f46e5; --bg: #1e293b; --card-bg: #ffffff; --text-main: #1e293b; --text-sub: #64748b; --danger: #ef4444; --success: #10b981; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; margin: 0; display: flex; }
 
-        /* Sidebar Style */
         .sidebar { width: 260px; background: var(--bg); color: white; min-height: 100vh; padding: 2rem 1rem; position: fixed; z-index: 1000; }
         .sidebar h2 { margin-bottom: 2rem; padding-left: 1rem; }
         .nav-item { padding: 0.8rem 1rem; border-radius: 8px; color: #cbd5e1; text-decoration: none; margin-bottom: 0.5rem; display: flex; align-items: center; transition: 0.3s; }
         .nav-item:hover, .nav-item.active { background: var(--primary); color: white; }
 
-        /* Main Content */
         .main-content { margin-left: 280px; padding: 2.5rem; width: calc(100% - 280px); }
-        .header { margin-bottom: 2rem; }
-        
-        .card { background: var(--card-bg); padding: 2.5rem; border-radius: 16px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
-        .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2rem; }
+        .card { background: var(--card-bg); padding: 2rem; border-radius: 16px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); margin-bottom: 2.5rem; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem; }
         
         .input-group { display: flex; flex-direction: column; gap: 0.6rem; }
         label { font-weight: 600; font-size: 0.9rem; color: var(--text-main); }
-        input { padding: 0.9rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.9rem; transition: 0.2s; }
-        input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
+        input { padding: 0.9rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.9rem; }
 
-        .btn-create { background: var(--primary); color: white; padding: 0.9rem 2rem; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 0.6rem; transition: 0.3s; }
-        .btn-create:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3); }
+        .btn-create { background: var(--primary); color: white; padding: 0.9rem 2rem; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 0.6rem; }
+
+        /* Table Style */
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th { text-align: left; padding: 1rem; border-bottom: 2px solid #f1f5f9; color: var(--text-sub); font-size: 0.85rem; text-transform: uppercase; }
+        td { padding: 1rem; border-bottom: 1px solid #f1f5f9; font-size: 0.95rem; }
+        .status-badge { padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+        .status-active { background: #dcfce7; color: #166534; }
+        .status-disabled { background: #fee2e2; color: #991b1b; }
+        
+        .action-btn { border: none; background: none; cursor: pointer; padding: 5px; font-size: 1rem; transition: 0.2s; }
+        .btn-toggle { color: var(--primary); }
+        .btn-delete { color: var(--danger); }
     </style>
 </head>
 <body>
 
     <div class="sidebar">
         <h2>Spider.io</h2>
-        <a href="super-admin.html" class="nav-item active">
-            <i class="fas fa-plus-circle"></i> Add Agent
-        </a>
-        <a href="user-list.html" class="nav-item">
-            <i class="fas fa-users"></i> User List
-        </a>
-        <a href="analytics.html" class="nav-item">
-            <i class="fas fa-chart-line"></i> Analytics
-        </a>
+        <a href="super-admin.html" class="nav-item active"><i class="fas fa-plus-circle"></i> &nbsp; Add Agent</a>
+        <a href="user-list.html" class="nav-item"><i class="fas fa-users"></i> &nbsp; User List</a>
+        <a href="analytics.html" class="nav-item"><i class="fas fa-chart-line"></i> &nbsp; Analytics</a>
     </div>
 
     <div class="main-content">
-        <div class="header">
-            <h1>Register New Agent</h1>
-        </div>
+        <h1>Super Admin Control</h1>
 
         <div class="card">
+            <h3>Register New Agent</h3>
             <div class="form-grid">
                 <div class="input-group">
                     <label>Shop Name</label>
@@ -61,7 +60,7 @@
                 </div>
                 <div class="input-group">
                     <label>Gmail / Phone</label>
-                    <input type="text" id="contact" placeholder="Email or Phone number">
+                    <input type="text" id="contact" placeholder="Email or Phone">
                 </div>
                 <div class="input-group">
                     <label>Password</label>
@@ -69,8 +68,24 @@
                 </div>
             </div>
             <button class="btn-create" onclick="createAgent()">
-                <i class="fas fa-plus"></i> Create & Save to Database
+                <i class="fas fa-plus"></i> Create Agent
             </button>
+        </div>
+
+        <div class="card">
+            <h3>Manage Agents</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Shop Name</th>
+                        <th>Contact</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="agentTableBody">
+                    </tbody>
+            </table>
         </div>
     </div>
 
@@ -89,39 +104,67 @@
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.firestore();
 
+        // ၁။ Agent အသစ်ဖွင့်ခြင်း
         async function createAgent() {
             const name = document.getElementById('shopName').value.trim();
             const contact = document.getElementById('contact').value.trim();
             const password = document.getElementById('password').value.trim();
 
-            if(!name || !contact || !password) {
-                return alert("အချက်အလက် အားလုံး ပြည့်စုံအောင် ဖြည့်ပေးပါ");
-            }
+            if(!name || !contact || !password) return alert("အချက်အလက် အားလုံး ဖြည့်ပေးပါ");
 
             try {
-                // ၁။ Database ထဲမှာ ဖုန်း သို့မဟုတ် Gmail ရှိနှင့်ပြီးသားလား အရင်စစ်ဆေးသည်
-                const checkDuplicate = await db.collection("agents")
-                    .where("gmail_phone", "==", contact)
-                    .get();
+                const checkDuplicate = await db.collection("agents").where("gmail_phone", "==", contact).get();
+                if (!checkDuplicate.empty) return alert("ဤ Gmail/ဖုန်းဖြင့် အကောင့်ရှိနှင့်ပြီးသားပါ။");
 
-                if (!checkDuplicate.empty) {
-                    return alert("ဤ Gmail သို့မဟုတ် ဖုန်းနံပါတ်ဖြင့် အကောင့်ဖွင့်ထားပြီးသား ဖြစ်ပါသည်။");
-                }
-
-                // ၂။ မရှိသေးမှသာ အကောင့်အသစ်ကို သိမ်းဆည်းသည်
                 await db.collection("agents").add({
-                    name: name,
-                    gmail_phone: contact,
-                    password: password,
-                    status: "Active",
+                    name, gmail_phone: contact, password, status: "Active",
                     created_at: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
                 alert("Agent အကောင့် အောင်မြင်စွာ ဖွင့်ပြီးပါပြီ");
-                window.location.href = "user-list.html"; 
-            } catch (error) {
-                console.error("Error: ", error);
-                alert("ဒေတာ သိမ်းဆည်းရာမှာ အမှားအယွင်း ရှိနေပါတယ်");
+                document.getElementById('shopName').value = '';
+                document.getElementById('contact').value = '';
+                document.getElementById('password').value = '';
+            } catch (error) { alert("Error: " + error.message); }
+        }
+
+        // ၂။ Agent စာရင်းကို Real-time ပြသခြင်း
+        db.collection("agents").orderBy("created_at", "desc").onSnapshot((snapshot) => {
+            const tbody = document.getElementById('agentTableBody');
+            tbody.innerHTML = '';
+            snapshot.forEach((doc) => {
+                const agent = doc.data();
+                const id = doc.id;
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${agent.name}</strong></td>
+                        <td>${agent.gmail_phone}</td>
+                        <td><span class="status-badge ${agent.status === 'Active' ? 'status-active' : 'status-disabled'}">${agent.status}</span></td>
+                        <td>
+                            <button class="action-btn btn-toggle" onclick="toggleStatus('${id}', '${agent.status}')" title="Change Status">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                            <button class="action-btn btn-delete" onclick="deleteAgent('${id}')" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        });
+
+        // ၃။ အကောင့် ပိတ်/ဖွင့် လုပ်ခြင်း
+        async function toggleStatus(id, currentStatus) {
+            const newStatus = currentStatus === "Active" ? "Disabled" : "Active";
+            if(confirm(`အေးဂျင့်ကို ${newStatus} လုပ်မှာ သေချာပါသလား?`)) {
+                await db.collection("agents").doc(id).update({ status: newStatus });
+            }
+        }
+
+        // ၄။ အေးဂျင့်ကို ဖျက်ခြင်း
+        async function deleteAgent(id) {
+            if(confirm("ဤအေးဂျင့်ကို ဖျက်ပစ်ရန် သေချာပါသလား? ပြန်ယူ၍ မရနိုင်ပါ။")) {
+                await db.collection("agents").doc(id).delete();
             }
         }
     </script>
