@@ -18,10 +18,10 @@
         .form-group { margin-bottom: 1.5rem; }
         label { display: block; margin-bottom: 0.6rem; font-weight: 600; color: #1e293b; font-size: 0.9rem; }
         input { width: 100%; padding: 0.9rem; border: 1px solid #e2e8f0; border-radius: 8px; box-sizing: border-box; }
-        .image-upload-wrapper { width: 150px; height: 150px; border: 2px dashed #cbd5e1; border-radius: 12px; display: flex; justify-content: center; align-items: center; cursor: pointer; overflow: hidden; background-color: #f8fafc; }
-        .image-preview { width: 100%; height: 100%; object-fit: cover; display: none; }
-        .btn-create { background: var(--primary); color: white; padding: 0.9rem; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; width: 100%; }
+        .btn-create { background: var(--primary); color: white; padding: 0.9rem; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; width: 100%; margin-top: 10px; }
         .readonly-input { background-color: #f1f5f9; font-weight: 700; color: #4f46e5; }
+        .preview-container { margin-top: 10px; border-radius: 8px; overflow: hidden; display: none; border: 1px solid #e2e8f0; }
+        #imagePreview { width: 100%; height: auto; max-height: 200px; object-fit: contain; background: #fff; }
     </style>
 </head>
 <body>
@@ -41,12 +41,12 @@
         <div class="card">
             <form id="productForm">
                 <div class="form-group">
-                    <label>Product Image</label>
-                    <input type="file" id="imageInput" accept="image/*" onchange="previewImage(this)" style="display:none">
-                    <div class="image-upload-wrapper" onclick="document.getElementById('imageInput').click()">
-                        <img src="" id="imagePreview" class="image-preview">
-                        <div id="uploadPlaceholder"><i class="fas fa-cloud-upload-alt"></i> Upload</div>
+                    <label>Product Image Link (URL)</label>
+                    <input type="text" id="imageUrl" placeholder="Paste image link here (e.g. https://imgbb.com/photo.jpg)" required oninput="previewFromLink()">
+                    <div class="preview-container" id="previewBox">
+                        <img src="" id="imagePreview">
                     </div>
+                    <small style="color: #64748b;">ImgBB ကဲ့သို့သော hosting မှ direct link ကို ထည့်ပေးပါ。</small>
                 </div>
 
                 <div class="form-group">
@@ -70,7 +70,7 @@
                 </div>
 
                 <button type="submit" class="btn-create" id="uploadBtn">
-                    <i class="fas fa-plus"></i> Upload Product
+                    <i class="fas fa-plus"></i> Save Product
                 </button>
             </form>
         </div>
@@ -78,21 +78,20 @@
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script> 
     
     <script>
-        // အရေးကြီးသည်- config ကို သင့် Project ID (spider-io) နှင့် ကိုက်အောင်ပြင်ထားပါသည်
+        // Project ID ကို spider-io နှင့် ညှိထားပါသည်
         const firebaseConfig = {
-            apiKey: "AIzaSy...", // သင့် API Key အစစ်ထည့်ပါ
+            apiKey: "AIzaSy...", // သင့် Project ၏ API Key ကို ဤနေရာတွင် ထည့်ပါ
             authDomain: "spider-io.firebaseapp.com",
             projectId: "spider-io",
-            storageBucket: "spider-io.appspot.com", // ဤနေရာ မှားနေ၍ လည်နေခြင်းဖြစ်နိုင်ပါသည်
+            storageBucket: "spider-io.appspot.com",
             messagingSenderId: "...",
             appId: "..."
         };
+        
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.firestore();
-        const storage = firebase.storage();
 
         function calculateDiscount() {
             const original = parseFloat(document.getElementById('originalPrice').value) || 0;
@@ -101,43 +100,39 @@
             finalInput.value = percent > 0 ? Math.round(original - (original * percent / 100)) : original;
         }
 
-        function previewImage(input) {
-            const file = input.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = e => {
-                    document.getElementById('imagePreview').src = e.target.result;
-                    document.getElementById('imagePreview').style.display = 'block';
-                    document.getElementById('uploadPlaceholder').style.display = 'none';
-                };
-                reader.readAsDataURL(file);
+        // Link ထည့်လိုက်သည်နှင့် ပုံကို ကြိုတင်ကြည့်ရှုနိုင်ရန်
+        function previewFromLink() {
+            const url = document.getElementById('imageUrl').value;
+            const previewBox = document.getElementById('previewBox');
+            const previewImg = document.getElementById('imagePreview');
+            
+            if (url) {
+                previewImg.src = url;
+                previewBox.style.display = 'block';
+            } else {
+                previewBox.style.display = 'none';
             }
         }
 
         document.getElementById('productForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const uploadBtn = document.getElementById('uploadBtn');
-            const file = document.getElementById('imageInput').files[0];
-            const agentData = JSON.parse(localStorage.getItem('currentAgent')) || { gmail_phone: 'default' };
+            const imageUrl = document.getElementById('imageUrl').value;
+            const agentData = JSON.parse(localStorage.getItem('currentAgent'));
 
-            if (!file) return alert("ကျေးဇူးပြု၍ ပုံအရင်ရွေးပါ");
+            if (!agentData) return alert("ကျေးဇူးပြု၍ အရင် Login ဝင်ပေးပါ!");
 
             uploadBtn.disabled = true;
-            uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+            uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
 
             try {
-                // ၁။ ပုံကို Storage သို့ တင်ခြင်း
-                const storageRef = storage.ref(`products/${Date.now()}_${file.name}`);
-                await storageRef.put(file);
-                const imageUrl = await storageRef.getDownloadURL();
-
-                // ၂။ Database ထဲသို့ ဒေတာသွင်းခြင်း (Field names များကို index.html နှင့် ညှိထားသည်)
+                // Storage ကို မပို့တော့ဘဲ Firestore Database ထဲသို့ URL ကို တိုက်ရိုက်သိမ်းဆည်းခြင်း
                 await db.collection("products").add({
                     name: document.getElementById('shopName').value,
                     original_price: document.getElementById('originalPrice').value,
                     discount_percent: document.getElementById('discountPercent').value,
-                    price: document.getElementById('finalPrice').value, // Final Price ကို price အနေနှင့်သိမ်းသည်
-                    imageUrl: imageUrl,
+                    price: document.getElementById('finalPrice').value,
+                    imageUrl: imageUrl, // ရိုက်ထည့်လိုက်သည့် URL ကို သိမ်းလိုက်သည်
                     agentGmailPhone: agentData.gmail_phone,
                     created_at: firebase.firestore.FieldValue.serverTimestamp()
                 });
@@ -148,7 +143,7 @@
                 console.error(error);
                 alert("Error: " + error.message);
                 uploadBtn.disabled = false;
-                uploadBtn.innerHTML = 'Upload Product';
+                uploadBtn.innerHTML = 'Save Product';
             }
         });
     </script>
