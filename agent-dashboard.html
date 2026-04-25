@@ -48,6 +48,9 @@
         <a href="inventory.html" class="nav-item">
             <i class="fas fa-box-open"></i> <span>My Products</span>
         </a>
+        <a href="banners.html" class="nav-item">
+            <i class="fas fa-ad"></i> <span>Shop Banner</span>
+        </a>
         <a href="profile-settings.html" class="nav-item">
             <i class="fas fa-user-cog"></i> <span>Profile Settings</span>
         </a>
@@ -87,7 +90,7 @@
                 </div>
                 <div class="info-row">
                     <span class="info-label">Current Orders:</span>
-                    <span class="info-value">0</span>
+                    <span class="info-value" id="totalOrders">0</span>
                 </div>
             </div>
         </div>
@@ -97,7 +100,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
     <script>
-        // Firebase Config (သင့် Project ID နှင့် ကိုက်ညီရပါမည်)
         const firebaseConfig = {
             apiKey: "AIzaSyCt1SMVSMqdX3u2viQ-n_BVwp6KgQwDLOM",
             authDomain: "my-shop-admin-cedb1.firebaseapp.com",
@@ -114,13 +116,11 @@
             const agentData = JSON.parse(localStorage.getItem('currentAgent'));
 
             if (agentData) {
-                // အေးဂျင့် အချက်အလက်များ ပြသခြင်း
                 const displayName = agentData.name || agentData.shop_name || "Agent";
                 document.getElementById('welcomeAgent').innerText = `Welcome back, ${displayName}!`;
                 document.getElementById('shopNameDisplay').innerText = displayName;
                 document.getElementById('shopContact').innerText = agentData.gmail_phone;
                 
-                // Account Status ကို ပြသခြင်း
                 const statusBadge = document.getElementById('accountStatus');
                 statusBadge.innerText = agentData.status || "Active";
                 if(agentData.status === "Disabled") {
@@ -128,16 +128,21 @@
                     statusBadge.style.color = "#991b1b";
                 }
 
-                // Firebase မှ ပစ္စည်းအရေအတွက်ကို Real-time ရေတွက်ခြင်း
-                // မှတ်ချက်- 'agent_name' field သည် အေးဂျင့်၏ အမည်နှင့် ကိုက်ညီရပါမည်
+                // ပစ္စည်းအရေအတွက်ကို Live ရေတွက်ခြင်း
                 db.collection("products")
                   .where("agent_name", "==", displayName)
                   .onSnapshot((snapshot) => {
                       document.getElementById('totalProducts').innerText = snapshot.size;
                   });
 
+                // အော်ဒါအရေအတွက်ကို Live ရေတွက်ခြင်း
+                db.collection("orders")
+                  .where("agent_name", "==", displayName)
+                  .onSnapshot((snapshot) => {
+                      document.getElementById('totalOrders').innerText = snapshot.size;
+                  });
+
             } else {
-                // Login မဝင်ထားရင် index.html (သို့မဟုတ် login page) ကို ပြန်ပို့မည်
                 window.location.href = "index.html"; 
             }
         };
