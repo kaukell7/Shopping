@@ -102,7 +102,6 @@
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.firestore();
 
-        // Agent အမည်ကို localStorage မှယူပါ၊ မရှိပါက "kid kid" ကို သုံးပါ
         const agentData = JSON.parse(localStorage.getItem('currentAgent'));
         const agentName = agentData ? (agentData.name || agentData.shop_name) : "kid kid";
 
@@ -127,7 +126,6 @@
             const url = urlInput.value.trim();
             if(!url) return alert("ကျေးဇူးပြု၍ ပုံ Link ထည့်ပါဦး");
             
-            // ပုံအသစ်ကို array ထဲပေါင်းထည့်ခြင်း
             imageQueue.push(url);
             urlInput.value = '';
             previewBanner();
@@ -163,13 +161,12 @@
             btn.disabled = true;
 
             try {
-                // array တစ်ခုလုံးကို သိမ်းဆည်းရန် imageUrls field ကို သုံးပါသည်
                 await db.collection("shop_banners").doc(agentName).set({
                     imageUrls: imageQueue, 
                     title: document.getElementById('bannerTitle').value,
                     desc: document.getElementById('bannerDesc').value,
                     updated_at: firebase.firestore.FieldValue.serverTimestamp()
-                }, { merge: true }); // merge: true ထည့်ခြင်းဖြင့် တခြား data တွေ မပျက်အောင် ကာကွယ်ပေးသည်
+                }, { merge: true });
                 
                 alert("Banner များ အောင်မြင်စွာ သိမ်းဆည်းပြီးပါပြီ!");
             } catch (error) {
@@ -180,15 +177,21 @@
             }
         }
 
-        // Database မှ ရှိပြီးသား Data များကို Real-time ပြန်ဆွဲထုတ်ခြင်း
+        // Database မှ data ဖတ်သည့် logic ကို ဤနေရာတွင် ပြင်ဆင်ထားပါသည်
         db.collection("shop_banners").doc(agentName).onSnapshot(doc => {
             if(doc.exists) {
                 const data = doc.data();
-                // array data ရှိပါက imageQueue ထဲသို့ ထည့်ပေးခြင်း
-                if(data.imageUrls && Array.isArray(data.imageUrls)) {
+                
+                // imageUrls array ရှိပါက ဦးစားပေးယူပါ
+                if(data.imageUrls && Array.isArray(data.imageUrls) && data.imageUrls.length > 0) {
                     imageQueue = data.imageUrls;
-                } else if(data.imageUrl) {
+                } 
+                // array မရှိဘဲ imageUrl တစ်ခုတည်းသာရှိပါက array ပြောင်းယူပါ
+                else if(data.imageUrl) {
                     imageQueue = [data.imageUrl];
+                } 
+                else {
+                    imageQueue = [];
                 }
                 
                 renderQueue();
