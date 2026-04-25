@@ -25,7 +25,6 @@
         .btn-save:disabled { background: #94a3b8; cursor: not-allowed; }
         #statusMsg, #logoStatusMsg { margin-top: 1.2rem; font-size: 0.95rem; font-weight: 600; text-align: center; min-height: 20px; }
         
-        /* Logo Preview Style */
         .logo-preview-box { margin-top: 10px; padding: 10px; border: 1px dashed #cbd5e1; border-radius: 8px; text-align: center; background: #f8fafc; }
         #currentLogoPreview { max-height: 80px; max-width: 150px; object-fit: contain; display: none; margin: 0 auto; }
     </style>
@@ -80,6 +79,11 @@
             </div>
 
             <div class="form-group">
+                <label>Shop Tagline (ဆိုင်နာမည်အောက်တွင်ပြသမည့် စာသား)</label>
+                <input type="text" id="shopTagline" placeholder="ဥပမာ- အကောင်းဆုံးဖိနပ်များ စုစည်းရာ">
+            </div>
+
+            <div class="form-group">
                 <label>Shop Logo URL (Direct Link)</label>
                 <input type="text" id="shopLogoUrl" placeholder="Logo Link ကိုဒီမှာထည့်ပါ" oninput="previewLogo()">
             </div>
@@ -118,15 +122,14 @@
             if (currentAgent) {
                 document.getElementById('shopName').value = currentAgent.name || currentAgent.shop_name || "";
                 document.getElementById('shopContact').value = currentAgent.gmail_phone || "";
-                fetchExistingBranding(); // Branding အချက်အလက်များ ဆွဲယူရန်
+                fetchExistingBranding(); 
             } else {
                 window.location.href = "index.html";
             }
         };
 
-        // --- Branding Functions (Logo & Name) - Updated ---
+        // --- Branding Functions (Updated) ---
 
-        // Firebase မှ Logo နှင့် ဆိုင်နာမည်ကို ဆွဲယူခြင်း
         function fetchExistingBranding() {
             db.collection("shop_settings").doc("branding").get().then((doc) => {
                 if (doc.exists) {
@@ -137,6 +140,10 @@
                     }
                     if (data.shopName) {
                         document.getElementById('shopDisplayName').value = data.shopName;
+                    }
+                    // လက်ရှိ Tagline ကို ဆွဲယူဖော်ပြခြင်း
+                    if (data.shopTagline) {
+                        document.getElementById('shopTagline').value = data.shopTagline;
                     }
                 }
             });
@@ -153,10 +160,10 @@
             }
         }
 
-        // Logo နှင့် ဆိုင်နာမည်ကို Firestore တွင် သိမ်းဆည်းခြင်း
         async function updateShopBranding() {
             const logoUrl = document.getElementById('shopLogoUrl').value.trim();
             const shopDisplayName = document.getElementById('shopDisplayName').value.trim();
+            const shopTagline = document.getElementById('shopTagline').value.trim(); // Tagline တန်ဖိုးယူခြင်း
             const msg = document.getElementById('logoStatusMsg');
             const btn = document.getElementById('saveLogoBtn');
 
@@ -166,19 +173,14 @@
                 return;
             }
 
-            if (!logoUrl) {
-                msg.style.color = "#ef4444";
-                msg.innerText = "⚠️ Logo Link တစ်ခုခု ထည့်ပေးပါ။";
-                return;
-            }
-
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
 
             try {
-                // shopName နှင့် logoUrl နှစ်ခုလုံးကို doc("branding") ထဲတွင် သိမ်းဆည်းသည်
+                // Branding data အားလုံးကို Firebase ထဲတွင် သိမ်းဆည်းခြင်း
                 await db.collection("shop_settings").doc("branding").set({
                     shopName: shopDisplayName,
+                    shopTagline: shopTagline, // Tagline ကိုပါ သိမ်းဆည်းသည်
                     logoUrl: logoUrl,
                     updated_at: firebase.firestore.FieldValue.serverTimestamp()
                 }, { merge: true });
