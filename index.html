@@ -22,10 +22,10 @@
             border-radius: 15px; 
             position: sticky; 
             top: 20px; 
-            overflow: hidden; /* အပေါ်တက်သွားတဲ့ပုံတွေကို ဖုံးကွယ်ရန် */
+            overflow: hidden; 
         }
 
-        /* Animation ပိုင်း - Container အရွယ်အစားပေါ်မူတည်ပြီး အပေါ်တက်သွားရန် */
+        /* Animation ပိုင်း - Seamless Vertical Loop */
         @keyframes verticalScroll {
             0% { transform: translateY(0); }
             100% { transform: translateY(-50%); } 
@@ -145,17 +145,19 @@
 
         let allProducts = [];
 
-        // --- Vertical Ad Scrolling Logic (Multiple Image Support) ---
+        // --- Banner Logic ---
         function fetchBanner() {
             db.collection("shop_banners").doc("kid kid").onSnapshot(doc => {
                 if(doc.exists) {
                     const data = doc.data();
-                    const images = data.imageUrls || []; // Array ပုံစံဖြင့် ယူပါသည်
+                    const images = data.imageUrls || []; 
                     if(images.length > 0) {
                         renderVerticalAds('leftAdBox', images);
                         renderVerticalAds('rightAdBox', images);
                     }
                 }
+            }, error => {
+                console.log("Banner Error:", error);
             });
         }
 
@@ -167,22 +169,24 @@
             const container = document.createElement('div');
             container.className = 'ad-container';
 
-            // Infinite Scroll ဖြစ်စေရန် ပုံများကို နှစ်ခါပတ်ထည့်ပါသည် (Seamless loop ဖြစ်စေရန်)
+            // Seamless infinite loop ဖြစ်ရန် ပုံများကို နှစ်ကြိမ် ပတ်ထည့်ပါသည်
             const displayImages = [...images, ...images];
             
             displayImages.forEach(url => {
                 const img = document.createElement('img');
                 img.src = url;
+                img.onerror = () => img.src = 'https://via.placeholder.com/200x500?text=Image+Error';
                 container.appendChild(img);
             });
 
-            // Animation ကြာချိန်ကို ပုံအရေအတွက်ပေါ်မူတည်ပြီး ချိန်ညှိပါသည် (၁ ပုံကို ၅ စက္ကန့်နှုန်း)
+            // ပုံတစ်ပုံကို ၅ စက္ကန့်နှုန်းဖြင့် Animation Speed ချိန်ခြင်း
             const duration = images.length * 5;
             container.style.animation = `verticalScroll ${duration}s linear infinite`;
 
             box.appendChild(container);
         }
 
+        // --- Products Logic ---
         function fetchProducts() {
             db.collection("products").orderBy("created_at", "desc").onSnapshot((snapshot) => {
                 allProducts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
