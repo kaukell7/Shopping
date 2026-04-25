@@ -14,7 +14,7 @@
         .nav-item { padding: 0.8rem 1rem; border-radius: 8px; color: #cbd5e1; text-decoration: none; display: flex; align-items: center; margin-bottom: 0.5rem; transition: 0.3s; }
         .nav-item:hover, .nav-item.active { background: var(--primary); color: white; }
         .main-content { margin-left: 280px; padding: 2.5rem; width: calc(100% - 280px); }
-        .card { background: white; padding: 2.5rem; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; max-width: 600px; }
+        .card { background: white; padding: 2.5rem; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; max-width: 600px; margin-bottom: 2rem; }
         .form-group { margin-bottom: 1.5rem; }
         label { display: block; margin-bottom: 0.6rem; font-weight: 600; color: #1e293b; font-size: 0.9rem; }
         input { width: 100%; padding: 0.9rem; border: 1px solid #e2e8f0; border-radius: 8px; box-sizing: border-box; font-size: 1rem; outline: none; }
@@ -23,7 +23,11 @@
         .btn-save { background: var(--primary); color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.3s; width: 100%; font-size: 1rem; }
         .btn-save:hover { background: #4338ca; transform: translateY(-1px); }
         .btn-save:disabled { background: #94a3b8; cursor: not-allowed; }
-        #statusMsg { margin-top: 1.2rem; font-size: 0.95rem; font-weight: 600; text-align: center; min-height: 20px; }
+        #statusMsg, #logoStatusMsg { margin-top: 1.2rem; font-size: 0.95rem; font-weight: 600; text-align: center; min-height: 20px; }
+        
+        /* Logo Preview Style */
+        .logo-preview-box { margin-top: 10px; padding: 10px; border: 1px dashed #cbd5e1; border-radius: 8px; text-align: center; background: #f8fafc; }
+        #currentLogoPreview { max-height: 80px; max-width: 150px; object-fit: contain; display: none; margin: 0 auto; }
     </style>
 </head>
 <body>
@@ -46,29 +50,42 @@
 
     <div class="main-content">
         <h1>Account Settings</h1>
+        
         <div class="card">
-            <h3>Update Shop Information</h3>
-            
+            <h3><i class="fas fa-store"></i> Update Shop Information</h3>
             <div class="form-group">
                 <label>Shop Name (ဆိုင်အမည်)</label>
                 <input type="text" id="shopName" placeholder="Enter your shop name">
             </div>
-
             <div class="form-group">
                 <label>Gmail / Phone (ပြင်၍မရပါ)</label>
-                <input type="text" id="shopContact" disabled title="Contact information cannot be changed">
+                <input type="text" id="shopContact" disabled>
             </div>
-
             <div class="form-group">
                 <label>New Password (လျှို့ဝှက်နံပါတ်အသစ်)</label>
                 <input type="password" id="shopPass" placeholder="မပြင်လိုလျှင် အလွတ်ထားပါ">
-                <small style="color: #64748b; margin-top: 5px; display: block;">Password ပြောင်းလိုမှသာ ဖြည့်သွင်းပါ။</small>
             </div>
-
             <button class="btn-save" id="saveBtn" onclick="updateProfile()">
-                <i class="fas fa-save"></i> Save Changes
+                <i class="fas fa-save"></i> Save Account Changes
             </button>
             <p id="statusMsg"></p>
+        </div>
+
+        <div class="card">
+            <h3><i class="fas fa-image"></i> Shop Branding (Logo)</h3>
+            <div class="form-group">
+                <label>Shop Logo URL (Direct Link)</label>
+                <input type="text" id="shopLogoUrl" placeholder="Logo Link (ဥပမာ - ImgBB link) ကိုဒီမှာထည့်ပါ" oninput="previewLogo()">
+            </div>
+            <div class="logo-preview-box">
+                <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 5px;">Logo Preview:</p>
+                <img id="currentLogoPreview" src="" alt="Logo Preview">
+                <p id="noLogoText" style="font-size: 0.85rem; color: #94a3b8;">No Logo selected</p>
+            </div>
+            <button class="btn-save" id="saveLogoBtn" onclick="updateShopLogo()" style="margin-top: 1.5rem; background: #0f172a;">
+                <i class="fas fa-check-circle"></i> Update Shop Logo
+            </button>
+            <p id="logoStatusMsg"></p>
         </div>
     </div>
 
@@ -87,18 +104,80 @@
         
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.firestore();
-
-        // localStorage မှ လက်ရှိ Login ဝင်ထားသော Agent အချက်အလက်ယူခြင်း
         const currentAgent = JSON.parse(localStorage.getItem('currentAgent'));
 
         window.onload = function() {
             if (currentAgent) {
                 document.getElementById('shopName').value = currentAgent.name || currentAgent.shop_name || "";
                 document.getElementById('shopContact').value = currentAgent.gmail_phone || "";
+                fetchExistingLogo(); // လက်ရှိ Logo ကို Firebase မှ ဆွဲယူပြရန်
             } else {
-                window.location.href = "index.html"; // Login မရှိရင် ပြန်ပို့မယ်
+                window.location.href = "index.html";
             }
         };
+
+        // --- Logo Branding Functions ---
+
+        // Firebase မှ လက်ရှိ Logo ကို ဆွဲယူခြင်း
+        function fetchExistingLogo() {
+            db.collection("shop_settings").doc("branding").get().then((doc) => {
+                if (doc.exists && doc.data().logoUrl) {
+                    const url = doc.data().logoUrl;
+                    document.getElementById('shopLogoUrl').value = url;
+                    previewLogo();
+                }
+            });
+        }
+
+        // Logo ပုံကို ချက်ချင်း Preview ပြခြင်း
+        function previewLogo() {
+            const url = document.getElementById('shopLogoUrl').value.trim();
+            const img = document.getElementById('currentLogoPreview');
+            const txt = document.getElementById('noLogoText');
+            
+            if (url) {
+                img.src = url;
+                img.style.display = "block";
+                txt.style.display = "none";
+            } else {
+                img.style.display = "none";
+                txt.style.display = "block";
+            }
+        }
+
+        // Logo ကို Firestore တွင် သိမ်းဆည်းခြင်း
+        async function updateShopLogo() {
+            const logoUrl = document.getElementById('shopLogoUrl').value.trim();
+            const msg = document.getElementById('logoStatusMsg');
+            const btn = document.getElementById('saveLogoBtn');
+
+            if (!logoUrl) {
+                msg.style.color = "#ef4444";
+                msg.innerText = "⚠️ Logo Link တစ်ခုခု ထည့်ပေးပါ။";
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+
+            try {
+                await db.collection("shop_settings").doc("branding").set({
+                    logoUrl: logoUrl,
+                    updated_at: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+
+                msg.style.color = "#22c55e";
+                msg.innerText = "✅ ဆိုင် Logo အောင်မြင်စွာ ပြောင်းလဲပြီးပါပြီ။";
+            } catch (e) {
+                msg.style.color = "#ef4444";
+                msg.innerText = "❌ အမှားအယွင်းရှိပါသည်- " + e.message;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-check-circle"></i> Update Shop Logo';
+            }
+        }
+
+        // --- Original Profile Functions ---
 
         async function updateProfile() {
             const newName = document.getElementById('shopName').value.trim();
@@ -114,27 +193,20 @@
 
             saveBtn.disabled = true;
             saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
-            statusMsg.innerText = "";
 
             try {
                 const updateData = { name: newName };
                 if (newPass) updateData.password = newPass;
 
-                // Firestore မှာ Gmail/Phone ကို သုံးပြီး ရှာဖွေပြီး Update လုပ်ခြင်း
-                // (UID မသေချာသည့် အခြေအနေအတွက် ပိုစိတ်ချရသော နည်းလမ်းဖြစ်သည်)
                 const querySnapshot = await db.collection("agents")
                     .where("gmail_phone", "==", currentAgent.gmail_phone)
                     .get();
 
-                if (querySnapshot.empty) {
-                    throw new Error("အေးဂျင့် အကောင့်ကို ရှာမတွေ့ပါ။");
-                }
+                if (querySnapshot.empty) throw new Error("အေးဂျင့် အကောင့်ကို ရှာမတွေ့ပါ။");
 
-                // ပထမဆုံးတွေ့တဲ့ Document ကို Update လုပ်မယ်
                 const docId = querySnapshot.docs[0].id;
                 await db.collection("agents").doc(docId).update(updateData);
 
-                // LocalStorage ကို Update လုပ်ခြင်း
                 currentAgent.name = newName;
                 if(newPass) currentAgent.password = newPass;
                 localStorage.setItem('currentAgent', JSON.stringify(currentAgent));
@@ -142,16 +214,13 @@
                 statusMsg.style.color = "#22c55e";
                 statusMsg.innerText = "✅ အချက်အလက်များ အောင်မြင်စွာ ပြင်ဆင်ပြီးပါပြီ။";
                 
-                setTimeout(() => { 
-                    window.location.href = "agent-dashboard.html"; 
-                }, 1500);
+                setTimeout(() => { window.location.href = "agent-dashboard.html"; }, 1500);
 
             } catch (error) {
-                console.error("Update error: ", error);
                 statusMsg.style.color = "#ef4444";
-                statusMsg.innerText = "❌ ပြင်ဆင်မှု မအောင်မြင်ပါ။ Error: " + error.message;
+                statusMsg.innerText = "❌ ပြင်ဆင်မှု မအောင်မြင်ပါ။";
                 saveBtn.disabled = false;
-                saveBtn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
+                saveBtn.innerHTML = '<i class="fas fa-save"></i> Save Account Changes';
             }
         }
     </script>
