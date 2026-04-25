@@ -146,10 +146,22 @@
             `).join('');
         }
 
-        function removeFromQueue(index) {
+        // ပုံဖျက်လိုက်သည်နှင့် Database ပါ တစ်ခါတည်း Update လုပ်ရန် ပြင်ဆင်ထားသည်
+        async function removeFromQueue(index) {
             if(confirm("ဤပုံကို ဖျက်လိုပါသလား?")) {
                 imageQueue.splice(index, 1);
                 renderQueue();
+
+                // Database ထဲသို့ပါ တစ်ခါတည်း လှမ်းသိမ်းခြင်း
+                try {
+                    await db.collection("shop_banners").doc(agentName).update({
+                        imageUrls: imageQueue,
+                        updated_at: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    console.log("Database updated after deletion.");
+                } catch (error) {
+                    console.error("Auto-save failed:", error);
+                }
             }
         }
 
@@ -177,16 +189,14 @@
             }
         }
 
-        // Database မှ data ဖတ်သည့် logic ကို ဤနေရာတွင် ပြင်ဆင်ထားပါသည်
+        // Real-time listener: Database ပြောင်းလဲမှုများကို အလိုအလျောက် စောင့်ကြည့်ဖတ်ရှုခြင်း
         db.collection("shop_banners").doc(agentName).onSnapshot(doc => {
             if(doc.exists) {
                 const data = doc.data();
                 
-                // imageUrls array ရှိပါက ဦးစားပေးယူပါ
-                if(data.imageUrls && Array.isArray(data.imageUrls) && data.imageUrls.length > 0) {
-                    imageQueue = data.imageUrls;
+                if(data.imageUrls && Array.isArray(data.imageUrls)) {
+                    imageQueue = [...data.imageUrls];
                 } 
-                // array မရှိဘဲ imageUrl တစ်ခုတည်းသာရှိပါက array ပြောင်းယူပါ
                 else if(data.imageUrl) {
                     imageQueue = [data.imageUrl];
                 } 
