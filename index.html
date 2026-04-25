@@ -8,6 +8,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
     <style>
+        /* အခြေခံ Style များ */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background-color: #f8f9fa; font-family: 'Segoe UI', sans-serif; color: #2d3436; overflow-x: hidden; }
         .main-layout { display: flex; max-width: 1500px; margin: 0 auto; padding: 0 10px; gap: 20px; }
@@ -22,6 +23,30 @@
             position: sticky; 
             top: 20px; 
             overflow: hidden; 
+        }
+
+        /* --- Marquee Animation CSS (အသစ်ထည့်သွင်းမှု) --- */
+        .marquee-container {
+            width: 100%;
+            overflow: hidden;
+            white-space: nowrap;
+            position: relative;
+            margin-top: 10px;
+            padding: 5px 0;
+        }
+
+        .marquee-text {
+            display: inline-block;
+            padding-left: 100%;
+            animation: marqueeEffect 15s linear infinite; /* ၁၅ စက္ကန့်ကြာတိုင်း တစ်ခေါက်လည်မည် */
+            font-size: 16px;
+            font-weight: 500;
+            color: #636e72;
+        }
+
+        @keyframes marqueeEffect {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
         }
 
         @keyframes verticalScroll {
@@ -82,7 +107,11 @@
                     <div class="demo-logo">Spider.io</div>
                 </div>
                 <h1 id="shopNameDisplay">THE SHOE HUB</h1>
-                <p id="shopTaglineDisplay">Premium & Authentic Footwear Collection</p>
+                
+                <div class="marquee-container">
+                    <p id="shopTaglineDisplay" class="marquee-text">Loading shop information...</p>
+                </div>
+
                 <div class="cart-container"><span>🛒</span><span id="historyCount">0</span></div>
             </div>
 
@@ -137,7 +166,7 @@
 
         let allProducts = [];
 
-        // --- Branding & Logo Logic (Updated) ---
+        // --- Branding & Logo Logic (Updated with Marquee Support) ---
         function fetchShopBranding() {
             db.collection("shop_settings").doc("branding").onSnapshot((doc) => {
                 if (doc.exists) {
@@ -155,7 +184,7 @@
                         document.getElementById('shopNameDisplay').innerText = data.shopName;
                     }
 
-                    // ၃။ Tagline (စာသားအတို) ပြသခြင်း
+                    // ၃။ Tagline (Live စာသားအား Animation ထဲသို့ ထည့်သွင်းခြင်း)
                     if (data.shopTagline) {
                         document.getElementById('shopTaglineDisplay').innerText = data.shopTagline;
                     }
