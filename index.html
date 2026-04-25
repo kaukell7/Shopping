@@ -25,7 +25,7 @@
             overflow: hidden; 
         }
 
-        /* --- Marquee Animation CSS (အသစ်ထည့်သွင်းမှု) --- */
+        /* --- Marquee Animation CSS --- */
         .marquee-container {
             width: 100%;
             overflow: hidden;
@@ -38,7 +38,7 @@
         .marquee-text {
             display: inline-block;
             padding-left: 100%;
-            animation: marqueeEffect 15s linear infinite; /* ၁၅ စက္ကန့်ကြာတိုင်း တစ်ခေါက်လည်မည် */
+            animation: marqueeEffect 15s linear infinite;
             font-size: 16px;
             font-weight: 500;
             color: #636e72;
@@ -91,6 +91,22 @@
         .modal-content input, .modal-content textarea { width: 100%; padding: 10px; margin-top: 10px; border-radius: 10px; border: 1px solid #ddd; }
         .close { position: absolute; right: 15px; top: 10px; font-size: 25px; cursor: pointer; }
 
+        /* --- Live Chat Floating Style --- */
+        #liveChatWrapper { position: fixed; bottom: 30px; right: 30px; z-index: 9999; }
+        #chatOptions { display: none; flex-direction: column; gap: 12px; margin-bottom: 20px; align-items: flex-end; }
+        .chat-link { 
+            color: white; padding: 12px 24px; border-radius: 50px; 
+            text-decoration: none; display: flex; align-items: center; gap: 10px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2); font-weight: 600; transition: 0.3s;
+        }
+        .chat-link:hover { transform: scale(1.05); }
+        .main-chat-btn { 
+            width: 65px; height: 65px; border-radius: 50%; background: #2d3436; 
+            border: none; cursor: pointer; display: flex; justify-content: center; 
+            align-items: center; box-shadow: 0 5px 20px rgba(0,0,0,0.3); transition: 0.3s;
+        }
+        .main-chat-btn:hover { transform: rotate(15deg); }
+
         @media (max-width: 768px) { .sidebar-ad { display: none; } }
     </style>
 </head>
@@ -137,6 +153,17 @@
         </aside>
     </div>
 
+    <div id="liveChatWrapper">
+        <div id="chatOptions">
+            <a id="viberLink" href="#" target="_blank" class="chat-link" style="background: #7360f2;">🟣 Viber</a>
+            <a id="telegramLink" href="#" target="_blank" class="chat-link" style="background: #0088cc;">🔵 Telegram</a>
+            <a id="phoneLink" href="#" class="chat-link" style="background: #2ecc71;">📞 Call Now</a>
+        </div>
+        <button class="main-chat-btn" onclick="toggleChat()">
+            <span style="font-size: 32px;">💬</span>
+        </button>
+    </div>
+
     <div id="imageModal" class="image-modal" onclick="this.style.display='none'">
         <img id="modalImg" src="">
     </div>
@@ -166,33 +193,38 @@
 
         let allProducts = [];
 
-        // --- Branding & Logo Logic (Updated with Marquee Support) ---
-        function fetchShopBranding() {
-            db.collection("shop_settings").doc("branding").onSnapshot((doc) => {
+        // --- Live Chat Logic ---
+        function toggleChat() {
+            const options = document.getElementById('chatOptions');
+            options.style.display = options.style.display === 'none' ? 'flex' : 'none';
+        }
+
+        function fetchContactSettings() {
+            db.collection("shop_settings").doc("contact").onSnapshot((doc) => {
                 if (doc.exists) {
                     const data = doc.data();
-                    
-                    // ၁။ Logo ပြသခြင်း
-                    if (data.logoUrl) {
-                        document.getElementById('logoDisplay').innerHTML = `
-                            <img src="${data.logoUrl}" id="shopLogoImg" alt="Shop Logo">
-                        `;
-                    }
-
-                    // ၂။ ဆိုင်နာမည် ပြသခြင်း
-                    if (data.shopName) {
-                        document.getElementById('shopNameDisplay').innerText = data.shopName;
-                    }
-
-                    // ၃။ Tagline (Live စာသားအား Animation ထဲသို့ ထည့်သွင်းခြင်း)
-                    if (data.shopTagline) {
-                        document.getElementById('shopTaglineDisplay').innerText = data.shopTagline;
-                    }
+                    if(data.viber) document.getElementById('viberLink').href = `viber://chat?number=${data.viber}`;
+                    if(data.telegram) document.getElementById('telegramLink').href = `https://t.me/${data.telegram}`;
+                    if(data.phone) document.getElementById('phoneLink').href = `tel:${data.phone}`;
                 }
             });
         }
 
-        // --- Banner Logic ---
+        // --- Branding Logic ---
+        function fetchShopBranding() {
+            db.collection("shop_settings").doc("branding").onSnapshot((doc) => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    if (data.logoUrl) {
+                        document.getElementById('logoDisplay').innerHTML = `<img src="${data.logoUrl}" id="shopLogoImg" alt="Shop Logo">`;
+                    }
+                    if (data.shopName) document.getElementById('shopNameDisplay').innerText = data.shopName;
+                    if (data.shopTagline) document.getElementById('shopTaglineDisplay').innerText = data.shopTagline;
+                }
+            });
+        }
+
+        // --- Banner & Products Logic ---
         function fetchBanner() {
             db.collection("shop_banners").doc("kid kid").onSnapshot(doc => {
                 if(doc.exists) {
@@ -223,7 +255,6 @@
             box.appendChild(container);
         }
 
-        // --- Products Logic ---
         function fetchProducts() {
             db.collection("products").orderBy("created_at", "desc").onSnapshot((snapshot) => {
                 allProducts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -295,6 +326,7 @@
             fetchShopBranding(); 
             fetchBanner();
             fetchProducts();
+            fetchContactSettings();
         };
     </script>
 </body>
