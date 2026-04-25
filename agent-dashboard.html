@@ -23,13 +23,20 @@
         
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
         .card { background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
-        .card h3 { margin-top: 0; color: #1e293b; font-size: 1.1rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; }
+        .card h3 { margin-top: 0; color: #1e293b; font-size: 1.1rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 15px; }
         
         .info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f8fafc; }
         .info-label { color: #64748b; font-weight: 500; }
         .info-value { color: #1e293b; font-weight: 600; }
         
         .status-badge { background: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; }
+
+        /* Input Styles for Contact Settings */
+        .contact-form label { display: block; font-size: 0.85rem; color: #64748b; margin-bottom: 5px; margin-top: 10px; }
+        .contact-form input { width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; outline: none; transition: 0.3s; }
+        .contact-form input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
+        .save-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 600; margin-top: 20px; transition: 0.2s; }
+        .save-btn:hover { background: #4338ca; }
 
         @media (max-width: 768px) {
             .sidebar { width: 80px; padding: 1rem 0.5rem; }
@@ -50,6 +57,9 @@
         </a>
         <a href="banners.html" class="nav-item">
             <i class="fas fa-ad"></i> <span>Shop Banner</span>
+        </a>
+        <a href="#contact-section" class="nav-item">
+            <i class="fas fa-headset"></i> <span>Contact Settings</span>
         </a>
         <a href="profile-settings.html" class="nav-item">
             <i class="fas fa-user-cog"></i> <span>Profile Settings</span>
@@ -73,7 +83,7 @@
                     <span class="info-value" id="shopNameDisplay">Loading...</span>
                 </div>
                 <div class="info-row">
-                    <span class="info-label">Contact:</span>
+                    <span class="info-label">Email/Phone:</span>
                     <span class="info-value" id="shopContact">Loading...</span>
                 </div>
                 <div class="info-row">
@@ -91,6 +101,22 @@
                 <div class="info-row">
                     <span class="info-label">Current Orders:</span>
                     <span class="info-value" id="totalOrders">0</span>
+                </div>
+            </div>
+
+            <div class="card" id="contact-section">
+                <h3>Live Chat Settings</h3>
+                <div class="contact-form">
+                    <label><i class="fab fa-viber"></i> Viber Number (e.g. 959xxx)</label>
+                    <input type="text" id="viberInput" placeholder="959777xxxxxx">
+                    
+                    <label><i class="fab fa-telegram"></i> Telegram Username</label>
+                    <input type="text" id="telegramInput" placeholder="username (without @)">
+                    
+                    <label><i class="fas fa-phone-alt"></i> Public Phone Number</label>
+                    <input type="text" id="phoneInput" placeholder="09xxxxxxxxx">
+                    
+                    <button class="save-btn" onclick="saveContactSettings()">Update Live Chat</button>
                 </div>
             </div>
         </div>
@@ -142,10 +168,43 @@
                       document.getElementById('totalOrders').innerText = snapshot.size;
                   });
 
+                // လက်ရှိ Contact အချက်အလက်များကို Firebase မှ ဆွဲယူပြသခြင်း
+                loadContactSettings();
+
             } else {
                 window.location.href = "index.html"; 
             }
         };
+
+        // Contact Data များ ဆွဲထုတ်ရန်
+        function loadContactSettings() {
+            db.collection("shop_settings").doc("contact").get().then((doc) => {
+                if(doc.exists) {
+                    const data = doc.data();
+                    document.getElementById('viberInput').value = data.viber || '';
+                    document.getElementById('telegramInput').value = data.telegram || '';
+                    document.getElementById('phoneInput').value = data.phone || '';
+                }
+            });
+        }
+
+        // Contact Data များ သိမ်းဆည်းရန်
+        function saveContactSettings() {
+            const viber = document.getElementById('viberInput').value;
+            const telegram = document.getElementById('telegramInput').value;
+            const phone = document.getElementById('phoneInput').value;
+
+            db.collection("shop_settings").doc("contact").set({
+                viber: viber,
+                telegram: telegram,
+                phone: phone
+            }).then(() => {
+                alert("Live Chat အချက်အလက်များ ပြင်ဆင်ပြီးပါပြီ။");
+            }).catch((error) => {
+                console.error("Error updating contact: ", error);
+                alert("ပြင်ဆင်မှု မအောင်မြင်ပါ။");
+            });
+        }
 
         function handleLogout() {
             if(confirm("အကောင့်ထဲက ထွက်မှာ သေချာပါသလား?")) {
