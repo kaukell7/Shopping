@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>THE SHOE HUB - Premium Collection</title>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -35,11 +35,17 @@
         .discount-tag { position: absolute; top: 10px; right: 10px; background: #ff7675; color: white; padding: 5px 10px; border-radius: 8px; font-size: 12px; font-weight: bold; }
         .content { padding: 20px; text-align: center; }
         .discount-price { color: #d63031; font-size: 18px; font-weight: 800; }
-        .buy-btn { background: #2d3436; color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: 600; }
+        .buy-btn { background: #2d3436; color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: 600; transition: 0.2s; }
+        .buy-btn:hover { background: #d63031; }
         .modal { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; }
         .modal-content { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 400px; position: relative; }
         .modal-content input, .modal-content textarea { width: 100%; padding: 10px; margin-top: 10px; border-radius: 10px; border: 1px solid #ddd; }
         .close { position: absolute; right: 15px; top: 10px; font-size: 25px; cursor: pointer; }
+
+        @media (max-width: 768px) {
+            .sidebar-ad { display: none; }
+            .header h1 { font-size: 24px; }
+        }
     </style>
 </head>
 <body>
@@ -92,34 +98,33 @@
             <input type="text" id="userName" placeholder="သင့်အမည်">
             <input type="text" id="userPhone" placeholder="ဖုန်းနံပါတ်">
             <textarea id="userAddress" placeholder="ပို့ဆောင်ရမည့် လိပ်စာ"></textarea>
-            <button class="buy-btn" style="background:#00b894; margin-top:15px;" onclick="submitOrder()">အော်ဒါတင်မည်</button>
+            <button class="buy-btn" style="background:#10b981; margin-top:15px;" onclick="submitOrder()">အော်ဒါတင်မည်</button>
         </div>
     </div>
 
     <script>
-        // --- Firebase Configuration (သင့် API Key များ ပြန်ထည့်ပါ) ---
+        // --- Firebase Configuration (သင့် Project ID နဲ့ ညှိပေးထားပါတယ်) ---
         const firebaseConfig = {
-            apiKey: "AIzaSy...", 
-            authDomain: "spider-io.firebaseapp.com",
-            projectId: "spider-io",
-            storageBucket: "spider-io.appspot.com",
-            messagingSenderId: "...",
-            appId: "..."
+            apiKey: "AIzaSyCt1SMVSMqdX3u2viQ-n_BVwp6KgQwDLOM",
+            authDomain: "my-shop-admin-cedb1.firebaseapp.com",
+            projectId: "my-shop-admin-cedb1",
+            storageBucket: "my-shop-admin-cedb1.firebasestorage.app",
+            messagingSenderId: "1073972515996",
+            appId: "1:1073972515996:web:28049f5e5977e3a8e74959"
         };
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.firestore();
 
         let allProducts = [];
 
-        // --- Firebase မှ ပစ္စည်းများ Real-time ဆွဲထုတ်ခြင်း ---
+        // --- Firebase မှ ပစ္စည်းများ ဆွဲထုတ်ခြင်း ---
         function fetchProducts() {
-            // onSnapshot ကိုသုံးထားလို့ Agent ဘက်က တင်လိုက်တာနဲ့ ချက်ချင်း ဒီမှာပေါ်ပါလိမ့်မယ်
             db.collection("products").orderBy("created_at", "desc").onSnapshot((snapshot) => {
                 allProducts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderProducts(allProducts);
             }, (error) => {
                 console.error("Error: ", error);
-                document.getElementById('productGrid').innerHTML = "ဒေတာချိတ်ဆက်မှု အဆင်မပြေပါ။";
+                document.getElementById('productGrid').innerHTML = "ဒေတာချိတ်ဆက်မှု အဆင်မပြေပါ။ Firebase Rules ကို စစ်ဆေးပေးပါ။";
             });
         }
 
@@ -131,24 +136,23 @@
             }
 
             grid.innerHTML = items.map(p => {
-                // inventory.html က သိမ်းလိုက်တဲ့ field name တွေနဲ့ ကိုက်အောင် ယူထားပါတယ်
-                const productName = p.name || 'Unnamed Product';
-                const originalPrice = p.original_price || 0;
+                const name = p.name || 'Unnamed Shoe';
                 const finalPrice = p.price || 0;
+                const originalPrice = p.original_price || 0;
                 const discount = p.discount_percent || 0;
                 const image = p.imageUrl || 'https://via.placeholder.com/300';
 
                 return `
                 <div class="card">
-                    ${discount > 0 ? `<div class="discount-tag">-${discount}% Off</div>` : ''}
-                    <img src="${image}" alt="${productName}" onerror="this.src='https://via.placeholder.com/300'">
+                    ${discount > 0 ? `<div class="discount-tag">-${discount}%</div>` : ''}
+                    <img src="${image}" alt="${name}" onerror="this.src='https://via.placeholder.com/300'">
                     <div class="content">
-                        <div style="font-weight:bold; margin-bottom:5px; font-size:16px;">${productName}</div>
+                        <div style="font-weight:bold; margin-bottom:5px; font-size:16px;">${name}</div>
                         <div style="margin-bottom:10px;">
                             ${originalPrice > 0 ? `<span style="text-decoration:line-through; color:#999; font-size:13px;">${originalPrice} Ks</span><br>` : ''}
                             <span class="discount-price">${finalPrice} Ks</span>
                         </div>
-                        <button class="buy-btn" onclick="openOrderModal('${productName}')">ဝယ်ယူမည်</button>
+                        <button class="buy-btn" onclick="openOrderModal('${name}')">ဝယ်ယူမည်</button>
                     </div>
                 </div>
                 `;
@@ -164,7 +168,6 @@
         function filterProducts(cat, btn) {
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            // category field သာ database မှာ ရှိရင် အလုပ်လုပ်ပါမယ်
             const filtered = cat === 'all' ? allProducts : allProducts.filter(p => p.category === cat);
             renderProducts(filtered);
         }
@@ -173,13 +176,17 @@
             document.getElementById('modalProductTitle').innerText = name + " မှာယူမည်";
             document.getElementById('orderModal').style.display = "flex";
         }
+
         function closeModal() { document.getElementById('orderModal').style.display = "none"; }
+
         function submitOrder() {
-            if(!document.getElementById('userName').value || !document.getElementById('userPhone').value) {
+            const name = document.getElementById('userName').value;
+            const phone = document.getElementById('userPhone').value;
+            if(!name || !phone) {
                 alert("အမည်နှင့် ဖုန်းနံပါတ် ဖြည့်စွက်ပေးပါ");
                 return;
             }
-            alert("အော်ဒါတင်ခြင်း အောင်မြင်ပါသည်။");
+            alert("အော်ဒါတင်ခြင်း အောင်မြင်ပါသည်။ ကျေးဇူးတင်ပါသည်။");
             closeModal();
         }
 
