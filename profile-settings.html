@@ -11,9 +11,16 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); margin: 0; display: flex; }
         .sidebar { width: 260px; background: var(--sidebar); color: white; min-height: 100vh; padding: 2rem 1rem; position: fixed; }
         .main-content { margin-left: 280px; padding: 2.5rem; width: calc(100% - 280px); }
-        .card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
+        .card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; max-width: 600px; }
         .nav-item { padding: 0.8rem 1rem; border-radius: 8px; color: #cbd5e1; text-decoration: none; display: flex; align-items: center; margin-bottom: 0.5rem; }
         .nav-item.active { background: var(--primary); color: white; }
+        .form-group { margin-bottom: 1.5rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: #64748b; }
+        input { width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; box-sizing: border-box; font-size: 1rem; }
+        input:disabled { background: #f1f5f9; cursor: not-allowed; }
+        .btn-save { background: var(--primary); color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.3s; }
+        .btn-save:hover { background: #4338ca; }
+        #statusMsg { margin-top: 1rem; font-size: 0.9rem; font-weight: 600; }
     </style>
 </head>
 <body>
@@ -28,8 +35,88 @@
         <h1>Profile Settings</h1>
         <div class="card">
             <h3>Update Shop Information</h3>
-            <p>Settings များကို ဤနေရာတွင် ပြင်ဆင်နိုင်ရန် ဆက်လက်လုပ်ဆောင်နေဆဲဖြစ်ပါသည်။</p>
+            
+            <div class="form-group">
+                <label>Shop Name (အေးဂျင့်အမည်)</label>
+                <input type="text" id="shopName" placeholder="Enter shop name">
+            </div>
+
+            <div class="form-group">
+                <label>Gmail / Phone (ပြင်၍မရပါ)</label>
+                <input type="text" id="shopContact" disabled>
+            </div>
+
+            <div class="form-group">
+                <label>New Password (ပြင်လိုလျှင်သာဖြည့်ပါ)</label>
+                <input type="password" id="shopPass" placeholder="Leave blank to keep current">
+            </div>
+
+            <button class="btn-save" onclick="updateProfile()">Save Changes</button>
+            <p id="statusMsg"></p>
         </div>
     </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCt1SMVSMqdX3u2viQ-n_BVwp6KgQwDLOM",
+            authDomain: "my-shop-admin-cedb1.firebaseapp.com",
+            projectId: "my-shop-admin-cedb1",
+            storageBucket: "my-shop-admin-cedb1.firebasestorage.app",
+            messagingSenderId: "1073972515996",
+            appId: "1:1073972515996:web:28049f5e5977e3a8e74959"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // localStorage မှ လက်ရှိ User အချက်အလက်ယူခြင်း
+        const currentAgent = JSON.parse(localStorage.getItem('currentAgent'));
+
+        // စာမျက်နှာစဖွင့်ချိန်တွင် လက်ရှိဒေတာများကို ဖြည့်ထားပေးရန်
+        if (currentAgent) {
+            document.getElementById('shopName').value = currentAgent.name || "";
+            document.getElementById('shopContact').value = currentAgent.gmail_phone || "";
+        } else {
+            window.location.href = "login.html";
+        }
+
+        async function updateProfile() {
+            const newName = document.getElementById('shopName').value.trim();
+            const newPass = document.getElementById('shopPass').value.trim();
+            const statusMsg = document.getElementById('statusMsg');
+
+            if (!newName) {
+                statusMsg.style.color = "#ef4444";
+                statusMsg.innerText = "ဆိုင်အမည် ဖြည့်စွက်ပေးပါ။";
+                return;
+            }
+
+            try {
+                // Firestore ရှိ agents collection တွင်သွားပြင်ခြင်း
+                const updateData = { name: newName };
+                if (newPass) updateData.password = newPass;
+
+                await db.collection("agents").doc(currentAgent.uid).update(updateData);
+
+                // LocalStorage ကိုပါ update လုပ်ပေးခြင်း (Dashboard တွင် ချက်ချင်းပေါ်စေရန်)
+                currentAgent.name = newName;
+                localStorage.setItem('currentAgent', JSON.stringify(currentAgent));
+
+                statusMsg.style.color = "#22c55e";
+                statusMsg.innerText = "အချက်အလက်များ အောင်မြင်စွာ ပြင်ဆင်ပြီးပါပြီ။";
+                
+                // 2 စက္ကန့်အကြာတွင် Dashboard သို့ ပြန်သွားရန်
+                setTimeout(() => { window.location.href = "agent-dashboard.html"; }, 2000);
+
+            } catch (error) {
+                console.error("Update error: ", error);
+                statusMsg.style.color = "#ef4444";
+                statusMsg.innerText = "ပြင်ဆင်မှု မအောင်မြင်ပါ။ Error: " + error.message;
+            }
+        }
+    </script>
 </body>
 </html>
