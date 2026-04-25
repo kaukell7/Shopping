@@ -30,6 +30,12 @@
         .info-value { color: #1e293b; font-weight: 600; }
         
         .status-badge { background: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; }
+
+        @media (max-width: 768px) {
+            .sidebar { width: 80px; padding: 1rem 0.5rem; }
+            .sidebar h2, .nav-item span { display: none; }
+            .main-content { margin-left: 100px; width: calc(100% - 100px); }
+        }
     </style>
 </head>
 <body>
@@ -37,22 +43,22 @@
     <div class="sidebar">
         <h2>Spider.io</h2>
         <a href="agent-dashboard.html" class="nav-item active">
-            <i class="fas fa-home"></i> Dashboard
+            <i class="fas fa-home"></i> <span>Dashboard</span>
         </a>
         <a href="inventory.html" class="nav-item">
-            <i class="fas fa-box-open"></i> My Products
+            <i class="fas fa-box-open"></i> <span>My Products</span>
         </a>
         <a href="profile-settings.html" class="nav-item">
-            <i class="fas fa-user-cog"></i> Profile Settings
+            <i class="fas fa-user-cog"></i> <span>Profile Settings</span>
         </a>
         <button class="nav-item" onclick="handleLogout()" style="margin-top: 20px; opacity: 0.7;">
-            <i class="fas fa-sign-out-alt"></i> Logout
+            <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
         </button>
     </div>
 
     <div class="main-content">
         <div class="welcome-card">
-            <h1 id="welcomeAgent">Welcome back, Agent!</h1>
+            <h1 id="welcomeAgent">Welcome back!</h1>
             <p>Here is your shop performance and account overview.</p>
         </div>
 
@@ -69,7 +75,7 @@
                 </div>
                 <div class="info-row">
                     <span class="info-label">Status:</span>
-                    <span class="status-badge">Active</span>
+                    <span class="status-badge" id="accountStatus">Active</span>
                 </div>
             </div>
 
@@ -80,34 +86,66 @@
                     <span class="info-value" id="totalProducts">0</span>
                 </div>
                 <div class="info-row">
-                    <span class="info-label">Total Sales:</span>
-                    <span class="info-value">0 Ks</span>
+                    <span class="info-label">Current Orders:</span>
+                    <span class="info-value">0</span>
                 </div>
             </div>
         </div>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
     <script>
+        // Firebase Config (သင့် Project ID နှင့် ကိုက်ညီရပါမည်)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCt1SMVSMqdX3u2viQ-n_BVwp6KgQwDLOM",
+            authDomain: "my-shop-admin-cedb1.firebaseapp.com",
+            projectId: "my-shop-admin-cedb1",
+            storageBucket: "my-shop-admin-cedb1.firebasestorage.app",
+            messagingSenderId: "1073972515996",
+            appId: "1:1073972515996:web:28049f5e5977e3a8e74959"
+        };
+        
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        const db = firebase.firestore();
+
         window.onload = function() {
             const agentData = JSON.parse(localStorage.getItem('currentAgent'));
 
             if (agentData) {
-                // ပြင်ဆင်လိုက်သည့်နေရာ- agentData.shop_name အစား agentData.name ကို အသုံးပြုထားပါသည်
-                // Database ထဲတွင် name: "kid kid" ဟု ရှိနေသောကြောင့်ဖြစ်သည်
+                // အေးဂျင့် အချက်အလက်များ ပြသခြင်း
                 const displayName = agentData.name || agentData.shop_name || "Agent";
-                
                 document.getElementById('welcomeAgent').innerText = `Welcome back, ${displayName}!`;
                 document.getElementById('shopNameDisplay').innerText = displayName;
                 document.getElementById('shopContact').innerText = agentData.gmail_phone;
+                
+                // Account Status ကို ပြသခြင်း
+                const statusBadge = document.getElementById('accountStatus');
+                statusBadge.innerText = agentData.status || "Active";
+                if(agentData.status === "Disabled") {
+                    statusBadge.style.background = "#fee2e2";
+                    statusBadge.style.color = "#991b1b";
+                }
+
+                // Firebase မှ ပစ္စည်းအရေအတွက်ကို Real-time ရေတွက်ခြင်း
+                // မှတ်ချက်- 'agent_name' field သည် အေးဂျင့်၏ အမည်နှင့် ကိုက်ညီရပါမည်
+                db.collection("products")
+                  .where("agent_name", "==", displayName)
+                  .onSnapshot((snapshot) => {
+                      document.getElementById('totalProducts').innerText = snapshot.size;
+                  });
+
             } else {
-                window.location.href = "login.html";
+                // Login မဝင်ထားရင် index.html (သို့မဟုတ် login page) ကို ပြန်ပို့မည်
+                window.location.href = "index.html"; 
             }
         };
 
         function handleLogout() {
             if(confirm("အကောင့်ထဲက ထွက်မှာ သေချာပါသလား?")) {
                 localStorage.removeItem('currentAgent');
-                window.location.href = "login.html";
+                window.location.href = "index.html";
             }
         }
     </script>
