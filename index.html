@@ -82,7 +82,7 @@
                 <div class="logo-container" id="logoDisplay">
                     <div class="demo-logo">Spider.io</div>
                 </div>
-                <h1>THE SHOE HUB</h1>
+                <h1 id="shopNameDisplay">THE SHOE HUB</h1>
                 <p>Premium & Authentic Footwear Collection</p>
                 <div class="cart-container"><span>🛒</span><span id="historyCount">0</span></div>
             </div>
@@ -138,14 +138,23 @@
 
         let allProducts = [];
 
-        // --- Branding & Logo Logic ---
-        function fetchShopLogo() {
+        // --- Branding & Logo Logic (Updated) ---
+        function fetchShopBranding() {
             db.collection("shop_settings").doc("branding").onSnapshot((doc) => {
-                if (doc.exists && doc.data().logoUrl) {
-                    const url = doc.data().logoUrl;
-                    document.getElementById('logoDisplay').innerHTML = `
-                        <img src="${url}" id="shopLogoImg" alt="Shop Logo">
-                    `;
+                if (doc.exists) {
+                    const data = doc.data();
+                    
+                    // ၁။ Logo ပြသခြင်း
+                    if (data.logoUrl) {
+                        document.getElementById('logoDisplay').innerHTML = `
+                            <img src="${data.logoUrl}" id="shopLogoImg" alt="Shop Logo">
+                        `;
+                    }
+
+                    // ၂။ ဆိုင်နာမည် ပြသခြင်း
+                    if (data.shopName) {
+                        document.getElementById('shopNameDisplay').innerText = data.shopName;
+                    }
                 }
             });
         }
@@ -250,7 +259,7 @@
         }
 
         window.onload = () => {
-            fetchShopLogo(); // Logo ကို ဆွဲယူရန် ခေါ်လိုက်ခြင်း
+            fetchShopBranding(); // Branding ဆွဲယူခြင်း (နာမည် + Logo)
             fetchBanner();
             fetchProducts();
         };
