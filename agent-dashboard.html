@@ -61,7 +61,7 @@
                 <h3>Shop Information</h3>
                 <div class="info-row">
                     <span class="info-label">Shop Name:</span>
-                    <span class="info-value" id="shopName">Loading...</span>
+                    <span class="info-value" id="shopNameDisplay">Loading...</span>
                 </div>
                 <div class="info-row">
                     <span class="info-label">Contact:</span>
@@ -88,22 +88,22 @@
     </div>
 
     <script>
-        // စာမျက်နှာ စဖွင့်သည်နှင့် Login Data စစ်ဆေးခြင်း
         window.onload = function() {
             const agentData = JSON.parse(localStorage.getItem('currentAgent'));
 
             if (agentData) {
-                // Login ဝင်ထားလျှင် Data ပြသခြင်း
-                document.getElementById('welcomeAgent').innerText = `Welcome back, ${agentData.shop_name}!`;
-                document.getElementById('shopName').innerText = agentData.shop_name;
+                // ပြင်ဆင်လိုက်သည့်နေရာ- agentData.shop_name အစား agentData.name ကို အသုံးပြုထားပါသည်
+                // Database ထဲတွင် name: "kid kid" ဟု ရှိနေသောကြောင့်ဖြစ်သည်
+                const displayName = agentData.name || agentData.shop_name || "Agent";
+                
+                document.getElementById('welcomeAgent').innerText = `Welcome back, ${displayName}!`;
+                document.getElementById('shopNameDisplay').innerText = displayName;
                 document.getElementById('shopContact').innerText = agentData.gmail_phone;
             } else {
-                // Login မဝင်ထားလျှင် login.html သို့ ပြန်ပို့ခြင်း
                 window.location.href = "login.html";
             }
         };
 
-        // Logout Function
         function handleLogout() {
             if(confirm("အကောင့်ထဲက ထွက်မှာ သေချာပါသလား?")) {
                 localStorage.removeItem('currentAgent');
