@@ -75,12 +75,12 @@
             
             <div class="form-group">
                 <label>Shop Display Name (အသုံးပြုသူများမြင်ရမည့် ဆိုင်နာမည်)</label>
-                <input type="text" id="shopDisplayName" placeholder="ဥပမာ- THE PHONE HUB">
+                <input type="text" id="shopDisplayName" placeholder="ဥပမာ- THE SHOE HUB">
             </div>
 
             <div class="form-group">
                 <label>Shop Tagline (ဆိုင်နာမည်အောက်တွင်ပြသမည့် စာသား)</label>
-                <input type="text" id="shopTagline" placeholder="ဥပမာ- အကောင်းဆုံးဖိနပ်များ စုစည်းရာ">
+                <input type="text" id="shopTagline" placeholder="ဥပမာ- Premium & Authentic Footwear Collection">
             </div>
 
             <div class="form-group">
@@ -141,7 +141,7 @@
                     if (data.shopName) {
                         document.getElementById('shopDisplayName').value = data.shopName;
                     }
-                    // လက်ရှိ Tagline ကို ဆွဲယူဖော်ပြခြင်း
+                    // Database မှ Tagline ကို ဆွဲယူဖော်ပြခြင်း
                     if (data.shopTagline) {
                         document.getElementById('shopTagline').value = data.shopTagline;
                     }
@@ -177,10 +177,10 @@
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
 
             try {
-                // Branding data အားလုံးကို Firebase ထဲတွင် သိမ်းဆည်းခြင်း
+                // Firebase ထဲတွင် Tagline ကိုပါ Live Update ဖြစ်စေရန် သိမ်းဆည်းခြင်း
                 await db.collection("shop_settings").doc("branding").set({
                     shopName: shopDisplayName,
-                    shopTagline: shopTagline, // Tagline ကိုပါ သိမ်းဆည်းသည်
+                    shopTagline: shopTagline, 
                     logoUrl: logoUrl,
                     updated_at: firebase.firestore.FieldValue.serverTimestamp()
                 }, { merge: true });
