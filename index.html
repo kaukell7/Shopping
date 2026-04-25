@@ -20,10 +20,12 @@
         .header h1 { font-size: 32px; letter-spacing: 2px; }
         .cart-container { position: absolute; right: 0; top: 45px; cursor: pointer; background: #2d3436; color: white; padding: 10px 15px; border-radius: 50px; display: flex; align-items: center; gap: 8px; z-index: 100; }
         #historyCount { background: #d63031; padding: 2px 8px; border-radius: 50%; font-size: 12px; }
+        
+        /* Banner Style */
         .promo-slider { width: 100%; height: 380px; background: #dfe6e9; overflow: hidden; border-radius: 20px; margin-bottom: 40px; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-        .slide { width: 100%; height: 100%; display: none; position: absolute; object-fit: cover; animation: fade 1.5s; }
-        @keyframes fade { from {opacity: .4} to {opacity: 1} }
+        #mainBannerImg { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
         .promo-text { position: absolute; bottom: 30px; left: 5%; background: rgba(0,0,0,0.6); color: white; padding: 15px 25px; border-radius: 12px; backdrop-filter: blur(5px); z-index: 2; }
+        
         .controls-container { margin-bottom: 40px; display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; align-items: center; }
         .filter-btn { background: white; border: 1px solid #ddd; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-weight: 600; transition: 0.3s; }
         .filter-btn.active { background: #2d3436; color: white; }
@@ -45,6 +47,7 @@
         @media (max-width: 768px) {
             .sidebar-ad { display: none; }
             .header h1 { font-size: 24px; }
+            .promo-slider { height: 250px; }
         }
     </style>
 </head>
@@ -64,9 +67,11 @@
             </div>
 
             <div class="promo-slider">
-                <img class="slide" src="https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=2012&auto=format&fit=crop">
-                <img class="slide" src="https://images.unsplash.com/photo-1514989940723-e8e51635b782?q=80&w=2070&auto=format&fit=crop">
-                <div class="promo-text"><strong>NEW COLLECTION!</strong><br>ဒီတစ်ပတ်အတွက် အထူးလျော့စျေး ၃၀%</div>
+                <img id="mainBannerImg" src="https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=2012&auto=format&fit=crop">
+                <div class="promo-text">
+                    <strong id="bannerTitleText">NEW COLLECTION!</strong><br>
+                    <span id="bannerDescText">ဒီတစ်ပတ်အတွက် အထူးလျော့စျေး ၃၀%</span>
+                </div>
             </div>
 
             <div class="controls-container">
@@ -103,7 +108,6 @@
     </div>
 
     <script>
-        // --- Firebase Configuration (သင့် Project ID နဲ့ ညှိပေးထားပါတယ်) ---
         const firebaseConfig = {
             apiKey: "AIzaSyCt1SMVSMqdX3u2viQ-n_BVwp6KgQwDLOM",
             authDomain: "my-shop-admin-cedb1.firebaseapp.com",
@@ -117,14 +121,26 @@
 
         let allProducts = [];
 
-        // --- Firebase မှ ပစ္စည်းများ ဆွဲထုတ်ခြင်း ---
+        // --- Banner ကို Live ဆွဲထုတ်ခြင်း (kid kid ဆိုင်အတွက်) ---
+        // မှတ်ချက် - အေးဂျင့်အမည်ပြောင်းရင် "kid kid" နေရာမှာ လိုက်ပြင်ပေးပါ
+        function fetchBanner() {
+            db.collection("shop_banners").doc("kid kid").onSnapshot(doc => {
+                if(doc.exists) {
+                    const data = doc.data();
+                    if(data.imageUrl) document.getElementById('mainBannerImg').src = data.imageUrl;
+                    if(data.title) document.getElementById('bannerTitleText').innerText = data.title;
+                    if(data.desc) document.getElementById('bannerDescText').innerText = data.desc;
+                }
+            });
+        }
+
         function fetchProducts() {
             db.collection("products").orderBy("created_at", "desc").onSnapshot((snapshot) => {
                 allProducts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderProducts(allProducts);
             }, (error) => {
                 console.error("Error: ", error);
-                document.getElementById('productGrid').innerHTML = "ဒေတာချိတ်ဆက်မှု အဆင်မပြေပါ။ Firebase Rules ကို စစ်ဆေးပေးပါ။";
+                document.getElementById('productGrid').innerHTML = "ဒေတာချိတ်ဆက်မှု အဆင်မပြေပါ။";
             });
         }
 
@@ -190,19 +206,9 @@
             closeModal();
         }
 
-        let slideIndex = 0;
-        function showSlides() {
-            let slides = document.getElementsByClassName("slide");
-            for (let i = 0; i < slides.length; i++) { slides[i].style.display = "none"; }
-            slideIndex++;
-            if (slideIndex > slides.length) {slideIndex = 1}    
-            if(slides.length > 0) slides[slideIndex-1].style.display = "block";  
-            setTimeout(showSlides, 3000);
-        }
-
         window.onload = () => {
+            fetchBanner(); // Banner ဆွဲယူမယ်
             fetchProducts();
-            showSlides();
         };
     </script>
 </body>
