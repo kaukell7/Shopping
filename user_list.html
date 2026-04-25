@@ -7,37 +7,41 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --primary: #4f46e5; --bg: #1e293b; --card-bg: #ffffff; }
+        :root { --primary: #4f46e5; --bg: #1e293b; --card-bg: #ffffff; --danger: #ef4444; --success: #059669; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; margin: 0; display: flex; }
-        .sidebar { width: 260px; background: var(--bg); color: white; min-height: 100vh; padding: 2rem 1rem; position: fixed; }
+        .sidebar { width: 260px; background: var(--bg); color: white; min-height: 100vh; padding: 2rem 1rem; position: fixed; z-index: 1000; }
         .sidebar h2 { padding-left: 1rem; margin-bottom: 2rem; font-size: 1.5rem; }
-        .nav-item { padding: 0.8rem 1rem; border-radius: 8px; color: #cbd5e1; text-decoration: none; margin-bottom: 0.5rem; display: flex; align-items: center; }
-        .nav-item.active { background: var(--primary); color: white; }
-        .main-content { margin-left: 280px; padding: 2.5rem; width: 100%; }
-        .table-card { background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .nav-item { padding: 0.8rem 1rem; border-radius: 8px; color: #cbd5e1; text-decoration: none; margin-bottom: 0.5rem; display: flex; align-items: center; transition: 0.3s; }
+        .nav-item:hover, .nav-item.active { background: var(--primary); color: white; }
+        
+        .main-content { margin-left: 280px; padding: 2.5rem; width: calc(100% - 280px); }
+        .table-card { background: white; padding: 1.5rem; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
         table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #edf2f7; }
+        th { text-align: left; padding: 1.2rem; border-bottom: 2px solid #f1f5f9; color: #64748b; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        td { padding: 1.2rem; border-bottom: 1px solid #f1f5f9; font-size: 0.95rem; color: #1e293b; }
         
-        /* Status Badges */
-        .status-active { color: #059669; background: #ecfdf5; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
-        .status-disabled { color: #dc2626; background: #fee2e2; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
+        .status-badge { padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.8rem; font-weight: 700; }
+        .status-active { color: var(--success); background: #ecfdf5; }
+        .status-disabled { color: var(--danger); background: #fee2e2; }
         
-        /* Setting Icon */
-        .btn-setting { color: #64748b; cursor: pointer; transition: 0.3s; font-size: 1.1rem; }
-        .btn-setting:hover { color: var(--primary); }
+        .btn-setting { color: #94a3b8; cursor: pointer; transition: 0.3s; font-size: 1.2rem; border: none; background: none; }
+        .btn-setting:hover { color: var(--primary); transform: rotate(45deg); }
 
-        /* Modal Style */
-        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
-        .modal-content { background: white; margin: 10% auto; padding: 2rem; border-radius: 16px; width: 400px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
-        .modal-header { margin-bottom: 1.5rem; font-weight: 700; font-size: 1.2rem; display: flex; justify-content: space-between; }
-        .form-group { margin-bottom: 1.2rem; }
-        label { display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; }
-        input { width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; box-sizing: border-box; }
-        .btn-group { display: flex; gap: 10px; margin-top: 1.5rem; }
-        .btn { flex: 1; padding: 0.8rem; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; }
+        /* Modal */
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); }
+        .modal-content { background: white; margin: 8% auto; padding: 2.5rem; border-radius: 20px; width: 420px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
+        .modal-header { margin-bottom: 2rem; font-weight: 700; font-size: 1.3rem; display: flex; justify-content: space-between; align-items: center; }
+        .form-group { margin-bottom: 1.5rem; }
+        label { display: block; margin-bottom: 0.6rem; font-weight: 600; font-size: 0.9rem; color: #475569; }
+        input { width: 100%; padding: 0.9rem; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 1rem; transition: 0.2s; }
+        input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); }
+        
+        .btn-group { display: flex; flex-direction: column; gap: 12px; margin-top: 2rem; }
+        .btn { width: 100%; padding: 1rem; border-radius: 10px; border: none; font-weight: 700; cursor: pointer; transition: 0.2s; }
         .btn-save { background: var(--primary); color: white; }
-        .btn-disable { background: #ef4444; color: white; }
-        .btn-close { background: #f1f5f9; color: #64748b; }
+        .btn-save:hover { background: #4338ca; }
+        .btn-status { border: 2px solid; }
+        .btn-close { background: #f8fafc; color: #64748b; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -49,16 +53,16 @@
     </div>
 
     <div class="main-content">
-        <h1>Agent User List</h1>
+        <h1>Agent Management List</h1>
         <div class="table-card">
             <table>
                 <thead>
                     <tr>
-                        <th>Name</th>
+                        <th>Shop Name</th>
                         <th>Gmail / Phone</th>
                         <th>Password</th>
                         <th>Status</th>
-                        <th>Date</th>
+                        <th>Created Date</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -70,19 +74,23 @@
     <div id="editModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <span>Account Settings</span>
-                <i class="fas fa-times" style="cursor:pointer" onclick="closeModal()"></i>
+                <span>Edit Agent Details</span>
+                <i class="fas fa-times" style="cursor:pointer; color: #94a3b8;" onclick="closeModal()"></i>
             </div>
             <input type="hidden" id="editDocId">
             <div class="form-group">
-                <label>New Password</label>
+                <label>Update Password</label>
                 <input type="text" id="newPassword" placeholder="Enter new password">
             </div>
             <div class="btn-group">
-                <button class="btn btn-save" onclick="updatePassword()">Change Password</button>
-                <button id="toggleStatusBtn" class="btn btn-disable" onclick="toggleAccountStatus()">Disable Account</button>
+                <button class="btn btn-save" onclick="updatePassword()">
+                    <i class="fas fa-save"></i> Save Password
+                </button>
+                <button id="toggleStatusBtn" class="btn btn-status" onclick="toggleAccountStatus()">
+                    Disable Account
+                </button>
             </div>
-            <button class="btn btn-close" style="width:100%; margin-top:10px;" onclick="closeModal()">Close</button>
+            <button class="btn btn-close" onclick="closeModal()">Dismiss</button>
         </div>
     </div>
 
@@ -98,32 +106,35 @@
             messagingSenderId: "1073972515996",
             appId: "1:1073972515996:web:28049f5e5977e3a8e74959"
         };
-        firebase.initializeApp(firebaseConfig);
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.firestore();
 
-        // Load Data
+        // Real-time Data Loading
         db.collection("agents").orderBy("created_at", "desc").onSnapshot((querySnapshot) => {
             const tableBody = document.getElementById('agentTableBody');
             tableBody.innerHTML = "";
             querySnapshot.forEach((doc) => {
                 const data = doc.data();
-                const statusClass = data.status === "Disabled" ? "status-disabled" : "status-active";
-                const date = data.created_at ? new Date(data.created_at.seconds * 1000).toLocaleDateString() : "N/A";
+                const status = data.status || 'Active';
+                const statusClass = status === "Disabled" ? "status-disabled" : "status-active";
+                const date = data.created_at ? new Date(data.created_at.seconds * 1000).toLocaleDateString() : "Pending";
                 
-                // Super Admin မှ သိမ်းလိုက်သော gmail_phone field အမည်အား ပြန်လည်ထုတ်ပြရန် ပြင်ဆင်သည်
                 tableBody.innerHTML += `
                     <tr>
-                        <td>${data.name}</td>
+                        <td><strong>${data.name}</strong></td>
                         <td>${data.gmail_phone || data.contact || 'N/A'}</td>
-                        <td>${data.password}</td>
-                        <td><span class="${statusClass}">${data.status || 'Active'}</span></td>
+                        <td style="font-family: monospace;">${data.password}</td>
+                        <td><span class="status-badge ${statusClass}">${status}</span></td>
                         <td>${date}</td>
-                        <td><i class="fas fa-cog btn-setting" onclick="openModal('${doc.id}', '${data.password}', '${data.status}')"></i></td>
+                        <td>
+                            <button class="btn-setting" onclick="openModal('${doc.id}', '${data.password}', '${status}')">
+                                <i class="fas fa-sliders-h"></i>
+                            </button>
+                        </td>
                     </tr>`;
             });
         });
 
-        // Modal Functions
         function openModal(id, currentPass, status) {
             document.getElementById('editDocId').value = id;
             document.getElementById('newPassword').value = currentPass;
@@ -131,12 +142,15 @@
             
             if(status === "Disabled") {
                 statusBtn.innerText = "Enable Account";
-                statusBtn.style.background = "#059669";
+                statusBtn.style.color = "var(--success)";
+                statusBtn.style.borderColor = "var(--success)";
+                statusBtn.style.background = "#f0fdf4";
             } else {
                 statusBtn.innerText = "Disable Account";
-                statusBtn.style.background = "#ef4444";
+                statusBtn.style.color = "var(--danger)";
+                statusBtn.style.borderColor = "var(--danger)";
+                statusBtn.style.background = "#fef2f2";
             }
-            
             document.getElementById('editModal').style.display = "block";
         }
 
@@ -144,23 +158,30 @@
             document.getElementById('editModal').style.display = "none";
         }
 
-        // Update Functions
         async function updatePassword() {
             const id = document.getElementById('editDocId').value;
             const newPass = document.getElementById('newPassword').value;
+            if(!newPass) return alert("စကားဝှက်အသစ် ရိုက်ထည့်ပါ");
+            
             await db.collection("agents").doc(id).update({ password: newPass });
-            alert("Password updated!");
+            alert("Password updated successfully!");
             closeModal();
         }
 
         async function toggleAccountStatus() {
             const id = document.getElementById('editDocId').value;
             const btnText = document.getElementById('toggleStatusBtn').innerText;
-            const newStatus = btnText === "Disable Account" ? "Disabled" : "Active";
+            const newStatus = btnText.includes("Disable") ? "Disabled" : "Active";
             
-            await db.collection("agents").doc(id).update({ status: newStatus });
-            alert(`Account ${newStatus}!`);
-            closeModal();
+            if(confirm(`ဒီအကောင့်ကို ${newStatus} လုပ်မှာ သေချာပါသလား?`)) {
+                await db.collection("agents").doc(id).update({ status: newStatus });
+                closeModal();
+            }
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('editModal')) closeModal();
         }
     </script>
 </body>
