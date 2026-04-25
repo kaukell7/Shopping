@@ -63,14 +63,15 @@
             }
 
             try {
-                // Database ထဲရှိ field name 'gmail_phone' နှင့် တိုက်စစ်သည်
+                // Database ထဲရှိ field name 'gmail_phone' နှင့် 'password' ကို တိုက်စစ်သည်
                 const snapshot = await db.collection("agents")
                     .where("gmail_phone", "==", id)
                     .where("password", "==", pass)
                     .get();
 
                 if (!snapshot.empty) {
-                    const agentData = snapshot.docs[0].data();
+                    const doc = snapshot.docs[0];
+                    const agentData = doc.data();
                     
                     // Account ပိတ်ထားခြင်း ရှိ/မရှိ စစ်ဆေးသည်
                     if (agentData.status === "Disabled") {
@@ -79,12 +80,22 @@
                         return;
                     }
 
-                    localStorage.setItem('currentAgent', JSON.stringify(agentData));
-                    // GitHub ပေါ်ရှိ ဖိုင်အမည် agent-dashboard.html သို့ သွားရန်
+                    // Dashboard မှာ 'undefined' မဖြစ်စေရန် Data အကုန်သိမ်းသည်
+                    // အထူးသဖြင့် agentData.name ကို သိမ်းဆည်းရန်လိုအပ်သည်
+                    const userData = {
+                        uid: doc.id,
+                        name: agentData.name || "User", 
+                        gmail_phone: agentData.gmail_phone,
+                        status: agentData.status
+                    };
+
+                    localStorage.setItem('currentAgent', JSON.stringify(userData));
+                    
+                    // Dashboard သို့ သွားရန်
                     window.location.href = "agent-dashboard.html";
                 } else {
                     errorMsg.style.display = 'block';
-                    errorMsg.innerText = "အကောင့်ဝင်ရန် အချက်အလက် မှားယွင်းနေပါသည်။ [Invalid Credentials]";
+                    errorMsg.innerText = "အကောင့်ဝင်ရန် အချက်အလက် မှားယွင်းနေပါသည်။";
                 }
             } catch (err) {
                 console.error("Error:", err);
