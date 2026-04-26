@@ -188,14 +188,14 @@
                 const statusBadge = document.getElementById('accountStatus');
                 statusBadge.innerText = agentData.status || "Active";
 
-                // Products Count
+                // Products Count (Real-time)
                 db.collection("products")
                   .where("agent_name", "==", displayName)
                   .onSnapshot((snapshot) => {
                       document.getElementById('totalProducts').innerText = snapshot.size;
                   });
 
-                // Orders List & Count
+                // Orders List & Count (Real-time Updates)
                 db.collection("orders")
                   .where("agent_name", "==", displayName)
                   .orderBy("created_at", "desc")
@@ -203,7 +203,13 @@
                       document.getElementById('totalOrders').innerText = snapshot.size;
                       renderOrders(snapshot);
                       document.getElementById('lastUpdate').innerText = new Date().toLocaleTimeString();
-                  }, (err) => console.log("Order fetch error:", err));
+                  }, (err) => {
+                      console.error("Order fetch error:", err);
+                      // အကယ်၍ created_at index မရှိသေးပါက sorting မပါဘဲ ပြန်ကြိုးစားရန်
+                      db.collection("orders")
+                        .where("agent_name", "==", displayName)
+                        .onSnapshot((snap) => renderOrders(snap));
+                  });
 
                 loadContactSettings();
             } else {
@@ -226,7 +232,7 @@
                         <td><span class="qty-badge">${order.quantity || 1}</span></td>
                         <td>${order.customer_name}</td>
                         <td>${order.customer_phone}</td>
-                        <td><span class="status-badge" style="background:#fef3c7; color:#92400e;">${order.status}</span></td>
+                        <td><span class="status-badge" style="background:#fef3c7; color:#92400e;">${order.status || 'Pending'}</span></td>
                     </tr>
                 `;
             }).join('');
