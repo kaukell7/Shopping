@@ -21,22 +21,32 @@
         .card { background: white; padding: 2rem; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
         .form-group { margin-bottom: 1.2rem; }
         label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: #1e293b; font-size: 0.9rem; }
-        input, select { width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; outline: none; transition: 0.3s; }
+        input, select { width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; outline: none; transition: 0.3s; box-sizing: border-box; }
         input:focus { border-color: var(--primary); }
         
         .btn-create { background: var(--primary); color: white; padding: 0.9rem; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; width: 100%; margin-top: 10px; }
+        .btn-create:disabled { background: #94a3b8; }
         .readonly-input { background-color: #f1f5f9; font-weight: 700; color: var(--primary); }
         
+        /* Preview Box */
+        .img-preview-box { width: 100%; height: 150px; border: 2px dashed #e2e8f0; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; overflow: hidden; background: #f8fafc; }
+        .img-preview-box img { max-height: 100%; max-width: 100%; object-fit: contain; }
+
         /* Table Style */
         .table-card { background: white; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; }
         table { width: 100%; border-collapse: collapse; }
         th { text-align: left; background: #f8fafc; padding: 12px; color: #64748b; font-size: 0.8rem; text-transform: uppercase; }
         td { padding: 12px; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; }
-        .product-img { width: 40px; height: 40px; border-radius: 4px; object-fit: cover; }
-        .btn-delete { color: #ef4444; cursor: pointer; border: none; background: none; transition: 0.2s; }
+        .product-img { width: 45px; height: 45px; border-radius: 6px; object-fit: cover; border: 1px solid #eee; }
+        .btn-delete { color: #ef4444; cursor: pointer; border: none; background: none; transition: 0.2s; font-size: 1rem; }
         .btn-delete:hover { transform: scale(1.2); }
 
-        @media (max-width: 1024px) { .grid-container { grid-template-columns: 1fr; } }
+        @media (max-width: 1024px) { 
+            .sidebar { width: 70px; padding: 2rem 0.5rem; }
+            .sidebar h2, .sidebar span { display: none; }
+            .main-content { margin-left: 90px; width: calc(100% - 90px); padding: 1.5rem; }
+            .grid-container { grid-template-columns: 1fr; } 
+        }
     </style>
 </head>
 <body>
@@ -46,6 +56,7 @@
         <a href="agent-dashboard.html" class="nav-item"><i class="fas fa-home"></i> <span>Dashboard</span></a>
         <a href="inventory.html" class="nav-item active"><i class="fas fa-box-open"></i> <span>My Products</span></a>
         <a href="user_list.html" id="navUsers" class="nav-item"><i class="fas fa-users"></i> <span>Customer List</span></a>
+        <a href="shop-settings.html" class="nav-item"><i class="fas fa-store"></i> <span>Shop Settings</span></a>
         <button class="nav-item" onclick="handleLogout()" style="margin-top: 20px; color: #f87171; background: none; border: none; width: 100%; text-align: left; cursor: pointer;">
             <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
         </button>
@@ -57,14 +68,19 @@
         <div class="grid-container">
             <div class="card">
                 <h3 style="margin-top: 0;"><i class="fas fa-plus-circle"></i> Add New Product</h3>
+                
+                <div class="img-preview-box" id="previewContainer">
+                    <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; color: #cbd5e1;"></i>
+                </div>
+
                 <form id="productForm">
                     <div class="form-group">
-                        <label>Image URL (Direct Link)</label>
-                        <input type="text" id="imageUrl" placeholder="Paste link here..." required>
+                        <label>Product Image (ဖိုင်ရွေးပါ)</label>
+                        <input type="file" id="pImageFile" accept="image/*" onchange="previewImage(event)" required>
                     </div>
                     <div class="form-group">
                         <label>Product Name</label>
-                        <input type="text" id="pName" placeholder="Item name" required>
+                        <input type="text" id="pName" placeholder="ဥပမာ - T-Shirt" required>
                     </div>
                     <div class="form-group">
                         <label>Category</label>
@@ -80,10 +96,10 @@
                     </div>
                     <div class="form-group">
                         <label>Discount (%)</label>
-                        <input type="number" id="discountPercent" placeholder="0" oninput="calculateDiscount()">
+                        <input type="number" id="discountPercent" value="0" oninput="calculateDiscount()">
                     </div>
                     <div class="form-group">
-                        <label>Final Price</label>
+                        <label>Final Price (ရောင်းမည့်ဈေး)</label>
                         <input type="number" id="finalPrice" class="readonly-input" readonly>
                     </div>
                     <button type="submit" class="btn-create" id="uploadBtn">Save Product</button>
@@ -111,6 +127,7 @@
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
 
     <script>
         const firebaseConfig = {
@@ -123,13 +140,24 @@
         };
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+        const storage = firebase.storage();
 
         const agentData = JSON.parse(localStorage.getItem('currentAgent'));
         if (!agentData) window.location.href = "login.html";
         const agentName = agentData.name;
 
-        // Sync Sidebar
-        document.getElementById('navUsers').href = `user_list.html?agent=${agentName}`;
+        // Image Preview Function
+        function previewImage(event) {
+            const container = document.getElementById('previewContainer');
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    container.innerHTML = `<img src="${e.target.result}">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
 
         function calculateDiscount() {
             const original = parseFloat(document.getElementById('originalPrice').value) || 0;
@@ -137,9 +165,11 @@
             document.getElementById('finalPrice').value = Math.round(original - (original * percent / 100));
         }
 
-        // Fetch My Products
+        // Real-time Fetch Products
         function fetchMyProducts() {
-            db.collection("products").where("agent_name", "==", agentName)
+            db.collection("products")
+              .where("agent_name", "==", agentName)
+              .orderBy("created_at", "desc")
               .onSnapshot(snapshot => {
                 const tbody = document.getElementById('productTableBody');
                 if (snapshot.empty) {
@@ -149,43 +179,70 @@
                 tbody.innerHTML = snapshot.docs.map(doc => {
                     const p = doc.data();
                     return `<tr>
-                        <td><img src="${p.imageUrl}" class="product-img"></td>
-                        <td><strong>${p.name}</strong></td>
-                        <td>${p.price} Ks</td>
+                        <td><img src="${p.imageUrl || 'https://via.placeholder.com/50'}" class="product-img"></td>
+                        <td><strong>${p.name}</strong><br><small style="color:#94a3b8">${p.category}</small></td>
+                        <td>${p.price.toLocaleString()} Ks</td>
                         <td><button class="btn-delete" onclick="deleteProduct('${doc.id}')"><i class="fas fa-trash"></i></button></td>
                     </tr>`;
                 }).join('');
+            }, err => {
+                console.error("Fetch Error:", err);
+                document.getElementById('productTableBody').innerHTML = '<tr><td colspan="4" style="text-align:center; color:red;">ဒေတာဆွဲယူ၍မရပါ။ Rules ကိုစစ်ပါ။</td></tr>';
             });
         }
 
-        // Add Product
+        // Add Product with Image Upload
         document.getElementById('productForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('uploadBtn');
+            const file = document.getElementById('pImageFile').files[0];
+            
+            if(!file) return alert("ပုံရွေးပေးရန် လိုအပ်ပါသည်။");
+
             btn.disabled = true;
-            btn.innerText = "Saving...";
+            btn.innerText = "Uploading Image...";
 
             try {
+                // 1. Upload Image to Firebase Storage
+                const fileName = `products/${agentName}_${Date.now()}`;
+                const storageRef = storage.ref().child(fileName);
+                const snapshot = await storageRef.put(file);
+                const downloadURL = await snapshot.ref.getDownloadURL();
+
+                btn.innerText = "Saving Data...";
+
+                // 2. Save Data to Firestore
                 await db.collection("products").add({
                     name: document.getElementById('pName').value,
                     original_price: parseInt(document.getElementById('originalPrice').value),
                     discount_percent: parseInt(document.getElementById('discountPercent').value) || 0,
                     price: parseInt(document.getElementById('finalPrice').value),
                     category: document.getElementById('pCategory').value,
-                    imageUrl: document.getElementById('imageUrl').value,
+                    imageUrl: downloadURL,
                     agent_name: agentName,
                     created_at: firebase.firestore.FieldValue.serverTimestamp()
                 });
+
                 alert("ပစ္စည်းအသစ် တင်ပြီးပါပြီ!");
                 document.getElementById('productForm').reset();
-            } catch (err) { alert("Error: " + err.message); }
-            btn.disabled = false;
-            btn.innerText = "Save Product";
+                document.getElementById('previewContainer').innerHTML = '<i class="fas fa-cloud-upload-alt" style="font-size: 2rem; color: #cbd5e1;"></i>';
+                document.getElementById('finalPrice').value = "";
+            } catch (err) { 
+                console.error(err);
+                alert("အမှားရှိနေပါသည်: " + err.message); 
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Save Product";
+            }
         });
 
         async function deleteProduct(id) {
             if (confirm("ဒီပစ္စည်းကို ဖျက်မှာ သေချာပါသလား?")) {
-                await db.collection("products").doc(id).delete();
+                try {
+                    await db.collection("products").doc(id).delete();
+                } catch (err) {
+                    alert("ဖျက်လို့မရပါ: " + err.message);
+                }
             }
         }
 
