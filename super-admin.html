@@ -35,9 +35,12 @@
         .status-active { background: #dcfce7; color: #166534; }
         .status-disabled { background: #fee2e2; color: #991b1b; }
         
-        .action-btn { border: none; background: none; cursor: pointer; padding: 5px; font-size: 1rem; transition: 0.2s; margin-right: 8px; }
+        .action-btn { border: none; background: none; cursor: pointer; padding: 5px; font-size: 1rem; transition: 0.2s; margin-right: 8px; text-decoration: none; display: inline-flex; align-items: center; }
+        .btn-view { color: #6366f1; }
         .btn-toggle { color: var(--primary); }
         .btn-delete { color: var(--danger); }
+        .agent-name-link { color: var(--primary); text-decoration: none; font-weight: 700; transition: 0.2s; }
+        .agent-name-link:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -141,12 +144,23 @@
             snapshot.forEach((doc) => {
                 const agent = doc.data();
                 const id = doc.id;
+                
+                // Agent Dashboard ဆီသွားမည့် Link တည်ဆောက်ခြင်း
+                const agentLink = `agent-dashboard.html?agent=${encodeURIComponent(agent.name)}`;
+
                 tbody.innerHTML += `
                     <tr>
-                        <td><strong>${agent.name}</strong></td>
+                        <td>
+                            <a href="${agentLink}" class="agent-name-link" title="View Dashboard">
+                                <i class="fas fa-external-link-alt" style="font-size: 0.7rem;"></i> ${agent.name}
+                            </a>
+                        </td>
                         <td>${agent.gmail_phone || agent.contact}</td>
                         <td><span class="status-badge ${agent.status === 'Active' ? 'status-active' : 'status-disabled'}">${agent.status || 'Active'}</span></td>
                         <td>
+                            <a href="${agentLink}" class="action-btn btn-view" title="View Dashboard">
+                                <i class="fas fa-eye"></i>
+                            </a>
                             <button class="action-btn btn-toggle" onclick="toggleStatus('${id}', '${agent.status}')" title="Change Status">
                                 <i class="fas fa-sync-alt"></i>
                             </button>
