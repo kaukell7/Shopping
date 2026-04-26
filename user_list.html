@@ -52,7 +52,7 @@
 
     <div class="sidebar">
         <h2><i class="fas fa-spider"></i> <span>Spider.io</span></h2>
-        <a href="agent-dashboard.html" class="nav-item"><i class="fas fa-th-large"></i> <span>Dashboard</span></a>
+        <a id="navDash" href="agent-dashboard.html" class="nav-item"><i class="fas fa-th-large"></i> <span>Dashboard</span></a>
         <a href="inventory.html" class="nav-item"><i class="fas fa-box"></i> <span>Inventory</span></a>
         <a href="user_list.html" class="nav-item active"><i class="fas fa-users"></i> <span>Customers</span></a>
         <a href="shop-settings.html" class="nav-item"><i class="fas fa-cog"></i> <span>Shop Settings</span></a>
@@ -62,8 +62,8 @@
     <div class="main-content">
         <div class="header-section">
             <div>
-                <h1>Customer Database</h1>
-                <p style="color: var(--text-slate); font-weight: 500;">သင့်ဆိုင်တွင် မှတ်ပုံတင်ထားသော ဝယ်ယူသူများစာရင်း</p>
+                <h1 id="pageTitle">Customer Database</h1>
+                <p id="subTitle" style="color: var(--text-slate); font-weight: 500;">သင့်ဆိုင်တွင် မှတ်ပုံတင်ထားသော ဝယ်ယူသူများစာရင်း</p>
             </div>
             <div class="search-wrapper">
                 <i class="fas fa-search"></i>
@@ -102,13 +102,29 @@
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // လက်ရှိ Login ဝင်ထားတဲ့ Agent နာမည်ကို ယူမယ် (သင့် Dashboard အရ kid kid သို့မဟုတ် hein ဖြစ်နိုင်ပါတယ်)
-        const currentAgent = localStorage.getItem('agentName') || "kid kid"; 
+        window.onload = function() {
+            // URL Parameter နဲ့ LocalStorage နှစ်ခုလုံးကို စစ်ဆေးမယ်
+            const urlParams = new URLSearchParams(window.location.search);
+            const agentFromUrl = urlParams.get('agent');
+            const loggedInAgent = JSON.parse(localStorage.getItem('currentAgent'));
+            
+            const agentName = agentFromUrl || (loggedInAgent ? loggedInAgent.name : null);
 
-        function fetchUsers() {
-            // "users" collection ထဲက ဒီ agent နဲ့သက်ဆိုင်တဲ့ data တွေကို ဆွဲထုတ်ခြင်း
-            // မှတ်ချက် - Users တွေကို Agent အလိုက်ခွဲသိမ်းထားရင် .where("agent_name", "==", currentAgent) သုံးနိုင်ပါတယ်
-            db.collection("users").orderBy("createdAt", "desc").onSnapshot(snapshot => {
+            if (!agentName) {
+                window.location.href = "login.html";
+                return;
+            }
+
+            // Dashboard Link မှာ နာမည်ပါအောင် ပြန်ပြင်မယ်
+            document.getElementById('navDash').href = `agent-dashboard.html?agent=${encodeURIComponent(agentName)}`;
+            document.getElementById('pageTitle').innerText = `${agentName}'s Customers`;
+
+            fetchUsers(agentName);
+        };
+
+        function fetchUsers(agentName) {
+            // "users" collection ထဲက ဒီ agent နဲ့ဆိုင်တဲ့ ဝယ်သူတွေကိုပဲ ဆွဲထုတ်မယ်
+            db.collection("users").where("agent_name", "==", agentName).orderBy("createdAt", "desc").onSnapshot(snapshot => {
                 const tbody = document.getElementById('userTableBody');
                 
                 if (snapshot.empty) {
@@ -149,29 +165,21 @@
         function filterTable() {
             const input = document.getElementById("userSearch");
             const filter = input.value.toUpperCase();
-            const table = document.querySelector("table");
-            const tr = table.getElementsByTagName("tr");
+            const tr = document.getElementById("userTableBody").getElementsByTagName("tr");
 
-            for (let i = 1; i < tr.length; i++) {
+            for (let i = 0; i < tr.length; i++) {
                 let td = tr[i].getElementsByTagName("td")[0];
                 if (td) {
                     let textValue = td.textContent || td.innerText;
-                    if (textValue.toUpperCase().indexOf(filter) > -1) {
-                        tr[i].style.display = "";
-                    } else {
-                        tr[i].style.display = "none";
-                    }
+                    tr[i].style.display = textValue.toUpperCase().indexOf(filter) > -1 ? "" : "none";
                 }
             }
         }
 
         function handleLogout() {
-            localStorage.removeItem('isLoggedIn');
-            localStorage.removeItem('agentName');
+            localStorage.removeItem('currentAgent');
             window.location.href = "login.html";
         }
-
-        window.onload = fetchUsers;
     </script>
 </body>
 </html>
