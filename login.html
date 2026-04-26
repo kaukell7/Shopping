@@ -8,13 +8,14 @@
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
         .login-card { background: white; padding: 2.5rem; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 400px; text-align: center; }
-        h1 { margin-bottom: 1.5rem; color: #1e293b; }
+        h1 { margin-bottom: 1.5rem; color: #1e293b; font-weight: 700; }
         .form-group { text-align: left; margin-bottom: 1.2rem; }
         label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: #64748b; font-size: 0.9rem; }
-        input { width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; box-sizing: border-box; font-size: 1rem; }
+        input { width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; box-sizing: border-box; font-size: 1rem; outline: none; transition: 0.3s; }
+        input:focus { border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
         .btn-login { width: 100%; padding: 0.8rem; background: #4f46e5; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; margin-top: 1rem; transition: 0.3s; }
         .btn-login:hover { background: #4338ca; }
-        #error { color: #ef4444; font-size: 0.85rem; margin-top: 1rem; display: none; }
+        #error { color: #ef4444; font-size: 0.85rem; margin-top: 1rem; display: none; background: #fef2f2; padding: 10px; border-radius: 8px; border: 1px solid #fee2e2; }
     </style>
 </head>
 <body>
@@ -32,12 +33,13 @@
             <input type="password" id="loginPass" placeholder="Enter password">
         </div>
 
-        <button class="btn-login" onclick="handleLogin()">Login</button>
+        <button class="btn-login" id="loginBtn" onclick="handleLogin()">Login</button>
         <p id="error"></p>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 
     <script>
         const firebaseConfig = {
@@ -48,22 +50,36 @@
             messagingSenderId: "1073972515996",
             appId: "1:1073972515996:web:28049f5e5977e3a8e74959"
         };
-        firebase.initializeApp(firebaseConfig);
+        
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
         const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        // Login ဝင်ထားပြီးသားဖြစ်ပါက Dashboard သို့ တန်းပို့ရန်
+        auth.onAuthStateChanged((user) => {
+            if (user || localStorage.getItem('currentAgent')) {
+                window.location.href = "agent-dashboard.html";
+            }
+        });
 
         async function handleLogin() {
             const id = document.getElementById('loginId').value.trim();
             const pass = document.getElementById('loginPass').value.trim();
             const errorMsg = document.getElementById('error');
+            const loginBtn = document.getElementById('loginBtn');
 
             if (!id || !pass) {
-                errorMsg.style.display = 'block';
-                errorMsg.innerText = "အချက်အလက်များကို အကုန်ဖြည့်ပါ။";
+                showError("အချက်အလက်များကို အကုန်ဖြည့်ပါ။");
                 return;
             }
 
+            // ခေတ္တခဏ Button ကို ပိတ်ထားမည်
+            loginBtn.disabled = true;
+            loginBtn.innerText = "စစ်ဆေးနေပါသည်...";
+
             try {
-                // Database ထဲရှိ field name 'gmail_phone' နှင့် 'password' ကို တိုက်စစ်သည်
                 const snapshot = await db.collection("agents")
                     .where("gmail_phone", "==", id)
                     .where("password", "==", pass)
@@ -73,15 +89,13 @@
                     const doc = snapshot.docs[0];
                     const agentData = doc.data();
                     
-                    // Account ပိတ်ထားခြင်း ရှိ/မရှိ စစ်ဆေးသည်
                     if (agentData.status === "Disabled") {
-                        errorMsg.style.display = 'block';
-                        errorMsg.innerText = "သင်၏အကောင့်မှာ ပိတ်ထားခြင်းခံရပါသည်။";
+                        showError("သင်၏အကောင့်မှာ ပိတ်ထားခြင်းခံရပါသည်။");
+                        loginBtn.disabled = false;
+                        loginBtn.innerText = "Login";
                         return;
                     }
 
-                    // Dashboard မှာ 'undefined' မဖြစ်စေရန် Data အကုန်သိမ်းသည်
-                    // အထူးသဖြင့် agentData.name ကို သိမ်းဆည်းရန်လိုအပ်သည်
                     const userData = {
                         uid: doc.id,
                         name: agentData.name || "User", 
@@ -89,20 +103,36 @@
                         status: agentData.status
                     };
 
+                    // LocalStorage တွင် သိမ်းဆည်းမည်
                     localStorage.setItem('currentAgent', JSON.stringify(userData));
                     
                     // Dashboard သို့ သွားရန်
                     window.location.href = "agent-dashboard.html";
                 } else {
-                    errorMsg.style.display = 'block';
-                    errorMsg.innerText = "အကောင့်ဝင်ရန် အချက်အလက် မှားယွင်းနေပါသည်။";
+                    showError("အကောင့်ဝင်ရန် အချက်အလက် မှားယွင်းနေပါသည်။");
+                    loginBtn.disabled = false;
+                    loginBtn.innerText = "Login";
                 }
             } catch (err) {
                 console.error("Error:", err);
-                errorMsg.style.display = 'block';
-                errorMsg.innerText = "Database နှင့် ချိတ်ဆက်၍မရပါ။";
+                showError("Database နှင့် ချိတ်ဆက်၍မရပါ။");
+                loginBtn.disabled = false;
+                loginBtn.innerText = "Login";
             }
         }
+
+        function showError(msg) {
+            const errorMsg = document.getElementById('error');
+            errorMsg.style.display = 'block';
+            errorMsg.innerText = msg;
+        }
+
+        // Enter key နှိပ်လျှင် Login ဝင်နိုင်ရန်
+        document.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                handleLogin();
+            }
+        });
     </script>
 </body>
 </html>
