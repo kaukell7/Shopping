@@ -1,103 +1,117 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="my">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add New Product - Spider.io</title>
+    <title>My Products - Spider.io</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root { --primary: #4f46e5; --bg: #f8fafc; --sidebar: #1e293b; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); margin: 0; display: flex; }
         .sidebar { width: 260px; background: var(--sidebar); color: white; min-height: 100vh; padding: 2rem 1rem; position: fixed; z-index: 1000; }
-        .sidebar h2 { padding-left: 1rem; margin-bottom: 2rem; color: #fff; }
-        .nav-item { padding: 0.8rem 1rem; border-radius: 8px; color: #cbd5e1; text-decoration: none; margin-bottom: 0.5rem; display: flex; align-items: center; transition: 0.3s; cursor: pointer; border: none; background: transparent; width: 100%; font-size: 1rem; text-align: left; }
+        .sidebar h2 { padding-left: 1rem; margin-bottom: 2rem; color: #fff; font-weight: 800; }
+        .nav-item { padding: 0.8rem 1rem; border-radius: 8px; color: #cbd5e1; text-decoration: none; margin-bottom: 0.5rem; display: flex; align-items: center; transition: 0.3s; }
         .nav-item:hover, .nav-item.active { background: var(--primary); color: white; }
         .nav-item i { width: 20px; margin-right: 10px; }
+        
         .main-content { margin-left: 280px; padding: 2.5rem; width: calc(100% - 280px); }
-        .card { background: white; padding: 2.5rem; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; max-width: 600px; }
-        .form-group { margin-bottom: 1.5rem; }
-        label { display: block; margin-bottom: 0.6rem; font-weight: 600; color: #1e293b; font-size: 0.9rem; }
-        input, select { width: 100%; padding: 0.9rem; border: 1px solid #e2e8f0; border-radius: 8px; box-sizing: border-box; outline: none; }
-        .btn-create { background: var(--primary); color: white; padding: 0.9rem; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; width: 100%; margin-top: 10px; transition: 0.3s; }
-        .btn-create:hover { background: #4338ca; }
-        .btn-create:disabled { background: #94a3b8; cursor: not-allowed; }
-        .readonly-input { background-color: #f1f5f9; font-weight: 700; color: #4f46e5; }
-        .preview-container { margin-top: 10px; border-radius: 8px; overflow: hidden; display: none; border: 1px solid #e2e8f0; }
-        #imagePreview { width: 100%; height: auto; max-height: 200px; object-fit: contain; background: #fff; }
+        .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
+        
+        .card { background: white; padding: 2rem; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
+        .form-group { margin-bottom: 1.2rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: #1e293b; font-size: 0.9rem; }
+        input, select { width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; outline: none; transition: 0.3s; }
+        input:focus { border-color: var(--primary); }
+        
+        .btn-create { background: var(--primary); color: white; padding: 0.9rem; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; width: 100%; margin-top: 10px; }
+        .readonly-input { background-color: #f1f5f9; font-weight: 700; color: var(--primary); }
+        
+        /* Table Style */
+        .table-card { background: white; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; background: #f8fafc; padding: 12px; color: #64748b; font-size: 0.8rem; text-transform: uppercase; }
+        td { padding: 12px; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; }
+        .product-img { width: 40px; height: 40px; border-radius: 4px; object-fit: cover; }
+        .btn-delete { color: #ef4444; cursor: pointer; border: none; background: none; transition: 0.2s; }
+        .btn-delete:hover { transform: scale(1.2); }
+
+        @media (max-width: 1024px) { .grid-container { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
     <div class="sidebar">
         <h2>Spider.io</h2>
-        <a href="agent-dashboard.html" class="nav-item">
-            <i class="fas fa-home"></i> <span>Dashboard</span>
-        </a>
-        <a href="inventory.html" class="nav-item active">
-            <i class="fas fa-box-open"></i> <span>My Products</span>
-        </a>
-        <a href="index.html" class="nav-item">
-            <i class="fas fa-store"></i> <span>View Shop</span>
-        </a>
-        <button class="nav-item" onclick="handleLogout()" style="margin-top: 20px; opacity: 0.7;">
+        <a href="agent-dashboard.html" class="nav-item"><i class="fas fa-home"></i> <span>Dashboard</span></a>
+        <a href="inventory.html" class="nav-item active"><i class="fas fa-box-open"></i> <span>My Products</span></a>
+        <a href="user_list.html" id="navUsers" class="nav-item"><i class="fas fa-users"></i> <span>Customer List</span></a>
+        <button class="nav-item" onclick="handleLogout()" style="margin-top: 20px; color: #f87171; background: none; border: none; width: 100%; text-align: left; cursor: pointer;">
             <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
         </button>
     </div>
 
     <div class="main-content">
-        <h1>Add New Product</h1>
-        <div class="card">
-            <form id="productForm">
-                <div class="form-group">
-                    <label>Product Image Link (URL)</label>
-                    <input type="text" id="imageUrl" placeholder="Paste image link here (e.g. https://imgbb.com/photo.jpg)" required oninput="previewFromLink()">
-                    <div class="preview-container" id="previewBox">
-                        <img src="" id="imagePreview">
+        <h1 style="margin-bottom: 2rem;">Product Management</h1>
+        
+        <div class="grid-container">
+            <div class="card">
+                <h3 style="margin-top: 0;"><i class="fas fa-plus-circle"></i> Add New Product</h3>
+                <form id="productForm">
+                    <div class="form-group">
+                        <label>Image URL (Direct Link)</label>
+                        <input type="text" id="imageUrl" placeholder="Paste link here..." required>
                     </div>
-                    <small style="color: #64748b;">ImgBB ကဲ့သို့သော hosting မှ direct link ကို ထည့်ပေးပါ။</small>
-                </div>
+                    <div class="form-group">
+                        <label>Product Name</label>
+                        <input type="text" id="pName" placeholder="Item name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select id="pCategory">
+                            <option value="boy">Boy</option>
+                            <option value="girl">Girl</option>
+                            <option value="kid">Kid</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Price (Ks)</label>
+                        <input type="number" id="originalPrice" placeholder="50000" required oninput="calculateDiscount()">
+                    </div>
+                    <div class="form-group">
+                        <label>Discount (%)</label>
+                        <input type="number" id="discountPercent" placeholder="0" oninput="calculateDiscount()">
+                    </div>
+                    <div class="form-group">
+                        <label>Final Price</label>
+                        <input type="number" id="finalPrice" class="readonly-input" readonly>
+                    </div>
+                    <button type="submit" class="btn-create" id="uploadBtn">Save Product</button>
+                </form>
+            </div>
 
-                <div class="form-group">
-                    <label>Product Name</label>
-                    <input type="text" id="pName" placeholder="Enter product name" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Category</label>
-                    <select id="pCategory">
-                        <option value="boy">Boy</option>
-                        <option value="girl">Girl</option>
-                        <option value="kid">Kid</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Original Price (Ks)</label>
-                    <input type="number" id="originalPrice" placeholder="50000" required oninput="calculateDiscount()">
-                </div>
-
-                <div class="form-group">
-                    <label>Discount Percentage (%)</label>
-                    <input type="number" id="discountPercent" placeholder="20" oninput="calculateDiscount()">
-                </div>
-
-                <div class="form-group">
-                    <label>Final Price (ကျသင့်ငွေ)</label>
-                    <input type="number" id="finalPrice" class="readonly-input" readonly>
-                </div>
-
-                <button type="submit" class="btn-create" id="uploadBtn">
-                    <i class="fas fa-plus"></i> Save Product
-                </button>
-            </form>
+            <div class="table-card">
+                <h3 style="padding: 1.5rem; margin: 0; border-bottom: 1px solid #f1f5f9;">My Inventory</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Image</th>
+                            <th>Name</th>
+                            <th>Price</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productTableBody">
+                        <tr><td colspan="4" style="text-align:center; padding: 20px;">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    
+
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyCt1SMVSMqdX3u2viQ-n_BVwp6KgQwDLOM",
@@ -107,95 +121,80 @@
             messagingSenderId: "1073972515996",
             appId: "1:1073972515996:web:28049f5e5977e3a8e74959"
         };
-        
-        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-        const auth = firebase.auth();
 
-        // Security Check: အကောင့်ဝင်မထားလျှင် login page သို့ ပြန်ပို့မည်
-        window.onload = function() {
-            if (!localStorage.getItem('currentAgent')) {
-                window.location.href = "login.html";
-            }
-        };
+        const agentData = JSON.parse(localStorage.getItem('currentAgent'));
+        if (!agentData) window.location.href = "login.html";
+        const agentName = agentData.name;
 
-        // ဈေးနှုန်း တွက်ချက်ခြင်း
+        // Sync Sidebar
+        document.getElementById('navUsers').href = `user_list.html?agent=${agentName}`;
+
         function calculateDiscount() {
             const original = parseFloat(document.getElementById('originalPrice').value) || 0;
             const percent = parseFloat(document.getElementById('discountPercent').value) || 0;
-            const finalInput = document.getElementById('finalPrice');
-            finalInput.value = percent > 0 ? Math.round(original - (original * percent / 100)) : original;
+            document.getElementById('finalPrice').value = Math.round(original - (original * percent / 100));
         }
 
-        // Link ထည့်လိုက်သည်နှင့် ပုံကို ကြိုတင်ကြည့်ရှုရန်
-        function previewFromLink() {
-            const url = document.getElementById('imageUrl').value;
-            const previewBox = document.getElementById('previewBox');
-            const previewImg = document.getElementById('imagePreview');
-            
-            if (url) {
-                previewImg.src = url;
-                previewBox.style.display = 'block';
-            } else {
-                previewBox.style.display = 'none';
-            }
+        // Fetch My Products
+        function fetchMyProducts() {
+            db.collection("products").where("agent_name", "==", agentName)
+              .onSnapshot(snapshot => {
+                const tbody = document.getElementById('productTableBody');
+                if (snapshot.empty) {
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px;">ပစ္စည်းမရှိသေးပါ။</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = snapshot.docs.map(doc => {
+                    const p = doc.data();
+                    return `<tr>
+                        <td><img src="${p.imageUrl}" class="product-img"></td>
+                        <td><strong>${p.name}</strong></td>
+                        <td>${p.price} Ks</td>
+                        <td><button class="btn-delete" onclick="deleteProduct('${doc.id}')"><i class="fas fa-trash"></i></button></td>
+                    </tr>`;
+                }).join('');
+            });
         }
 
-        // ပစ္စည်း အချက်အလက်များကို Database သို့ သိမ်းဆည်းခြင်း
+        // Add Product
         document.getElementById('productForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const uploadBtn = document.getElementById('uploadBtn');
-            const imageUrl = document.getElementById('imageUrl').value;
-            const agentData = JSON.parse(localStorage.getItem('currentAgent'));
-
-            if (!agentData) {
-                alert("ကျေးဇူးပြု၍ အရင် Login ဝင်ပေးပါ!");
-                window.location.href = "login.html";
-                return;
-            }
-
-            uploadBtn.disabled = true;
-            uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            const btn = document.getElementById('uploadBtn');
+            btn.disabled = true;
+            btn.innerText = "Saving...";
 
             try {
-                const agentName = agentData.name || agentData.shop_name;
-
                 await db.collection("products").add({
                     name: document.getElementById('pName').value,
                     original_price: parseInt(document.getElementById('originalPrice').value),
                     discount_percent: parseInt(document.getElementById('discountPercent').value) || 0,
                     price: parseInt(document.getElementById('finalPrice').value),
                     category: document.getElementById('pCategory').value,
-                    imageUrl: imageUrl,
+                    imageUrl: document.getElementById('imageUrl').value,
                     agent_name: agentName,
-                    agentGmailPhone: agentData.gmail_phone,
                     created_at: firebase.firestore.FieldValue.serverTimestamp()
                 });
-
-                alert("ပစ္စည်းတင်ခြင်း အောင်မြင်ပါသည်!");
-                window.location.href = "agent-dashboard.html"; 
-            } catch (error) {
-                console.error(error);
-                alert("Error: " + error.message);
-                uploadBtn.disabled = false;
-                uploadBtn.innerHTML = 'Save Product';
-            }
+                alert("ပစ္စည်းအသစ် တင်ပြီးပါပြီ!");
+                document.getElementById('productForm').reset();
+            } catch (err) { alert("Error: " + err.message); }
+            btn.disabled = false;
+            btn.innerText = "Save Product";
         });
 
-        // Logout လုပ်ဆောင်ချက်
-        async function handleLogout() {
-            if(confirm("အကောင့်ထဲက ထွက်မှာ သေချာပါသလား?")) {
-                try {
-                    await auth.signOut();
-                    localStorage.removeItem('currentAgent');
-                    window.location.href = "login.html";
-                } catch (error) {
-                    console.error("Logout Error:", error);
-                    localStorage.removeItem('currentAgent');
-                    window.location.href = "login.html";
-                }
+        async function deleteProduct(id) {
+            if (confirm("ဒီပစ္စည်းကို ဖျက်မှာ သေချာပါသလား?")) {
+                await db.collection("products").doc(id).delete();
             }
         }
+
+        function handleLogout() {
+            localStorage.removeItem('currentAgent');
+            window.location.href = "login.html";
+        }
+
+        window.onload = fetchMyProducts;
     </script>
 </body>
 </html>
