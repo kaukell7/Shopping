@@ -92,9 +92,7 @@
         .modal-content h3 { margin-bottom: 20px; color: #1e293b; text-align: center; }
         .modal-content input, .modal-content textarea { width: 100%; padding: 12px; margin-top: 12px; border-radius: 10px; border: 1px solid #e2e8f0; font-family: inherit; outline: none; }
         
-        /* Quantity Style */
         .qty-label { display: block; margin-top: 15px; font-size: 0.9rem; font-weight: 600; color: #64748b; }
-        #orderQty { margin-top: 5px; }
 
         .close { position: absolute; right: 20px; top: 15px; font-size: 28px; cursor: pointer; color: #94a3b8; }
 
@@ -196,7 +194,6 @@
         let allProducts = [];
         let selectedProduct = "";
 
-        // UI Functions
         function toggleChat() {
             const options = document.getElementById('chatOptions');
             options.style.display = options.style.display === 'none' ? 'flex' : 'none';
@@ -216,7 +213,6 @@
 
         function closeModal() { document.getElementById('orderModal').style.display = "none"; }
 
-        // Fetch Branding & Contacts
         function fetchShopBranding() {
             db.collection("shop_settings").doc("branding").onSnapshot((doc) => {
                 if (doc.exists) {
@@ -316,7 +312,7 @@
             }
         }
 
-        // Dashboard နှင့် ကိုက်ညီအောင် ပြင်ဆင်ထားသော submitOrder
+        // Dashboard/Orders Page နှင့် အပြည့်အဝ ချိတ်ဆက်ထားသော Function
         async function submitOrder() {
             const name = document.getElementById('userName').value.trim();
             const phone = document.getElementById('userPhone').value.trim();
@@ -330,25 +326,30 @@
             submitBtn.innerText = "ခေတ္တစောင့်ပါ...";
 
             try {
+                // Dashboard filter အတွက် data format များအား အတိအကျ ထည့်သွင်းပေးထားပါသည်
                 await db.collection("orders").add({
-                    agent_name: "kid kid", // Dashboard filter အတွက် အမည်ကို တိုက်ရိုက်ထည့်ပါသည်
+                    agent_name: "kid kid", 
                     product_name: selectedProduct,
-                    quantity: parseInt(qty),
+                    quantity: parseInt(qty) || 1,
                     customer_name: name,
                     customer_phone: phone,
-                    address: address, // Dashboard က 'address' field ကို သုံးထားပါသည်
-                    status: "Pending", // Dashboard မှာ အရောင်ပေါ်ရန် စာလုံးအကြီးသုံးပါသည်
+                    address: address, 
+                    status: "Pending", 
                     created_at: firebase.firestore.FieldValue.serverTimestamp()
                 });
+                
                 alert("မှာယူမှု အောင်မြင်ပါသည်။");
                 closeModal();
-                // Form reset လုပ်ခြင်း
+                
+                // Form Fields များအား Clear လုပ်ခြင်း
                 document.getElementById('userName').value = "";
                 document.getElementById('userPhone').value = "";
                 document.getElementById('userAddress').value = "";
+                document.getElementById('orderQty').value = 1;
+                
             } catch (e) {
-                console.error(e);
-                alert("အမှားတစ်ခု ဖြစ်သွားပါသည်");
+                console.error("Order Submission Error:", e);
+                alert("မှာယူမှု မအောင်မြင်ပါ။ နောက်မှ ပြန်လည် ကြိုးစားကြည့်ပါ။");
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerText = "အော်ဒါတင်မည်";
