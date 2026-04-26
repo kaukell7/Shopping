@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orders - Spider.io</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f4f7fe; display: flex; color: #1e293b; }
+        
+        /* Sidebar Styling */
+        .sidebar { width: 260px; background: #1e293b; height: 100vh; padding: 30px 20px; color: white; position: fixed; }
+        .logo { font-size: 24px; font-weight: 800; margin-bottom: 40px; color: #fff; text-decoration: none; display: block; }
+        .menu-item { display: flex; align-items: center; gap: 12px; color: #94a3b8; text-decoration: none; padding: 14px 18px; border-radius: 12px; margin-bottom: 8px; transition: 0.3s; font-weight: 600; }
+        .menu-item:hover, .menu-item.active { background: #4f46e5; color: white; }
+
+        /* Main Content */
+        .main-content { margin-left: 260px; padding: 40px; width: calc(100% - 260px); min-height: 100vh; }
+        .page-header { margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
+        .page-header h2 { font-size: 24px; font-weight: 800; }
+        
+        .card { background: white; border-radius: 24px; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.02); }
+        
+        /* Table Styling */
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { text-align: left; padding: 15px 20px; border-bottom: 2px solid #f1f5f9; color: #64748b; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
+        td { padding: 18px 20px; border-bottom: 1px solid #f1f5f9; font-size: 15px; vertical-align: middle; }
+        
+        .product-info { font-weight: 700; color: #1e293b; }
+        .customer-name { font-weight: 600; }
+        .phone-number { color: #4f46e5; font-weight: 600; text-decoration: none; }
+        
+        /* Status Badges */
+        .status-badge { padding: 6px 14px; border-radius: 50px; font-size: 12px; font-weight: 700; display: inline-block; }
+        .status-pending { background: #fff7ed; color: #ea580c; }
+        .status-completed { background: #f0fdf4; color: #16a34a; }
+
+        @media (max-width: 900px) {
+            .sidebar { width: 80px; padding: 20px 10px; }
+            .sidebar .logo, .sidebar span { display: none; }
+            .main-content { margin-left: 80px; width: calc(100% - 80px); padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <a href="#" class="logo">Spider.io</a>
+        <a href="index.html" class="menu-item"><span>🏠 Dashboard</span></a>
+        <a href="#" class="menu-item"><span>📦 My Products</span></a>
+        <a href="orders.html" class="menu-item active"><span>🛒 Orders</span></a>
+        <a href="#" class="menu-item"><span>⚙️ Settings</span></a>
+    </div>
+
+    <div class="main-content">
+        <div class="page-header">
+            <div>
+                <h2>Customer Orders</h2>
+                <p style="color: #64748b; margin-top: 5px;">နောက်ဆုံးဝင်ထားသော အော်ဒါများကို ဤနေရာတွင် စစ်ဆေးနိုင်ပါသည်။</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Qty</th>
+                            <th>Customer</th>
+                            <th>Phone</th>
+                            <th>Address</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orderTableBody">
+                        <tr>
+                            <td colspan="6" style="text-align:center; padding: 50px; color: #94a3b8;">
+                                <div style="margin-bottom: 10px;">⏳</div>
+                                အော်ဒါများ ဆွဲတင်နေပါသည်...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCt1SMVSMqdX3u2viQ-n_BVwp6KgQwDLOM",
+            authDomain: "my-shop-admin-cedb1.firebaseapp.com",
+            projectId: "my-shop-admin-cedb1",
+            storageBucket: "my-shop-admin-cedb1.firebasestorage.app",
+            messagingSenderId: "1073972515996",
+            appId: "1:1073972515996:web:28049f5e5977e3a8e74959"
+        };
+        
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        const db = firebase.firestore();
+
+        // Fetch Orders Function
+        function fetchOrders() {
+            // "kid kid" အမည်ဖြင့် တင်ထားသော အော်ဒါများကို အချိန်နှင့်တပြေးညီ (Real-time) ဆွဲယူမည်
+            db.collection("orders")
+              .where("agent_name", "==", "kid kid")
+              .orderBy("created_at", "desc")
+              .onSnapshot((snapshot) => {
+                const tbody = document.getElementById('orderTableBody');
+                
+                if (snapshot.empty) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 50px; color: #94a3b8;">အော်ဒါစာရင်း မရှိသေးပါ။</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = snapshot.docs.map(doc => {
+                    const data = doc.data();
+                    const statusClass = (data.status === "Pending") ? "status-pending" : "status-completed";
+                    
+                    return `
+                        <tr>
+                            <td class="product-info">${data.product_name}</td>
+                            <td><span style="background: #f1f5f9; padding: 4px 10px; border-radius: 8px;">${data.quantity || 1}</span></td>
+                            <td class="customer-name">${data.customer_name}</td>
+                            <td><a href="tel:${data.customer_phone}" class="phone-number">${data.customer_phone}</a></td>
+                            <td style="max-width: 200px; font-size: 13px; line-height: 1.4;">${data.address || '-'}</td>
+                            <td><span class="status-badge ${statusClass}">${data.status}</span></td>
+                        </tr>
+                    `;
+                }).join('');
+            }, (error) => {
+                console.error("Firebase Error:", error);
+                document.getElementById('orderTableBody').innerHTML = `<tr><td colspan="6" style="text-align:center; color: red; padding: 20px;">Error: ${error.message}</td></tr>`;
+            });
+        }
+
+        // စာမျက်နှာပွင့်လာသည်နှင့် Data ဆွဲမည်
+        window.onload = fetchOrders;
+    </script>
+</body>
+</html>
