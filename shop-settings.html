@@ -22,15 +22,15 @@
         .form-group { margin-bottom: 1.5rem; }
         .form-group label { display: block; margin-bottom: 8px; font-weight: 700; color: #1e293b; }
         .form-group input { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 12px; outline: none; transition: 0.3s; font-family: inherit; box-sizing: border-box; }
-        .form-group input:focus { border-color: var(--primary); ring: 2px solid #c7d2fe; }
+        .form-group input:focus { border-color: var(--primary); }
         
         /* Logo Preview */
         .logo-upload-section { display: flex; align-items: center; gap: 20px; background: #f8fafc; padding: 1.5rem; border-radius: 16px; border: 2px dashed #e2e8f0; }
         .preview-box { width: 100px; height: 100px; background: white; border-radius: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1px solid #e2e8f0; }
         .preview-box img { width: 100%; height: 100%; object-fit: contain; }
 
-        .save-btn { background: var(--primary); color: white; border: none; padding: 14px 28px; border-radius: 12px; cursor: pointer; font-weight: 700; width: 100%; font-size: 1rem; margin-top: 1rem; }
-        .save-btn:hover { opacity: 0.9; }
+        .save-btn { background: var(--primary); color: white; border: none; padding: 14px 28px; border-radius: 12px; cursor: pointer; font-weight: 700; width: 100%; font-size: 1rem; margin-top: 1rem; transition: 0.3s; }
+        .save-btn:disabled { background: #94a3b8; cursor: not-allowed; }
 
         @media (max-width: 900px) {
             .sidebar { width: 70px; padding: 1.5rem 0.5rem; }
@@ -96,19 +96,23 @@
         const db = firebase.firestore();
         const storage = firebase.storage();
 
+        // LocalStorage ကနေ Agent နာမည်ယူမယ်၊ မရှိရင် "hein" လို့ default ထားမယ် (သင့်ပုံထဲက နာမည်)
         const agentData = JSON.parse(localStorage.getItem('currentAgent'));
-        const currentAgent = agentData ? agentData.name : "kid kid";
+        const currentAgent = agentData ? agentData.name : "hein";
 
-        // ဒေတာအဟောင်းတွေရှိရင် ပြန်ခေါ်ပြမယ်
         async function loadOldSettings() {
-            const doc = await db.collection("shop_settings").doc(currentAgent).get();
-            if (doc.exists) {
-                const data = doc.data();
-                document.getElementById('shopName').value = data.shopName || "";
-                document.getElementById('viberPhone').value = data.viber || "";
-                if(data.logoUrl) {
-                    document.getElementById('logoPreview').innerHTML = `<img src="${data.logoUrl}">`;
+            try {
+                const doc = await db.collection("shop_settings").doc(currentAgent).get();
+                if (doc.exists) {
+                    const data = doc.data();
+                    document.getElementById('shopName').value = data.shopName || "";
+                    document.getElementById('viberPhone').value = data.viber || "";
+                    if(data.logoUrl) {
+                        document.getElementById('logoPreview').innerHTML = `<img src="${data.logoUrl}" style="width:100%; height:100%; object-fit:contain;">`;
+                    }
                 }
+            } catch (err) {
+                console.error("Data ခေါ်ယူရာတွင် အမှားရှိနေပါသည် - ", err);
             }
         }
 
@@ -117,7 +121,7 @@
             if (file) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                    document.getElementById('logoPreview').innerHTML = `<img src="${e.target.result}">`;
+                    document.getElementById('logoPreview').innerHTML = `<img src="${e.target.result}" style="width:100%; height:100%; object-fit:contain;">`;
                 };
                 reader.readAsDataURL(file);
             }
@@ -129,31 +133,45 @@
             const name = document.getElementById('shopName').value;
             const viber = document.getElementById('viberPhone').value;
 
+            if(!name) return alert("ဆိုင်နာမည် ထည့်ပေးရန် လိုအပ်ပါသည်။");
+
             btn.disabled = true;
             btn.innerText = "Saving...";
 
             try {
                 let logoUrl = "";
+                // အကယ်၍ ပုံအသစ်ရွေးထားရင် အရင်တင်မယ်
                 if (file) {
-                    const ref = storage.ref(`logos/${currentAgent}_logo`);
-                    await ref.put(file);
-                    logoUrl = await ref.getDownloadURL();
+                    const ref = storage.ref().child(`logos/${currentAgent}_logo_${Date.now()}`);
+                    const uploadTask = await ref.put(file);
+                    logoUrl = await uploadTask.ref.getDownloadURL();
                 }
 
                 const payload = {
                     shopName: name,
                     viber: viber,
-                    agent_name: currentAgent
+                    agent_name: currentAgent,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                 };
-                if(logoUrl) payload.logoUrl = logoUrl;
+                
+                if(logoUrl) {
+                    payload.logoUrl = logoUrl;
+                }
 
+                // Firestore ထဲ သိမ်းမယ်
                 await db.collection("shop_settings").doc(currentAgent).set(payload, { merge: true });
-                alert("Shop updated successfully!");
+                
+                alert("ဆိုင်အချက်အလက်များ သိမ်းဆည်းပြီးပါပြီ။");
+                location.reload(); // Page ကို refresh လုပ်လိုက်မယ်
+
             } catch (err) {
-                alert("Error saving data.");
+                console.error("Save Error:", err);
+                // Firebase Permission (Rules) ကြောင့် ဖြစ်နိုင်ချေများပါတယ်
+                alert("သိမ်းလို့မရပါ - " + err.message + "\n\nFirebase Console မှာ Rules တွေကို Check လုပ်ပေးပါ။");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Save Changes";
             }
-            btn.disabled = false;
-            btn.innerText = "Save Changes";
         }
 
         window.onload = loadOldSettings;
