@@ -10,7 +10,7 @@
         :root { --primary: #4f46e5; --bg: #f8fafc; --sidebar: #1e293b; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); margin: 0; display: flex; }
         
-        /* Sidebar Style - Fixed & Z-index added */
+        /* Sidebar Style */
         .sidebar { 
             width: 260px; 
             background: var(--sidebar); 
@@ -26,7 +26,7 @@
         .nav-item:hover, .nav-item.active { background: var(--primary); color: white; }
         .nav-item i { width: 20px; margin-right: 10px; }
         
-        /* Main Content Adjustments */
+        /* Main Content */
         .main-content { margin-left: 260px; padding: 2.5rem; width: calc(100% - 260px); box-sizing: border-box; }
         .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
         
@@ -63,20 +63,20 @@
 
     <div class="sidebar">
         <h2>Spider.io</h2>
-        <a href="agent-dashboard.html" class="nav-item"><i class="fas fa-home"></i> <span>Dashboard</span></a>
+        <a id="navDash" href="agent-dashboard.html" class="nav-item"><i class="fas fa-home"></i> <span>Dashboard</span></a>
         <a href="inventory.html" class="nav-item active"><i class="fas fa-box-open"></i> <span>My Products</span></a>
-        <a href="user_list.html" id="navUsers" class="nav-item"><i class="fas fa-users"></i> <span>Customer List</span></a>
-        <a href="shop-settings.html" class="nav-item"><i class="fas fa-store"></i> <span>Shop Settings</span></a>
+        <a id="navUsers" href="user_list.html" class="nav-item"><i class="fas fa-users"></i> <span>Customer List</span></a>
+        <a id="navSettings" href="shop-settings.html" class="nav-item"><i class="fas fa-store"></i> <span>Shop Settings</span></a>
         <button class="nav-item" onclick="handleLogout()" style="margin-top: 20px; color: #f87171; background: none; border: none; width: 100%; text-align: left; cursor: pointer;">
             <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
         </button>
     </div>
 
     <div class="main-content">
-        <h1 style="margin-bottom: 2rem;">Product Management</h1>
+        <h1 id="pageTitle" style="margin-bottom: 2rem;">Product Management</h1>
         
         <div class="grid-container">
-            <div class="card">
+            <div class="card" id="addProductSection">
                 <h3 style="margin-top: 0;"><i class="fas fa-plus-circle"></i> Add New Product</h3>
                 
                 <div class="img-preview-box" id="previewContainer">
@@ -117,7 +117,7 @@
             </div>
 
             <div class="table-card">
-                <h3 style="padding: 1.5rem; margin: 0; border-bottom: 1px solid #f1f5f9;">My Inventory</h3>
+                <h3 id="inventoryTitle" style="padding: 1.5rem; margin: 0; border-bottom: 1px solid #f1f5f9;">My Inventory</h3>
                 <table>
                     <thead>
                         <tr>
@@ -152,9 +152,37 @@
         const db = firebase.firestore();
         const storage = firebase.storage();
 
-        const agentData = JSON.parse(localStorage.getItem('currentAgent'));
-        if (!agentData) window.location.href = "login.html";
-        const agentName = agentData.name;
+        let currentAgentName = "";
+
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const agentFromUrl = urlParams.get('agent');
+            const loggedInAgent = JSON.parse(localStorage.getItem('currentAgent'));
+            
+            currentAgentName = agentFromUrl || (loggedInAgent ? loggedInAgent.name : null);
+
+            if (!currentAgentName) {
+                window.location.href = "login.html";
+                return;
+            }
+
+            // Super Admin က ကြည့်နေတာဆိုရင် Add Product section ကို ဖျောက်ထားမယ်
+            if (agentFromUrl && loggedInAgent && loggedInAgent.role === "super_admin") {
+                document.getElementById('addProductSection').style.display = "none";
+                document.querySelector('.grid-container').style.gridTemplateColumns = "1fr";
+            }
+
+            // Navigation Links Update
+            const suffix = `?agent=${encodeURIComponent(currentAgentName)}`;
+            document.getElementById('navDash').href = `agent-dashboard.html${suffix}`;
+            document.getElementById('navUsers').href = `user_list.html${suffix}`;
+            document.getElementById('navSettings').href = `shop-settings.html${suffix}`;
+            
+            document.getElementById('pageTitle').innerText = `${currentAgentName}'s Products`;
+            document.getElementById('inventoryTitle').innerText = `${currentAgentName}'s Inventory`;
+
+            fetchMyProducts(currentAgentName);
+        };
 
         function previewImage(event) {
             const container = document.getElementById('previewContainer');
@@ -174,7 +202,7 @@
             document.getElementById('finalPrice').value = Math.round(original - (original * percent / 100));
         }
 
-        function fetchMyProducts() {
+        function fetchMyProducts(agentName) {
             db.collection("products")
               .where("agent_name", "==", agentName)
               .orderBy("created_at", "desc")
@@ -195,7 +223,7 @@
                 }).join('');
             }, err => {
                 console.error("Fetch Error:", err);
-                document.getElementById('productTableBody').innerHTML = '<tr><td colspan="4" style="text-align:center; color:red;">ဒေတာဆွဲယူ၍မရပါ။ Rules ကိုစစ်ပါ။</td></tr>';
+                document.getElementById('productTableBody').innerHTML = '<tr><td colspan="4" style="text-align:center; color:red;">ဒေတာဆွဲယူ၍မရပါ။</td></tr>';
             });
         }
 
@@ -210,7 +238,7 @@
             btn.innerText = "Uploading Image...";
 
             try {
-                const fileName = `products/${agentName}_${Date.now()}`;
+                const fileName = `products/${currentAgentName}_${Date.now()}`;
                 const storageRef = storage.ref().child(fileName);
                 const snapshot = await storageRef.put(file);
                 const downloadURL = await snapshot.ref.getDownloadURL();
@@ -224,7 +252,7 @@
                     price: parseInt(document.getElementById('finalPrice').value),
                     category: document.getElementById('pCategory').value,
                     imageUrl: downloadURL,
-                    agent_name: agentName,
+                    agent_name: currentAgentName,
                     created_at: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
@@ -255,8 +283,6 @@
             localStorage.removeItem('currentAgent');
             window.location.href = "login.html";
         }
-
-        window.onload = fetchMyProducts;
     </script>
 </body>
 </html>
