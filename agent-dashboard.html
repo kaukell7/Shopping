@@ -34,18 +34,24 @@
         
         .status-badge { background: #dcfce7; color: #166534; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
 
-        /* Contact Settings Form */
+        /* Order Table Style */
+        .order-section { margin-top: 2rem; background: white; padding: 1.5rem; border-radius: 16px; border: 1px solid #e2e8f0; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th { text-align: left; background: #f1f5f9; padding: 12px; color: #64748b; font-size: 0.85rem; }
+        td { padding: 12px; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; color: #1e293b; }
+        .qty-badge { background: #e0e7ff; color: #4338ca; padding: 2px 8px; border-radius: 4px; font-weight: 700; }
+
         .contact-form label { display: block; font-size: 0.85rem; color: #64748b; margin-bottom: 8px; margin-top: 15px; font-weight: 600; }
         .contact-form input { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; outline: none; transition: 0.3s; font-family: inherit; }
         .contact-form input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); }
         .save-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 14px; border-radius: 10px; cursor: pointer; font-weight: 700; margin-top: 25px; transition: 0.2s; font-size: 1rem; }
         .save-btn:hover { background: #4338ca; transform: scale(1.01); }
-        .save-btn:active { transform: scale(0.99); }
 
         @media (max-width: 768px) {
             .sidebar { width: 80px; padding: 1rem 0.5rem; }
             .sidebar h2, .nav-item span { display: none; }
             .main-content { margin-left: 100px; width: calc(100% - 100px); padding: 1.5rem; }
+            .order-section { overflow-x: auto; }
         }
     </style>
 </head>
@@ -108,7 +114,7 @@
                 </div>
                 <div class="info-row">
                     <span class="info-label">Last Updated:</span>
-                    <span class="info-value" style="font-size: 0.8rem; color: #94a3b8;">Just Now</span>
+                    <span class="info-value" style="font-size: 0.8rem; color: #94a3b8;" id="lastUpdate">Just Now</span>
                 </div>
             </div>
 
@@ -129,6 +135,26 @@
                     </button>
                 </div>
             </div>
+        </div>
+
+        <div class="order-section">
+            <h3><i class="fas fa-shopping-cart text-primary"></i> Recent Orders</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Qty</th>
+                        <th>Customer</th>
+                        <th>Phone</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="orderTableBody">
+                    <tr>
+                        <td colspan="5" style="text-align:center; padding: 20px; color: #94a3b8;">အော်ဒါများ ဆွဲယူနေသည်...</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -154,7 +180,6 @@
             const agentData = JSON.parse(localStorage.getItem('currentAgent'));
 
             if (agentData) {
-                // Dashboard UI အချက်အလက်များ ထည့်သွင်းခြင်း
                 const displayName = agentData.name || agentData.shop_name || "Agent";
                 document.getElementById('welcomeAgent').innerText = `Welcome back, ${displayName}!`;
                 document.getElementById('shopNameDisplay').innerText = displayName;
@@ -162,23 +187,22 @@
                 
                 const statusBadge = document.getElementById('accountStatus');
                 statusBadge.innerText = agentData.status || "Active";
-                if(agentData.status === "Disabled") {
-                    statusBadge.style.background = "#fee2e2";
-                    statusBadge.style.color = "#991b1b";
-                }
 
-                // ပစ္စည်းအရေအတွက်ကို Live ရေတွက်ခြင်း (Filter ကို agent_name ဖြင့် စစ်သည်)
+                // Products Count
                 db.collection("products")
                   .where("agent_name", "==", displayName)
                   .onSnapshot((snapshot) => {
                       document.getElementById('totalProducts').innerText = snapshot.size;
-                  }, (err) => console.log("Product fetch error:", err));
+                  });
 
-                // အော်ဒါအရေအတွက်ကို Live ရေတွက်ခြင်း
+                // Orders List & Count
                 db.collection("orders")
                   .where("agent_name", "==", displayName)
+                  .orderBy("created_at", "desc")
                   .onSnapshot((snapshot) => {
                       document.getElementById('totalOrders').innerText = snapshot.size;
+                      renderOrders(snapshot);
+                      document.getElementById('lastUpdate').innerText = new Date().toLocaleTimeString();
                   }, (err) => console.log("Order fetch error:", err));
 
                 loadContactSettings();
@@ -187,7 +211,27 @@
             }
         };
 
-        // အချက်အလက်များ ပြန်ဆွဲထုတ်ခြင်း
+        function renderOrders(snapshot) {
+            const tbody = document.getElementById('orderTableBody');
+            if (snapshot.empty) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px;">အော်ဒါမရှိသေးပါ။</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = snapshot.docs.map(doc => {
+                const order = doc.data();
+                return `
+                    <tr>
+                        <td style="font-weight:600;">${order.product_name}</td>
+                        <td><span class="qty-badge">${order.quantity || 1}</span></td>
+                        <td>${order.customer_name}</td>
+                        <td>${order.customer_phone}</td>
+                        <td><span class="status-badge" style="background:#fef3c7; color:#92400e;">${order.status}</span></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
         function loadContactSettings() {
             db.collection("shop_settings").doc("contact").get().then((doc) => {
                 if(doc.exists) {
@@ -196,10 +240,9 @@
                     document.getElementById('telegramInput').value = data.telegram || '';
                     document.getElementById('phoneInput').value = data.phone || '';
                 }
-            }).catch(err => console.error("Load settings error:", err));
+            });
         }
 
-        // အချက်အလက်များ သိမ်းဆည်းခြင်း
         async function saveContactSettings() {
             const btn = document.getElementById('saveBtn');
             const viber = document.getElementById('viberInput').value.trim();
@@ -215,12 +258,10 @@
                     telegram: telegram,
                     phone: phone,
                     last_updated: firebase.firestore.FieldValue.serverTimestamp()
-                }, { merge: true }); // merge: true ထည့်ထားခြင်းဖြင့် ရှိပြီးသား data မပျက်စေပါ
-                
+                }, { merge: true });
                 alert("Live Chat အချက်အလက်များ အောင်မြင်စွာ ပြင်ဆင်ပြီးပါပြီ။");
             } catch (error) {
-                console.error("Error updating contact: ", error);
-                alert("ပြင်ဆင်မှု မအောင်မြင်ပါ။ Error: " + error.message);
+                alert("Error: " + error.message);
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fas fa-save"></i> Update Live Chat';
@@ -229,15 +270,9 @@
 
         async function handleLogout() {
             if(confirm("အကောင့်ထဲက ထွက်မှာ သေချာပါသလား?")) {
-                try {
-                    await auth.signOut();
-                    localStorage.removeItem('currentAgent');
-                    window.location.href = "login.html";
-                } catch (error) {
-                    console.error("Logout Error:", error);
-                    localStorage.removeItem('currentAgent');
-                    window.location.href = "login.html";
-                }
+                await auth.signOut();
+                localStorage.removeItem('currentAgent');
+                window.location.href = "login.html";
             }
         }
     </script>
