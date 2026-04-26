@@ -3,131 +3,156 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer List - Spider.io</title>
+    <title>Shop Settings - Spider.io</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --primary: #4f46e5; --bg: #1e293b; --card-bg: #ffffff; --success: #059669; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; margin: 0; display: flex; }
+        :root { --primary: #4f46e5; --bg: #0f172a; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f1f5f9; margin: 0; display: flex; }
         
-        .sidebar { width: 260px; background: var(--bg); color: white; min-height: 100vh; padding: 2rem 1rem; position: fixed; z-index: 1000; }
-        .sidebar h2 { padding-left: 1rem; margin-bottom: 2rem; font-size: 1.5rem; }
-        .nav-item { padding: 0.8rem 1rem; border-radius: 8px; color: #cbd5e1; text-decoration: none; margin-bottom: 0.5rem; display: flex; align-items: center; transition: 0.3s; }
-        .nav-item:hover, .nav-item.active { background: var(--primary); color: white; }
-        
-        .main-content { margin-left: 280px; padding: 2.5rem; width: calc(100% - 280px); }
-        .page-header { margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; }
-        .agent-badge { background: var(--primary); color: white; padding: 6px 16px; border-radius: 8px; font-weight: 600; font-size: 14px; }
-        
-        .table-card { background: white; padding: 1.5rem; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
-        table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; padding: 1.2rem; border-bottom: 2px solid #f1f5f9; color: #64748b; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; }
-        td { padding: 1.2rem; border-bottom: 1px solid #f1f5f9; font-size: 0.95rem; color: #1e293b; }
-        
-        .phone-link { color: var(--primary); text-decoration: none; font-weight: 600; }
-        .btn-call { padding: 8px 15px; background: #ecfdf5; color: var(--success); border-radius: 8px; cursor: pointer; transition: 0.3s; text-decoration: none; font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
-        .btn-call:hover { background: var(--success); color: white; }
+        .sidebar { width: 260px; background: var(--bg); color: white; min-height: 100vh; padding: 1.5rem 1rem; position: fixed; }
+        .nav-item { padding: 0.8rem 1rem; border-radius: 12px; color: #94a3b8; text-decoration: none; margin-bottom: 0.5rem; display: flex; align-items: center; transition: 0.3s; font-weight: 600; }
+        .nav-item.active { background: var(--primary); color: white; }
 
-        @media (max-width: 900px) {
-            .sidebar { width: 80px; padding: 20px 10px; }
-            .sidebar h2, .sidebar span { display: none; }
-            .main-content { margin-left: 80px; width: calc(100% - 80px); padding: 20px; }
-        }
+        .main-content { margin-left: 260px; padding: 2.5rem; width: calc(100% - 260px); }
+        .settings-card { background: white; padding: 2rem; border-radius: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); max-width: 600px; }
+        
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #475569; }
+        .form-group input { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; outline: none; }
+        
+        .logo-preview { width: 100px; height: 100px; border: 2px dashed #cbd5e1; border-radius: 12px; margin-top: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .logo-preview img { width: 100%; height: 100%; object-fit: contain; }
+
+        .save-btn { background: var(--primary); color: white; border: none; padding: 12px 25px; border-radius: 10px; cursor: pointer; font-weight: 700; width: 100%; font-size: 1rem; }
+        .save-btn:disabled { background: #94a3b8; }
     </style>
 </head>
 <body>
     <div class="sidebar">
-        <h2>Spider.io</h2>
-        <a href="#" id="navHome" class="nav-item"><i class="fas fa-home"></i> &nbsp;<span>Dashboard</span></a>
-        <a href="#" id="navOrders" class="nav-item"><i class="fas fa-shopping-cart"></i> &nbsp;<span>Orders</span></a>
-        <a href="#" id="navUsers" class="nav-item active"><i class="fas fa-users"></i> &nbsp;<span>Customer List</span></a>
+        <div style="font-size: 1.5rem; font-weight: 800; margin-bottom: 2rem; padding-left: 1rem;"><i class="fas fa-spider"></i> Spider.io</div>
+        <a href="agent-dashboard.html" class="nav-item"><i class="fas fa-th-large"></i> &nbsp;<span>Dashboard</span></a>
+        <a href="inventory.html" class="nav-item"><i class="fas fa-box"></i> &nbsp;<span>Inventory</span></a>
+        <a href="user_list.html" class="nav-item"><i class="fas fa-users"></i> &nbsp;<span>Customers</span></a>
+        <a href="shop-settings.html" class="nav-item active"><i class="fas fa-cog"></i> &nbsp;<span>Shop Settings</span></a>
     </div>
 
     <div class="main-content">
-        <div class="page-header">
-            <div>
-                <h1>My Customer List</h1>
-                <p style="color: #64748b; margin-top: 5px;">ကိုယ့်ဆိုင်မှာ အော်ဒါတင်ဖူးသော Customer များစာရင်း</p>
-            </div>
-            <div id="agentDisplay" class="agent-badge">Agent: Loading...</div>
-        </div>
+        <h1>Shop Settings</h1>
+        <p style="color: #64748b; margin-bottom: 2rem;">သင့်ဆိုင်ရဲ့ နာမည်နဲ့ Logo များကို ဤနေရာတွင် ပြင်ဆင်ပါ</p>
 
-        <div class="table-card">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Customer Name</th>
-                        <th>Phone Number</th>
-                        <th>Address</th>
-                        <th>Registered Date</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="userTableBody">
-                    <tr><td colspan="5" style="text-align:center; padding: 50px; color: #94a3b8;">Loading...</td></tr>
-                </tbody>
-            </table>
+        <div class="settings-card">
+            <div class="form-group">
+                <label>Shop Logo</label>
+                <input type="file" id="logoInput" accept="image/*" onchange="previewLogo(event)">
+                <div class="logo-preview" id="previewBox">
+                    <i class="fas fa-image" style="color: #cbd5e1; font-size: 2rem;"></i>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Shop Name (ဆိုင်အမည်)</label>
+                <input type="text" id="shopName" placeholder="ဥပမာ - Spider Fashion House">
+            </div>
+
+            <div class="form-group">
+                <label>Shop Tagline (ကြော်ငြာစာသား)</label>
+                <input type="text" id="shopTagline" placeholder="ဥပမာ - အကောင်းဆုံး ပစ္စည်းများကို ဈေးနှုန်းချိုသာစွာဖြင့်...">
+            </div>
+
+            <div class="form-group">
+                <label>Viber Number (ဆက်သွယ်ရန်)</label>
+                <input type="text" id="viber" placeholder="09xxxxxxxxx">
+            </div>
+
+            <button class="save-btn" id="saveBtn" onclick="saveSettings()">Save Changes</button>
         </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
 
     <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const currentAgent = urlParams.get('agent') || "kid kid";
-        document.getElementById('agentDisplay').innerText = `Agent: ${currentAgent.toUpperCase()}`;
-
-        document.getElementById('navHome').href = `index.html?agent=${currentAgent}`;
-        document.getElementById('navOrders').href = `orders.html?agent=${currentAgent}`;
-        document.getElementById('navUsers').href = `user_list.html?agent=${currentAgent}`;
-
+        // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyCt1SMVSMqdX3u2viQ-n_BVwp6KgQwDLOM",
             authDomain: "my-shop-admin-cedb1.firebaseapp.com",
             projectId: "my-shop-admin-cedb1",
             storageBucket: "my-shop-admin-cedb1.firebasestorage.app",
-            messagingSenderId: "1073972515996",
             appId: "1:1073972515996:web:28049f5e5977e3a8e74959"
         };
-        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+        const storage = firebase.storage();
 
-        function fetchCustomers() {
-            db.collection("users")
-              .where("agent_name", "==", currentAgent)
-              .onSnapshot((snapshot) => {
-                const tableBody = document.getElementById('userTableBody');
-                
-                if (snapshot.empty) {
-                    tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 30px;">Customer မရှိသေးပါ။</td></tr>';
-                    return;
+        // လက်ရှိ Login ဝင်ထားတဲ့ Agent (LocalStorage ကနေ ခေတ္တယူမယ်၊ ဒါပေမဲ့ Data သိမ်းတာက Firestore မှာပါ)
+        const agentData = JSON.parse(localStorage.getItem('currentAgent'));
+        const currentAgent = agentData ? agentData.name : "kid kid";
+
+        // Firestore ထဲက Data အဟောင်းကို ပြန်ခေါ်ပြမယ်
+        async function loadExistingSettings() {
+            const doc = await db.collection("shop_settings").doc(currentAgent).get();
+            if (doc.exists) {
+                const data = doc.data();
+                document.getElementById('shopName').value = data.shopName || "";
+                document.getElementById('shopTagline').value = data.shopTagline || "";
+                document.getElementById('viber').value = data.viber || "";
+                if(data.logoUrl) {
+                    document.getElementById('previewBox').innerHTML = `<img src="${data.logoUrl}">`;
                 }
-
-                tableBody.innerHTML = "";
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    const date = data.created_at ? new Date(data.created_at.seconds * 1000).toLocaleDateString() : "-";
-                    
-                    tableBody.innerHTML += `
-                        <tr>
-                            <td><strong>${data.name}</strong></td>
-                            <td><a href="tel:${data.phone}" class="phone-link">${data.phone}</a></td>
-                            <td>${data.address || '-'}</td>
-                            <td>${date}</td>
-                            <td>
-                                <a href="tel:${data.phone}" class="btn-call">
-                                    <i class="fas fa-phone-alt"></i> Call Now
-                                </a>
-                            </td>
-                        </tr>`;
-                });
-            }, (error) => {
-                console.error("Error fetching customers: ", error);
-            });
+            }
         }
 
-        window.onload = fetchCustomers;
+        function previewLogo(event) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                document.getElementById('previewBox').innerHTML = `<img src="${reader.result}">`;
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+        async function saveSettings() {
+            const saveBtn = document.getElementById('saveBtn');
+            const file = document.getElementById('logoInput').files[0];
+            const shopName = document.getElementById('shopName').value;
+            const tagline = document.getElementById('shopTagline').value;
+            const viber = document.getElementById('viber').value;
+
+            saveBtn.disabled = true;
+            saveBtn.innerText = "Saving...";
+
+            try {
+                let logoUrl = "";
+                
+                // ၁။ ပုံပါရင် Storage မှာအရင်သိမ်းမယ်
+                if (file) {
+                    const storageRef = storage.ref(`logos/${currentAgent}_logo`);
+                    await storageRef.put(file);
+                    logoUrl = await storageRef.getDownloadURL();
+                }
+
+                // ၂။ Firestore မှာ Data သိမ်းမယ် (ID ကို Agent Name နဲ့ထားမယ်)
+                const updateData = {
+                    shopName: shopName,
+                    shopTagline: tagline,
+                    viber: viber,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                if(logoUrl) updateData.logoUrl = logoUrl;
+
+                await db.collection("shop_settings").doc(currentAgent).set(updateData, { merge: true });
+
+                alert("သိမ်းဆည်းပြီးပါပြီ။");
+            } catch (e) {
+                console.error(e);
+                alert("အမှားအယွင်းရှိနေပါသည်။");
+            }
+            saveBtn.disabled = false;
+            saveBtn.innerText = "Save Changes";
+        }
+
+        window.onload = loadExistingSettings;
     </script>
 </body>
 </html>
