@@ -11,29 +11,9 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f1f5f9; margin: 0; display: flex; }
         
         /* Sidebar */
-        .sidebar { 
-            width: 260px; 
-            background: var(--bg); 
-            color: white; 
-            min-height: 100vh; 
-            padding: 1.5rem 1rem; 
-            position: fixed; 
-            z-index: 9999;
-            box-sizing: border-box;
-        }
+        .sidebar { width: 260px; background: var(--bg); color: white; min-height: 100vh; padding: 1.5rem 1rem; position: fixed; z-index: 9999; box-sizing: border-box; }
         .sidebar h2 { padding-left: 1rem; margin-bottom: 2.5rem; color: #fff; font-weight: 800; display: flex; align-items: center; gap: 12px; font-size: 1.4rem; }
-        .nav-item { 
-            padding: 0.8rem 1rem; 
-            border-radius: 12px; 
-            color: #94a3b8; 
-            text-decoration: none; 
-            margin-bottom: 0.5rem; 
-            display: flex; 
-            align-items: center; 
-            transition: 0.3s; 
-            font-weight: 600; 
-            cursor: pointer;
-        }
+        .nav-item { padding: 0.8rem 1rem; border-radius: 12px; color: #94a3b8; text-decoration: none; margin-bottom: 0.5rem; display: flex; align-items: center; transition: 0.3s; font-weight: 600; cursor: pointer; }
         .nav-item:hover { color: white; background: rgba(255,255,255,0.1); }
         .nav-item.active { background: var(--primary); color: white; }
 
@@ -119,6 +99,7 @@
         const storage = firebase.storage();
 
         let currentAgent = "";
+        let existingLogoUrl = "";
 
         window.onload = function() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -132,7 +113,6 @@
                 return;
             }
 
-            // Sidebar Links Update
             const param = `?agent=${encodeURIComponent(currentAgent)}`;
             document.getElementById('navDash').href = `agent-dashboard.html${param}`;
             document.getElementById('navInv').href = `inventory.html${param}`;
@@ -150,11 +130,12 @@
                     document.getElementById('shopName').value = data.shopName || "";
                     document.getElementById('viberPhone').value = data.viber || "";
                     if(data.logoUrl) {
+                        existingLogoUrl = data.logoUrl;
                         document.getElementById('logoPreview').innerHTML = `<img src="${data.logoUrl}" style="width:100%; height:100%; object-fit:contain;">`;
                     }
                 }
             } catch (err) {
-                console.error("Data ခေါ်ယူရာတွင် အမှားရှိနေပါသည် - ", err);
+                console.error("Data loading error:", err);
             }
         }
 
@@ -178,27 +159,29 @@
             if(!name) return alert("ဆိုင်နာမည် ထည့်ပေးရန် လိုအပ်ပါသည်။");
 
             btn.disabled = true;
-            btn.innerText = "Saving...";
+            btn.innerText = "Processing...";
 
             try {
-                let logoUrl = "";
+                let logoUrl = existingLogoUrl;
+
                 if (file) {
-                    // အေးဂျင့်အလိုက် သီးသန့် folder နဲ့ သိမ်းမယ်
-                    const ref = storage.ref().child(`logos/${currentAgent}/${Date.now()}_${file.name}`);
-                    const uploadTask = await ref.put(file);
-                    logoUrl = await uploadTask.ref.getDownloadURL();
+                    btn.innerText = "Uploading Logo...";
+                    const filePath = `logos/${currentAgent}/${Date.now()}_${file.name}`;
+                    const ref = storage.ref().child(filePath);
+                    
+                    // ပုံတင်ခြင်း
+                    const snapshot = await ref.put(file);
+                    logoUrl = await snapshot.ref.getDownloadURL();
                 }
 
+                btn.innerText = "Updating Database...";
                 const payload = {
                     shopName: name,
                     viber: viber,
                     agent_name: currentAgent,
+                    logoUrl: logoUrl,
                     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                 };
-                
-                if(logoUrl) {
-                    payload.logoUrl = logoUrl;
-                }
 
                 await db.collection("shop_settings").doc(currentAgent).set(payload, { merge: true });
                 
@@ -206,8 +189,8 @@
                 location.reload();
 
             } catch (err) {
-                console.error("Save Error:", err);
-                alert("သိမ်းလို့မရပါ - " + err.message);
+                console.error("Critical Save Error:", err);
+                alert("သိမ်းဆည်းရာတွင် အမှားရှိနေပါသည်- " + err.message + "\n\nFirebase Storage Rules ကို ပြန်စစ်ပေးပါ။");
             } finally {
                 btn.disabled = false;
                 btn.innerText = "Save Changes";
