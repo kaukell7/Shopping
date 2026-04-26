@@ -12,8 +12,8 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; margin: 0; display: flex; }
 
         .sidebar { width: 260px; background: var(--bg); color: white; min-height: 100vh; padding: 2rem 1rem; position: fixed; z-index: 1000; }
-        .sidebar h2 { margin-bottom: 2rem; padding-left: 1rem; }
-        .nav-item { padding: 0.8rem 1rem; border-radius: 8px; color: #cbd5e1; text-decoration: none; margin-bottom: 0.5rem; display: flex; align-items: center; transition: 0.3s; }
+        .sidebar h2 { margin-bottom: 2rem; padding-left: 1rem; font-weight: 800; }
+        .nav-item { padding: 0.8rem 1rem; border-radius: 8px; color: #cbd5e1; text-decoration: none; margin-bottom: 0.5rem; display: flex; align-items: center; transition: 0.3s; font-weight: 600; }
         .nav-item:hover, .nav-item.active { background: var(--primary); color: white; }
 
         .main-content { margin-left: 280px; padding: 2.5rem; width: calc(100% - 280px); }
@@ -44,8 +44,7 @@
 
     <div class="sidebar">
         <h2>Spider.io</h2>
-        <a href="super-admin.html" class="nav-item active"><i class="fas fa-plus-circle"></i> &nbsp; Add Agent</a>
-        <a href="user_list.html" class="nav-item"><i class="fas fa-users"></i> &nbsp; User List</a>
+        <a href="super-admin.html" class="nav-item active"><i class="fas fa-users"></i> &nbsp; User List</a>
         <a href="analytics.html" class="nav-item"><i class="fas fa-chart-line"></i> &nbsp; Analytics</a>
     </div>
 
@@ -129,13 +128,10 @@
                 document.getElementById('shopName').value = '';
                 document.getElementById('contact').value = '';
                 document.getElementById('password').value = '';
-                
-                // အောင်မြင်ရင် user_list.html ကို တိုက်ရိုက်သွားလိုပါက အောက်ပါ code ကို သုံးနိုင်ပါတယ်
-                // window.location.href = "user_list.html";
 
             } catch (error) { 
                 console.error(error);
-                alert("Error: Missing Permissions. Firebase Console တွင် Rules ကို စစ်ဆေးပါ။"); 
+                alert("Error: Firebase Console တွင် Rules ကို စစ်ဆေးပါ။"); 
             }
         }
 
@@ -171,7 +167,7 @@
         }
 
         async function deleteAgent(id) {
-            if(confirm("ဤအေးဂျင့်ကို ဖျက်ပစ်ရန် သေချာပါသလား? ပြန်ယူ၍ မရနိုင်ပါ။")) {
+            if(confirm("ဤအေးဂျင့်ကို ဖျက်ပစ်ရန် သေချာပါသလား?")) {
                 await db.collection("agents").doc(id).delete();
             }
         }
