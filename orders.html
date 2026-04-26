@@ -106,10 +106,9 @@
 
         // Fetch Orders Function
         function fetchOrders() {
-            // "kid kid" အမည်ဖြင့် တင်ထားသော အော်ဒါများကို အချိန်နှင့်တပြေးညီ (Real-time) ဆွဲယူမည်
+            // Index Error မတက်စေရန် orderBy ကို ခေတ္တဖြုတ်ထားပါသည်
             db.collection("orders")
               .where("agent_name", "==", "kid kid")
-              .orderBy("created_at", "desc")
               .onSnapshot((snapshot) => {
                 const tbody = document.getElementById('orderTableBody');
                 
@@ -118,8 +117,11 @@
                     return;
                 }
 
-                tbody.innerHTML = snapshot.docs.map(doc => {
-                    const data = doc.data();
+                // Sorting ကို JavaScript ဘက်မှာ လုပ်ပေးထားပါသည် (Error မတက်စေရန်)
+                const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                docs.sort((a, b) => (b.created_at?.seconds || 0) - (a.created_at?.seconds || 0));
+
+                tbody.innerHTML = docs.map(data => {
                     const statusClass = (data.status === "Pending") ? "status-pending" : "status-completed";
                     
                     return `
@@ -139,7 +141,6 @@
             });
         }
 
-        // စာမျက်နှာပွင့်လာသည်နှင့် Data ဆွဲမည်
         window.onload = fetchOrders;
     </script>
 </body>
