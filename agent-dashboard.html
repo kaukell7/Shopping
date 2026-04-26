@@ -124,6 +124,7 @@
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 
     <script>
         const firebaseConfig = {
@@ -137,7 +138,9 @@
         
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.firestore();
+        const auth = firebase.auth();
 
+        // Security Check: အကောင့်ဝင်မထားလျှင် login page သို့ ပြန်ပို့မည်
         window.onload = function() {
             const agentData = JSON.parse(localStorage.getItem('currentAgent'));
 
@@ -168,15 +171,20 @@
                       document.getElementById('totalOrders').innerText = snapshot.size;
                   });
 
-                // လက်ရှိ Contact အချက်အလက်များကို Firebase မှ ဆွဲယူပြသခြင်း
                 loadContactSettings();
-
             } else {
-                window.location.href = "index.html"; 
+                // localStorage မှာ data မရှိလျှင် login page သို့ ပြန်သွားမည်
+                window.location.href = "login.html"; 
             }
         };
 
-        // Contact Data များ ဆွဲထုတ်ရန်
+        // Auth state ပြောင်းလဲမှုကို စောင့်ကြည့်ရန် (အပိုဆောင်းလုံခြုံရေး)
+        auth.onAuthStateChanged((user) => {
+            if (!user && !localStorage.getItem('currentAgent')) {
+                window.location.href = "login.html";
+            }
+        });
+
         function loadContactSettings() {
             db.collection("shop_settings").doc("contact").get().then((doc) => {
                 if(doc.exists) {
@@ -188,7 +196,6 @@
             });
         }
 
-        // Contact Data များ သိမ်းဆည်းရန်
         function saveContactSettings() {
             const viber = document.getElementById('viberInput').value;
             const telegram = document.getElementById('telegramInput').value;
@@ -206,10 +213,21 @@
             });
         }
 
-        function handleLogout() {
+        async function handleLogout() {
             if(confirm("အကောင့်ထဲက ထွက်မှာ သေချာပါသလား?")) {
-                localStorage.removeItem('currentAgent');
-                window.location.href = "index.html";
+                try {
+                    // Firebase Logout လုပ်ခြင်း
+                    await auth.signOut();
+                    // LocalStorage ရှင်းလင်းခြင်း
+                    localStorage.removeItem('currentAgent');
+                    // Login စာမျက်နှာသို့ ပြန်ပို့ခြင်း
+                    window.location.href = "login.html";
+                } catch (error) {
+                    console.error("Logout Error:", error);
+                    // Error တက်သော်လည်း Local Storage ကို ရှင်းပြီး ပြန်ထုတ်ပေးမည်
+                    localStorage.removeItem('currentAgent');
+                    window.location.href = "login.html";
+                }
             }
         }
     </script>
