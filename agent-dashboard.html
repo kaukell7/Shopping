@@ -10,47 +10,43 @@
         :root { --primary: #4f46e5; --bg: #f1f5f9; --sidebar: #0f172a; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); margin: 0; display: flex; }
         
-        /* Sidebar Style - z-index ထည့်သွင်းထားသည် */
-        .sidebar { 
-            width: 260px; 
-            background: var(--sidebar); 
-            color: white; 
-            min-height: 100vh; 
-            padding: 2rem 1rem; 
-            position: fixed; 
-            z-index: 1000; /* အခြား element များထက် အပေါ်ရောက်နေစေရန် */
-        }
+        /* Sidebar Style */
+        .sidebar { width: 260px; background: var(--sidebar); color: white; min-height: 100vh; padding: 2rem 1rem; position: fixed; z-index: 1000; box-sizing: border-box; }
         .sidebar h2 { padding-left: 1rem; margin-bottom: 2.5rem; color: #fff; font-weight: 800; display: flex; align-items: center; gap: 10px; }
         .nav-item { padding: 0.9rem 1rem; border-radius: 12px; color: #94a3b8; text-decoration: none; margin-bottom: 0.5rem; display: flex; align-items: center; transition: 0.3s; font-weight: 600; cursor: pointer; }
         .nav-item:hover, .nav-item.active { background: var(--primary); color: white; }
         .nav-item i { width: 24px; font-size: 1.1rem; }
 
         /* Main Content */
-        .main-content { margin-left: 260px; padding: 2.5rem; width: calc(100% - 260px); position: relative; }
-        .welcome-card { background: linear-gradient(135deg, #4f46e5, #6366f1); color: white; padding: 2rem; border-radius: 24px; margin-bottom: 2rem; box-shadow: 0 10px 25px rgba(79, 70, 229, 0.15); position: relative; overflow: hidden; }
-        .welcome-card h1 { margin: 0; font-size: 1.8rem; }
+        .main-content { margin-left: 260px; padding: 2.5rem; width: calc(100% - 260px); position: relative; box-sizing: border-box; }
+        .welcome-card { background: linear-gradient(135deg, #4f46e5, #6366f1); color: white; padding: 2.5rem; border-radius: 24px; margin-bottom: 2rem; box-shadow: 0 10px 25px rgba(79, 70, 229, 0.15); }
+        .welcome-card h1 { margin: 0; font-size: 2rem; letter-spacing: -0.5px; }
         
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
-        .card { background: white; padding: 1.5rem; border-radius: 20px; border: 1px solid #e2e8f0; transition: 0.3s; }
-        .card:hover { transform: translateY(-5px); box-shadow: 0 12px 20px -5px rgba(0,0,0,0.05); }
-        .card h3 { margin-top: 0; color: #1e293b; font-size: 1.1rem; display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; }
+        .card { background: white; padding: 1.8rem; border-radius: 22px; border: 1px solid #e2e8f0; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px -10px rgba(0,0,0,0.1); }
+        .card h3 { margin-top: 0; color: #1e293b; font-size: 1.15rem; display: flex; align-items: center; gap: 12px; margin-bottom: 1.8rem; font-weight: 700; }
         
-        .info-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
-        .info-label { color: #64748b; font-weight: 500; }
+        .info-row { display: flex; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid #f1f5f9; align-items: center; }
+        .info-row:last-child { border-bottom: none; }
+        .info-label { color: #64748b; font-weight: 500; font-size: 0.95rem; }
         .info-value { color: #1e293b; font-weight: 700; }
         
-        .status-badge { background: #dcfce7; color: #15803d; padding: 4px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 700; }
+        .status-badge-active { background: #dcfce7; color: #15803d; padding: 6px 14px; border-radius: 12px; font-size: 0.8rem; font-weight: 700; }
 
         /* Order Table */
-        .order-section { margin-top: 2rem; background: white; padding: 1.5rem; border-radius: 20px; border: 1px solid #e2e8f0; }
-        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-        th { text-align: left; background: #f8fafc; padding: 14px; color: #64748b; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
-        td { padding: 14px; border-bottom: 1px solid #f1f5f9; font-size: 0.95rem; color: #1e293b; }
+        .order-section { margin-top: 2rem; background: white; padding: 1.8rem; border-radius: 22px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        table { width: 100%; border-collapse: collapse; margin-top: 1.5rem; }
+        th { text-align: left; background: #f8fafc; padding: 16px; color: #64748b; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; }
+        td { padding: 16px; border-bottom: 1px solid #f1f5f9; font-size: 0.95rem; color: #1e293b; }
+        tr:last-child td { border-bottom: none; }
 
-        @media (max-width: 900px) {
-            .sidebar { width: 80px; padding: 2rem 0.5rem; }
-            .sidebar h2, .nav-item span { display: none; }
-            .main-content { margin-left: 80px; width: calc(100% - 80px); padding: 1.5rem; }
+        .order-status { padding: 5px 12px; border-radius: 10px; font-size: 0.75rem; font-weight: 700; }
+
+        @media (max-width: 1024px) {
+            .sidebar { width: 85px; padding: 2rem 0.5rem; }
+            .sidebar h2 span, .nav-item span { display: none; }
+            .main-content { margin-left: 85px; width: calc(100% - 85px); padding: 1.5rem; }
         }
     </style>
 </head>
@@ -62,13 +58,13 @@
         <a href="inventory.html" class="nav-item"><i class="fas fa-box"></i> <span>Inventory</span></a>
         <a href="user_list.html" class="nav-item"><i class="fas fa-users"></i> <span>Customers</span></a>
         <a href="shop-settings.html" class="nav-item"><i class="fas fa-store"></i> <span>Shop Settings</span></a>
-        <a href="#" onclick="handleLogout()" class="nav-item" style="margin-top: auto; color: #fb7185;"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+        <a href="#" onclick="handleLogout()" class="nav-item" style="margin-top: 5rem; color: #fb7185;"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
     </div>
 
     <div class="main-content">
         <div class="welcome-card">
-            <h1 id="welcomeAgent">Welcome back!</h1>
-            <p style="opacity: 0.9;">သင့်ဆိုင်ရဲ့ အခြေအနေနဲ့ အော်ဒါများကို တစ်နေရာတည်းမှာ စီမံခန့်ခွဲပါ။</p>
+            <h1 id="welcomeAgent">မင်္ဂလာပါ!</h1>
+            <p style="opacity: 0.9; margin-top: 10px;">သင့်ဆိုင်ရဲ့ အခြေအနေနဲ့ အော်ဒါများကို တစ်နေရာတည်းမှာ စီမံခန့်ခွဲပါ။</p>
         </div>
 
         <div class="grid">
@@ -76,21 +72,21 @@
                 <h3><i class="fas fa-shop" style="color: #4f46e5;"></i> Shop Overview</h3>
                 <div class="info-row"><span class="info-label">Shop Name:</span><span class="info-value" id="shopNameDisplay">Loading...</span></div>
                 <div class="info-row"><span class="info-label">Viber:</span><span class="info-value" id="shopContact">-</span></div>
-                <div class="info-row"><span class="info-label">Status:</span><span class="status-badge">Active</span></div>
+                <div class="info-row"><span class="info-label">Status:</span><span class="status-badge-active">Active</span></div>
             </div>
 
             <div class="card">
                 <h3><i class="fas fa-chart-pie" style="color: #10b981;"></i> Quick Stats</h3>
                 <div class="info-row"><span class="info-label">Total Products:</span><span class="info-value" id="totalProducts">0</span></div>
                 <div class="info-row"><span class="info-label">Total Orders:</span><span class="info-value" id="totalOrders">0</span></div>
-                <div class="info-row"><span class="info-label">Last Update:</span><span class="info-value" id="lastUpdate" style="font-size: 0.75rem; color: #94a3b8;">-</span></div>
+                <div class="info-row"><span class="info-label">Last Update:</span><span class="info-value" id="lastUpdate" style="font-size: 0.8rem; color: #94a3b8;">-</span></div>
             </div>
         </div>
 
         <div class="order-section">
             <div style="display: flex; justify-content: space-between; align-items: center;">
-                <h3 style="margin: 0;"><i class="fas fa-shopping-bag"></i> Recent Orders</h3>
-                <a href="#" style="font-size: 0.85rem; color: var(--primary); text-decoration: none; font-weight: 600;">View All</a>
+                <h3 style="margin: 0; color: #1e293b;"><i class="fas fa-shopping-bag" style="color: #f59e0b; margin-right: 10px;"></i> Recent Orders</h3>
+                <a href="#" style="font-size: 0.9rem; color: var(--primary); text-decoration: none; font-weight: 700; background: #eef2ff; padding: 8px 16px; border-radius: 10px;">View All</a>
             </div>
             <table>
                 <thead>
@@ -103,7 +99,7 @@
                     </tr>
                 </thead>
                 <tbody id="orderTableBody">
-                    <tr><td colspan="5" style="text-align:center; padding: 40px; color: #94a3b8;">Loading orders...</td></tr>
+                    <tr><td colspan="5" style="text-align:center; padding: 50px; color: #94a3b8;"><i class="fas fa-spinner fa-spin" style="margin-right: 8px;"></i> Loading orders...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -131,6 +127,7 @@
             const agentName = agentData.name;
             document.getElementById('welcomeAgent').innerText = `မင်္ဂလာပါ ${agentName}!`;
 
+            // Shop Settings Data
             db.collection("shop_settings").doc(agentName).onSnapshot(doc => {
                 if(doc.exists) {
                     const data = doc.data();
@@ -141,26 +138,30 @@
                 }
             });
 
+            // Products Count
             db.collection("products").where("agent_name", "==", agentName).onSnapshot(snap => {
                 document.getElementById('totalProducts').innerText = snap.size;
             });
 
+            // Recent Orders
             db.collection("orders").where("agent_name", "==", agentName).orderBy("created_at", "desc").limit(5).onSnapshot(snap => {
                 document.getElementById('totalOrders').innerText = snap.size;
                 const tbody = document.getElementById('orderTableBody');
                 
                 if (snap.empty) {
-                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 30px;">အော်ဒါမရှိသေးပါ။</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 40px; color: #94a3b8;">လက်ရှိတွင် အော်ဒါမရှိသေးပါ။</td></tr>';
                 } else {
                     tbody.innerHTML = snap.docs.map(doc => {
                         const d = doc.data();
-                        const orderDate = d.created_at ? new Date(d.created_at.seconds * 1000).toLocaleDateString() : '-';
+                        const orderDate = d.created_at ? new Date(d.created_at.seconds * 1000).toLocaleDateString('en-GB') : '-';
+                        let statusColor = d.status === 'Completed' ? 'background:#dcfce7; color:#15803d;' : 'background:#fef3c7; color:#92400e;';
+                        
                         return `
                             <tr>
-                                <td style="font-weight:600;">${d.product_name}</td>
+                                <td style="font-weight:700;">${d.product_name}</td>
                                 <td>${d.customer_name}</td>
                                 <td>${d.customer_phone}</td>
-                                <td><span class="status-badge" style="background:#fef3c7; color:#92400e;">${d.status || 'Pending'}</span></td>
+                                <td><span class="order-status" style="${statusColor}">${d.status || 'Pending'}</span></td>
                                 <td style="color:#64748b; font-size: 0.85rem;">${orderDate}</td>
                             </tr>
                         `;
