@@ -180,6 +180,10 @@
     </div>
 
     <script>
+        // URL မှ Agent နာမည်ကို ယူခြင်း (ဥပမာ: index.html?agent=kid_kid)
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentAgent = urlParams.get('agent') || "kid kid"; // Default အနေဖြင့် kid kid ထားသည်
+
         const firebaseConfig = {
             apiKey: "AIzaSyCt1SMVSMqdX3u2viQ-n_BVwp6KgQwDLOM",
             authDomain: "my-shop-admin-cedb1.firebaseapp.com",
@@ -214,20 +218,17 @@
         function closeModal() { document.getElementById('orderModal').style.display = "none"; }
 
         function fetchShopBranding() {
-            db.collection("shop_settings").doc("branding").onSnapshot((doc) => {
+            // Agent အလိုက် Branding ဆွဲယူခြင်း
+            db.collection("shop_settings").doc(currentAgent).onSnapshot((doc) => {
                 if (doc.exists) {
                     const data = doc.data();
                     if (data.logoUrl) {
                         document.getElementById('logoDisplay').innerHTML = `<img src="${data.logoUrl}" id="shopLogoImg" alt="Logo">`;
                     }
-                    document.getElementById('shopNameDisplay').innerText = data.shopName || "Spider Shop";
+                    document.getElementById('shopNameDisplay').innerText = data.shopName || currentAgent.toUpperCase();
                     document.getElementById('shopTaglineDisplay').innerText = data.shopTagline || "Best Quality Products";
-                }
-            });
-
-            db.collection("shop_settings").doc("contact").onSnapshot((doc) => {
-                if (doc.exists) {
-                    const data = doc.data();
+                    
+                    // Contact Info Update
                     if (data.viber) document.getElementById('viberLink').href = `viber://chat?number=${data.viber}`;
                     if (data.telegram) document.getElementById('telegramLink').href = `https://t.me/${data.telegram}`;
                     if (data.phone) document.getElementById('phoneLink').href = `tel:${data.phone}`;
@@ -236,7 +237,8 @@
         }
 
         function fetchBanner() {
-            db.collection("shop_banners").doc("kid kid").onSnapshot(doc => {
+            // Agent အလိုက် Banner ဆွဲယူခြင်း
+            db.collection("shop_banners").doc(currentAgent).onSnapshot(doc => {
                 if(doc.exists) {
                     const images = doc.data().imageUrls || []; 
                     if(images.length > 0) {
@@ -264,8 +266,10 @@
         }
 
         function fetchProducts() {
-            // orderBy ကို ခေတ္တဖြုတ်ထားသည် (Index Error မတက်စေရန်)
-            db.collection("products").onSnapshot((snapshot) => {
+            // အဓိကပြင်ဆင်ချက်: လက်ရှိ Agent တင်ထားသော ပစ္စည်းများကိုသာ စစ်ထုတ်ယူမည်
+            db.collection("products")
+              .where("agent_name", "==", currentAgent)
+              .onSnapshot((snapshot) => {
                 allProducts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderProducts(allProducts);
             }, (error) => {
@@ -326,14 +330,24 @@
             submitBtn.innerText = "ခေတ္တစောင့်ပါ...";
 
             try {
+                // အော်ဒါတင်သည့်အခါ လက်ရှိ Agent ဆီသို့ရောက်အောင် သိမ်းဆည်းမည်
                 await db.collection("orders").add({
-                    agent_name: "kid kid", 
+                    agent_name: currentAgent, 
                     product_name: selectedProduct,
                     quantity: parseInt(qty) || 1,
                     customer_name: name,
                     customer_phone: phone,
                     address: address, 
                     status: "Pending", 
+                    created_at: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                // Customer အချက်အလက်ကို User List ထဲသို့လည်း ထည့်သွင်းမည်
+                await db.collection("users").add({
+                    agent_name: currentAgent,
+                    name: name,
+                    phone: phone,
+                    address: address,
                     created_at: firebase.firestore.FieldValue.serverTimestamp()
                 });
                 
