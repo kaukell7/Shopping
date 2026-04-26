@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop Settings - Spider.io</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --primary: #4f46e5; --bg: #0f172a; --card: #ffffff; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f1f5f9; margin: 0; display: flex; }
+        
+        /* Sidebar */
+        .sidebar { width: 260px; background: var(--bg); color: white; min-height: 100vh; padding: 1.5rem 1rem; position: fixed; }
+        .nav-item { padding: 0.8rem 1rem; border-radius: 12px; color: #94a3b8; text-decoration: none; margin-bottom: 0.5rem; display: flex; align-items: center; transition: 0.3s; font-weight: 600; }
+        .nav-item.active { background: var(--primary); color: white; }
+
+        /* Main */
+        .main-content { margin-left: 260px; padding: 2.5rem; width: calc(100% - 260px); }
+        .settings-container { max-width: 700px; background: var(--card); padding: 2rem; border-radius: 24px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 700; color: #1e293b; }
+        .form-group input { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 12px; outline: none; transition: 0.3s; font-family: inherit; box-sizing: border-box; }
+        .form-group input:focus { border-color: var(--primary); ring: 2px solid #c7d2fe; }
+        
+        /* Logo Preview */
+        .logo-upload-section { display: flex; align-items: center; gap: 20px; background: #f8fafc; padding: 1.5rem; border-radius: 16px; border: 2px dashed #e2e8f0; }
+        .preview-box { width: 100px; height: 100px; background: white; border-radius: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1px solid #e2e8f0; }
+        .preview-box img { width: 100%; height: 100%; object-fit: contain; }
+
+        .save-btn { background: var(--primary); color: white; border: none; padding: 14px 28px; border-radius: 12px; cursor: pointer; font-weight: 700; width: 100%; font-size: 1rem; margin-top: 1rem; }
+        .save-btn:hover { opacity: 0.9; }
+
+        @media (max-width: 900px) {
+            .sidebar { width: 70px; padding: 1.5rem 0.5rem; }
+            .sidebar span { display: none; }
+            .main-content { margin-left: 70px; width: calc(100% - 70px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div style="font-size: 1.5rem; font-weight: 800; margin-bottom: 2rem; padding-left: 1rem;"><i class="fas fa-spider"></i> <span>Spider.io</span></div>
+        <a href="agent-dashboard.html" class="nav-item"><i class="fas fa-th-large"></i> &nbsp;<span>Dashboard</span></a>
+        <a href="inventory.html" class="nav-item"><i class="fas fa-box"></i> &nbsp;<span>Inventory</span></a>
+        <a href="user_list.html" class="nav-item"><i class="fas fa-users"></i> &nbsp;<span>Customers</span></a>
+        <a href="shop-settings.html" class="nav-item active"><i class="fas fa-store"></i> &nbsp;<span>Shop Settings</span></a>
+    </div>
+
+    <div class="main-content">
+        <h1 style="color: #0f172a;">Shop Customization</h1>
+        <p style="color: #64748b; margin-bottom: 2rem;">သင့်ဆိုင်ရဲ့ Logo နဲ့ အချက်အလက်တွေကို ဒီမှာပြင်ဆင်နိုင်ပါတယ်</p>
+
+        <div class="settings-container">
+            <div class="form-group">
+                <label>Shop Logo</label>
+                <div class="logo-upload-section">
+                    <div class="preview-box" id="logoPreview">
+                        <i class="fas fa-image" style="color: #cbd5e1; font-size: 2rem;"></i>
+                    </div>
+                    <div>
+                        <input type="file" id="logoFile" accept="image/*" onchange="handlePreview(event)">
+                        <p style="font-size: 12px; color: #94a3b8; margin-top: 8px;">Square size ပုံလေးတွေက ပိုလှပါတယ်</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Shop Name (ဆိုင်နာမည်)</label>
+                <input type="text" id="shopName" placeholder="ဥပမာ - Spider Fashion House">
+            </div>
+
+            <div class="form-group">
+                <label>Viber Number (ဆက်သွယ်ရန်ဖုန်း)</label>
+                <input type="text" id="viberPhone" placeholder="09xxxxxxxxx">
+            </div>
+
+            <button class="save-btn" id="saveBtn" onclick="saveToFirebase()">Save Changes</button>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCt1SMVSMqdX3u2viQ-n_BVwp6KgQwDLOM",
+            authDomain: "my-shop-admin-cedb1.firebaseapp.com",
+            projectId: "my-shop-admin-cedb1",
+            storageBucket: "my-shop-admin-cedb1.firebasestorage.app",
+            appId: "1:1073972515996:web:28049f5e5977e3a8e74959"
+        };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+
+        const agentData = JSON.parse(localStorage.getItem('currentAgent'));
+        const currentAgent = agentData ? agentData.name : "kid kid";
+
+        // ဒေတာအဟောင်းတွေရှိရင် ပြန်ခေါ်ပြမယ်
+        async function loadOldSettings() {
+            const doc = await db.collection("shop_settings").doc(currentAgent).get();
+            if (doc.exists) {
+                const data = doc.data();
+                document.getElementById('shopName').value = data.shopName || "";
+                document.getElementById('viberPhone').value = data.viber || "";
+                if(data.logoUrl) {
+                    document.getElementById('logoPreview').innerHTML = `<img src="${data.logoUrl}">`;
+                }
+            }
+        }
+
+        function handlePreview(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById('logoPreview').innerHTML = `<img src="${e.target.result}">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        async function saveToFirebase() {
+            const btn = document.getElementById('saveBtn');
+            const file = document.getElementById('logoFile').files[0];
+            const name = document.getElementById('shopName').value;
+            const viber = document.getElementById('viberPhone').value;
+
+            btn.disabled = true;
+            btn.innerText = "Saving...";
+
+            try {
+                let logoUrl = "";
+                if (file) {
+                    const ref = storage.ref(`logos/${currentAgent}_logo`);
+                    await ref.put(file);
+                    logoUrl = await ref.getDownloadURL();
+                }
+
+                const payload = {
+                    shopName: name,
+                    viber: viber,
+                    agent_name: currentAgent
+                };
+                if(logoUrl) payload.logoUrl = logoUrl;
+
+                await db.collection("shop_settings").doc(currentAgent).set(payload, { merge: true });
+                alert("Shop updated successfully!");
+            } catch (err) {
+                alert("Error saving data.");
+            }
+            btn.disabled = false;
+            btn.innerText = "Save Changes";
+        }
+
+        window.onload = loadOldSettings;
+    </script>
+</body>
+</html>
