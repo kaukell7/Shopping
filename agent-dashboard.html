@@ -10,15 +10,23 @@
         :root { --primary: #4f46e5; --bg: #f1f5f9; --sidebar: #0f172a; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); margin: 0; display: flex; }
         
-        /* Sidebar Style */
-        .sidebar { width: 260px; background: var(--sidebar); color: white; min-height: 100vh; padding: 2rem 1rem; position: fixed; z-index: 1000; }
+        /* Sidebar Style - z-index ထည့်သွင်းထားသည် */
+        .sidebar { 
+            width: 260px; 
+            background: var(--sidebar); 
+            color: white; 
+            min-height: 100vh; 
+            padding: 2rem 1rem; 
+            position: fixed; 
+            z-index: 1000; /* အခြား element များထက် အပေါ်ရောက်နေစေရန် */
+        }
         .sidebar h2 { padding-left: 1rem; margin-bottom: 2.5rem; color: #fff; font-weight: 800; display: flex; align-items: center; gap: 10px; }
-        .nav-item { padding: 0.9rem 1rem; border-radius: 12px; color: #94a3b8; text-decoration: none; margin-bottom: 0.5rem; display: flex; align-items: center; transition: 0.3s; font-weight: 600; }
+        .nav-item { padding: 0.9rem 1rem; border-radius: 12px; color: #94a3b8; text-decoration: none; margin-bottom: 0.5rem; display: flex; align-items: center; transition: 0.3s; font-weight: 600; cursor: pointer; }
         .nav-item:hover, .nav-item.active { background: var(--primary); color: white; }
         .nav-item i { width: 24px; font-size: 1.1rem; }
 
         /* Main Content */
-        .main-content { margin-left: 280px; padding: 2.5rem; width: calc(100% - 280px); }
+        .main-content { margin-left: 260px; padding: 2.5rem; width: calc(100% - 260px); position: relative; }
         .welcome-card { background: linear-gradient(135deg, #4f46e5, #6366f1); color: white; padding: 2rem; border-radius: 24px; margin-bottom: 2rem; box-shadow: 0 10px 25px rgba(79, 70, 229, 0.15); position: relative; overflow: hidden; }
         .welcome-card h1 { margin: 0; font-size: 1.8rem; }
         
@@ -123,7 +131,6 @@
             const agentName = agentData.name;
             document.getElementById('welcomeAgent').innerText = `မင်္ဂလာပါ ${agentName}!`;
 
-            // Load Shop Settings (နာမည်နဲ့ ဖုန်းကို settings ထဲက ယူမယ်)
             db.collection("shop_settings").doc(agentName).onSnapshot(doc => {
                 if(doc.exists) {
                     const data = doc.data();
@@ -134,12 +141,10 @@
                 }
             });
 
-            // Count Products
             db.collection("products").where("agent_name", "==", agentName).onSnapshot(snap => {
                 document.getElementById('totalProducts').innerText = snap.size;
             });
 
-            // Load Orders
             db.collection("orders").where("agent_name", "==", agentName).orderBy("created_at", "desc").limit(5).onSnapshot(snap => {
                 document.getElementById('totalOrders').innerText = snap.size;
                 const tbody = document.getElementById('orderTableBody');
