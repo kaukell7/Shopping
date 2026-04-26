@@ -9,13 +9,25 @@
     <style>
         :root { --primary: #4f46e5; --bg: #f8fafc; --sidebar: #1e293b; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); margin: 0; display: flex; }
-        .sidebar { width: 260px; background: var(--sidebar); color: white; min-height: 100vh; padding: 2rem 1rem; position: fixed; z-index: 1000; }
+        
+        /* Sidebar Style - Fixed & Z-index added */
+        .sidebar { 
+            width: 260px; 
+            background: var(--sidebar); 
+            color: white; 
+            min-height: 100vh; 
+            padding: 2rem 1rem; 
+            position: fixed; 
+            z-index: 1000; 
+            box-sizing: border-box;
+        }
         .sidebar h2 { padding-left: 1rem; margin-bottom: 2rem; color: #fff; font-weight: 800; }
-        .nav-item { padding: 0.8rem 1rem; border-radius: 8px; color: #cbd5e1; text-decoration: none; margin-bottom: 0.5rem; display: flex; align-items: center; transition: 0.3s; }
+        .nav-item { padding: 0.8rem 1rem; border-radius: 8px; color: #cbd5e1; text-decoration: none; margin-bottom: 0.5rem; display: flex; align-items: center; transition: 0.3s; cursor: pointer; }
         .nav-item:hover, .nav-item.active { background: var(--primary); color: white; }
         .nav-item i { width: 20px; margin-right: 10px; }
         
-        .main-content { margin-left: 280px; padding: 2.5rem; width: calc(100% - 280px); }
+        /* Main Content Adjustments */
+        .main-content { margin-left: 260px; padding: 2.5rem; width: calc(100% - 260px); box-sizing: border-box; }
         .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
         
         .card { background: white; padding: 2rem; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
@@ -25,14 +37,12 @@
         input:focus { border-color: var(--primary); }
         
         .btn-create { background: var(--primary); color: white; padding: 0.9rem; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; width: 100%; margin-top: 10px; }
-        .btn-create:disabled { background: #94a3b8; }
+        .btn-create:disabled { background: #94a3b8; cursor: not-allowed; }
         .readonly-input { background-color: #f1f5f9; font-weight: 700; color: var(--primary); }
         
-        /* Preview Box */
         .img-preview-box { width: 100%; height: 150px; border: 2px dashed #e2e8f0; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; overflow: hidden; background: #f8fafc; }
         .img-preview-box img { max-height: 100%; max-width: 100%; object-fit: contain; }
 
-        /* Table Style */
         .table-card { background: white; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; }
         table { width: 100%; border-collapse: collapse; }
         th { text-align: left; background: #f8fafc; padding: 12px; color: #64748b; font-size: 0.8rem; text-transform: uppercase; }
@@ -42,9 +52,9 @@
         .btn-delete:hover { transform: scale(1.2); }
 
         @media (max-width: 1024px) { 
-            .sidebar { width: 70px; padding: 2rem 0.5rem; }
+            .sidebar { width: 80px; padding: 2rem 0.5rem; }
             .sidebar h2, .sidebar span { display: none; }
-            .main-content { margin-left: 90px; width: calc(100% - 90px); padding: 1.5rem; }
+            .main-content { margin-left: 80px; width: calc(100% - 80px); padding: 1.5rem; }
             .grid-container { grid-template-columns: 1fr; } 
         }
     </style>
@@ -146,7 +156,6 @@
         if (!agentData) window.location.href = "login.html";
         const agentName = agentData.name;
 
-        // Image Preview Function
         function previewImage(event) {
             const container = document.getElementById('previewContainer');
             const file = event.target.files[0];
@@ -165,7 +174,6 @@
             document.getElementById('finalPrice').value = Math.round(original - (original * percent / 100));
         }
 
-        // Real-time Fetch Products
         function fetchMyProducts() {
             db.collection("products")
               .where("agent_name", "==", agentName)
@@ -181,7 +189,7 @@
                     return `<tr>
                         <td><img src="${p.imageUrl || 'https://via.placeholder.com/50'}" class="product-img"></td>
                         <td><strong>${p.name}</strong><br><small style="color:#94a3b8">${p.category}</small></td>
-                        <td>${p.price.toLocaleString()} Ks</td>
+                        <td>${(p.price || 0).toLocaleString()} Ks</td>
                         <td><button class="btn-delete" onclick="deleteProduct('${doc.id}')"><i class="fas fa-trash"></i></button></td>
                     </tr>`;
                 }).join('');
@@ -191,7 +199,6 @@
             });
         }
 
-        // Add Product with Image Upload
         document.getElementById('productForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('uploadBtn');
@@ -203,7 +210,6 @@
             btn.innerText = "Uploading Image...";
 
             try {
-                // 1. Upload Image to Firebase Storage
                 const fileName = `products/${agentName}_${Date.now()}`;
                 const storageRef = storage.ref().child(fileName);
                 const snapshot = await storageRef.put(file);
@@ -211,7 +217,6 @@
 
                 btn.innerText = "Saving Data...";
 
-                // 2. Save Data to Firestore
                 await db.collection("products").add({
                     name: document.getElementById('pName').value,
                     original_price: parseInt(document.getElementById('originalPrice').value),
