@@ -206,8 +206,9 @@
 
         function closeModal() { document.getElementById('orderModal').style.display = "none"; }
 
-        // Fetch Branding
+        // Fetch Branding & Contacts
         function fetchShopBranding() {
+            // Branding data
             db.collection("shop_settings").doc("branding").onSnapshot((doc) => {
                 if (doc.exists) {
                     const data = doc.data();
@@ -218,10 +219,21 @@
                     document.getElementById('shopTaglineDisplay').innerText = data.shopTagline || "Best Quality Products";
                 }
             });
+
+            // Contact data for floating chat links
+            db.collection("shop_settings").doc("contact").onSnapshot((doc) => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    if (data.viber) document.getElementById('viberLink').href = `viber://chat?number=${data.viber}`;
+                    if (data.telegram) document.getElementById('telegramLink').href = `https://t.me/${data.telegram}`;
+                    if (data.phone) document.getElementById('phoneLink').href = `tel:${data.phone}`;
+                }
+            });
         }
 
-        // Fetch Banners
+        // Fetch Banners (Updated Document ID based on your dashboard)
         function fetchBanner() {
+            // Dashboard မှာ ဆိုင်နာမည်က "kid kid" ဖြစ်နေတာကြောင့် အဲ့ဒီအမည်နဲ့ Banner ကိုရှာပါတယ်
             db.collection("shop_banners").doc("kid kid").onSnapshot(doc => {
                 if(doc.exists) {
                     const images = doc.data().imageUrls || []; 
@@ -254,6 +266,9 @@
             db.collection("products").orderBy("created_at", "desc").onSnapshot((snapshot) => {
                 allProducts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderProducts(allProducts);
+            }, (error) => {
+                console.error("Firebase Error:", error);
+                document.getElementById('productGrid').innerHTML = `<p style="text-align:center; grid-column: 1/-1; padding: 50px;">Error: ${error.message}</p>`;
             });
         }
 
@@ -270,8 +285,8 @@
                     <div class="content">
                         <div class="product-name">${p.name}</div>
                         <div class="price-box">
-                            ${p.original_price > p.price ? `<span class="original-price">${p.original_price.toLocaleString()} Ks</span>` : ''}
-                            <span class="discount-price">${p.price.toLocaleString()} Ks</span>
+                            ${(p.original_price && p.original_price > p.price) ? `<span class="original-price">${Number(p.original_price).toLocaleString()} Ks</span>` : ''}
+                            <span class="discount-price">${Number(p.price).toLocaleString()} Ks</span>
                         </div>
                         <button class="buy-btn" onclick="openOrderModal('${p.name}')">ဝယ်ယူမည်</button>
                     </div>
@@ -281,3 +296,50 @@
 
         function searchProducts() {
             const term = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = allProducts.filter(p => p.name.toLowerCase().includes(term));
+            renderProducts(filtered);
+        }
+
+        function filterProducts(category, btn) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            if (category === 'all') {
+                renderProducts(allProducts);
+            } else {
+                const filtered = allProducts.filter(p => p.category === category);
+                renderProducts(filtered);
+            }
+        }
+
+        async function submitOrder() {
+            const name = document.getElementById('userName').value;
+            const phone = document.getElementById('userPhone').value;
+            const address = document.getElementById('userAddress').value;
+
+            if(!name || !phone || !address) return alert("အချက်အလက်စုံလင်စွာ ဖြည့်ပေးပါ");
+
+            try {
+                await db.collection("orders").add({
+                    product_name: selectedProduct,
+                    customer_name: name,
+                    customer_phone: phone,
+                    customer_address: address,
+                    status: "pending",
+                    created_at: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                alert("မှာယူမှု အောင်မြင်ပါသည်။");
+                closeModal();
+            } catch (e) {
+                alert("အမှားတစ်ခု ဖြစ်သွားပါသည်");
+            }
+        }
+
+        // Initialize
+        window.onload = () => {
+            fetchShopBranding();
+            fetchBanner();
+            fetchProducts();
+        };
+    </script>
+</body>
+</html>
