@@ -14,7 +14,7 @@
         
         .main-layout { display: flex; max-width: 1400px; margin: 0 auto; padding: 0 15px; gap: 30px; }
         
-        /* Ad Banners - Styling */
+        /* Ad Banners */
         .sidebar-ad { width: 180px; flex-shrink: 0; padding-top: 100px; }
         .ad-box { 
             width: 100%; height: 600px; background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%); 
@@ -70,7 +70,7 @@
         .card { background: white; border-radius: 24px; overflow: hidden; border: 1px solid #e2e8f0; transition: 0.4s; position: relative; }
         .card:hover { transform: translateY(-10px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
         
-        .img-wrapper { width: 100%; height: 280px; overflow: hidden; background: #f1f5f9; }
+        .img-wrapper { width: 100%; height: 280px; overflow: hidden; background: #f1f5f9; cursor: pointer; }
         .card img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
         .card:hover img { scale: 1.05; }
         
@@ -92,24 +92,25 @@
 
         /* Modal */
         .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(8px); }
-        .modal-content { background: white; padding: 40px; border-radius: 32px; width: 100%; max-width: 450px; position: relative; animation: slideUp 0.4s ease-out; }
+        .modal-content { background: white; padding: 30px; border-radius: 32px; width: 100%; max-width: 450px; position: relative; animation: slideUp 0.4s ease-out; }
         @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         
         .modal-content h3 { font-size: 1.5rem; margin-bottom: 20px; color: var(--secondary); }
         .modal-content input, .modal-content textarea { 
-            width: 100%; padding: 15px; margin-top: 15px; border-radius: 14px; 
-            border: 1px solid #e2e8f0; background: #f8fafc; font-family: inherit; font-size: 1rem;
+            width: 100%; padding: 14px; margin-top: 15px; border-radius: 14px; 
+            border: 1px solid #e2e8f0; background: #f8fafc; font-family: inherit; font-size: 1rem; outline: none;
         }
-        .close { position: absolute; right: 25px; top: 25px; font-size: 24px; cursor: pointer; color: #94a3b8; transition: 0.3s; }
-        .close:hover { color: var(--secondary); }
+        .modal-content input:focus { border-color: var(--primary); background: white; }
+        .close { position: absolute; right: 25px; top: 25px; font-size: 24px; cursor: pointer; color: #94a3b8; }
 
-        .chat-btn { position: fixed; bottom: 30px; right: 30px; width: 70px; height: 70px; background: #2563eb; color: white; border-radius: 24px; display: flex; align-items: center; justify-content: center; font-size: 28px; border: none; cursor: pointer; z-index: 999; box-shadow: 0 15px 30px rgba(37, 99, 235, 0.3); transition: 0.3s; }
-        .chat-btn:hover { transform: scale(1.1) rotate(5deg); }
+        .chat-btn { position: fixed; bottom: 30px; right: 30px; width: 65px; height: 65px; background: #2563eb; color: white; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 28px; border: none; cursor: pointer; z-index: 999; box-shadow: 0 10px 20px rgba(37,99,235,0.3); transition: 0.3s; }
+        .chat-btn:hover { transform: scale(1.1); }
 
         @media (max-width: 900px) { 
             .sidebar-ad { display: none; } 
             .header { padding: 40px 0 20px; }
             .shop-name { font-size: 2rem; }
+            .main-layout { padding: 0 10px; }
         }
     </style>
 </head>
@@ -138,7 +139,7 @@
                 </div>
                 <div class="search-box">
                     <i class="fas fa-search"></i>
-                    <input type="text" id="searchInput" placeholder="ရှာဖွေလိုသည့် ပစ္စည်းအမည် ရိုက်ထည့်ပါ..." onkeyup="handleSearch()">
+                    <input type="text" id="searchInput" placeholder="ရှာဖွေလိုသည့် ပစ္စည်းအမည်..." onkeyup="handleSearch()">
                 </div>
             </div>
 
@@ -154,16 +155,16 @@
     <div id="orderModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
-            <h3 id="modalTitle">မှာယူမည့် ပစ္စည်း</h3>
-            <p id="selectedItemName" style="color: #64748b; font-weight: 600; margin-bottom: 10px;"></p>
+            <h3 id="modalTitle">Order Details</h3>
+            <p id="selectedItemName" style="color: var(--primary); font-weight: 700; font-size: 1.1rem;"></p>
             
             <input type="text" id="cusName" placeholder="သင့်နာမည်">
             <input type="text" id="cusPhone" placeholder="ဖုန်းနံပါတ်">
             <div style="margin-top: 15px;">
-                <label style="font-size: 0.85rem; font-weight: 700; color: #64748b;">အရေအတွက်</label>
+                <label style="font-size: 0.85rem; font-weight: 700; color: #64748b; margin-left: 5px;">အရေအတွက် (Quantity)</label>
                 <input type="number" id="cusQty" value="1" min="1">
             </div>
-            <textarea id="cusAddress" rows="3" placeholder="လိပ်စာ (မြို့နယ်/ရပ်ကွက်)"></textarea>
+            <textarea id="cusAddress" rows="3" placeholder="လိပ်စာ (မြို့နယ် နှင့် ရပ်ကွက်)"></textarea>
             
             <button class="buy-btn" style="background:#10b981;" id="submitBtn" onclick="sendOrder()">
                 <i class="fas fa-check-circle"></i> Confirm Order
@@ -175,10 +176,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
     <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        // Default agent ကို "hein" (သို့) "kid kid" လို့ သတ်မှတ်နိုင်ပါတယ်
-        const agentName = urlParams.get('agent') || "kid kid"; 
-
         const firebaseConfig = {
             apiKey: "AIzaSyCt1SMVSMqdX3u2viQ-n_BVwp6KgQwDLOM",
             authDomain: "my-shop-admin-cedb1.firebaseapp.com",
@@ -189,17 +186,20 @@
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
+        const urlParams = new URLSearchParams(window.location.search);
+        // URL မှာ ?agent=နာမည် မပါရင် 'spider' ကို default ထားမယ်
+        const agentName = urlParams.get('agent') || "spider"; 
+
         let allProducts = [];
         let currentItem = null;
         let agentViber = "";
 
-        // ၁။ ဆိုင် Settings (Logo, Name, Tagline)
+        // ၁။ ဆိုင် Settings (Logo, Name, Viber)
         function loadShopSettings() {
             db.collection("shop_settings").doc(agentName).onSnapshot(doc => {
                 if(doc.exists) {
                     const data = doc.data();
-                    document.getElementById('shopNameDisplay').innerText = data.shopName || agentName;
-                    if(data.shopTagline) document.getElementById('taglineDisplay').innerText = "🔥 " + data.shopTagline;
+                    document.getElementById('shopNameDisplay').innerText = data.shopName || agentName.toUpperCase();
                     if(data.logoUrl) {
                         document.getElementById('logoArea').innerHTML = `<img src="${data.logoUrl}" alt="logo">`;
                     }
@@ -208,26 +208,35 @@
             });
         }
 
-        // ၂။ ပစ္စည်းများ
+        // ၂။ ပစ္စည်းများ ခေါ်ယူခြင်း
         function loadProducts() {
-            db.collection("products").where("agent_name", "==", agentName)
+            db.collection("products")
+              .where("agent_name", "==", agentName)
+              .orderBy("createdAt", "desc") // ပစ္စည်းသစ် အပေါ်ဆုံးထားမယ်
               .onSnapshot(snapshot => {
                   allProducts = snapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
                   renderGrid(allProducts);
+              }, err => {
+                  console.error("Error loading products:", err);
+                  // error တက်ရင် (ဥပမာ composite index မရှိရင်) orderBy မပါဘဲ ပြန်ခေါ်မယ်
+                  db.collection("products").where("agent_name", "==", agentName).onSnapshot(s => {
+                      allProducts = s.docs.map(doc => ({id: doc.id, ...doc.data()}));
+                      renderGrid(allProducts);
+                  });
               });
         }
 
         function renderGrid(items) {
             const grid = document.getElementById('productGrid');
             if(items.length === 0) {
-                grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:100px; color:#94a3b8;"><i class="fas fa-box-open" style="font-size:3rem; margin-bottom:15px;"></i><p>ပစ္စည်းများ မရှိသေးပါ။</p></div>';
+                grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:80px; color:#94a3b8;"><i class="fas fa-box-open" style="font-size:3rem; margin-bottom:15px;"></i><p>ပစ္စည်းများ မရှိသေးပါ။</p></div>';
                 return;
             }
             grid.innerHTML = items.map(p => `
                 <div class="card">
                     ${p.discount_percent > 0 ? `<div class="discount-badge">${p.discount_percent}% OFF</div>` : ''}
-                    <div class="img-wrapper">
-                        <img src="${p.imageUrl}" loading="lazy" onclick="window.open('${p.imageUrl}', '_blank')">
+                    <div class="img-wrapper" onclick="window.open('${p.imageUrl}', '_blank')">
+                        <img src="${p.imageUrl}" alt="${p.name}" loading="lazy">
                     </div>
                     <div class="p-info">
                         <div class="p-cat">${p.category || 'General'}</div>
@@ -265,17 +274,18 @@
 
         function closeModal() { document.getElementById('orderModal').style.display = 'none'; }
 
+        // ၃။ Order တင်ခြင်း
         async function sendOrder() {
             const name = document.getElementById('cusName').value.trim();
             const phone = document.getElementById('cusPhone').value.trim();
             const address = document.getElementById('cusAddress').value.trim();
             const qty = document.getElementById('cusQty').value;
 
-            if(!name || !phone || !address) return alert("အချက်အလက်ပြည့်စုံစွာဖြည့်ပါ");
+            if(!name || !phone || !address) return alert("အချက်အလက်များကို ပြည့်စုံစွာ ဖြည့်စွက်ပေးပါ။");
 
             const btn = document.getElementById('submitBtn');
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Processing...';
 
             try {
                 await db.collection("orders").add({
@@ -288,18 +298,28 @@
                     status: "Pending",
                     created_at: firebase.firestore.FieldValue.serverTimestamp()
                 });
-                alert("မှာယူမှု အောင်မြင်ပါသည်။ ဆိုင်မှ ပြန်လည်ဆက်သွယ်ပေးပါမည်။");
+                
+                alert("လူကြီးမင်း၏ မှာယူမှု အောင်မြင်ပါသည်။ ဆိုင်မှ မကြာမီ ပြန်လည်ဆက်သွယ်ပေးပါမည်။");
                 closeModal();
+                // form clear လုပ်မယ်
+                document.getElementById('cusName').value = "";
+                document.getElementById('cusPhone').value = "";
+                document.getElementById('cusAddress').value = "";
+                document.getElementById('cusQty').value = "1";
+                
             } catch(e) { 
-                alert("အမှားအယွင်းရှိပါသည်။: " + e.message); 
+                alert("မှာယူမှု မအောင်မြင်ပါ။ နောက်မှ ပြန်လည် ကြိုးစားကြည့်ပါ။");
+                console.error(e);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-check-circle"></i> Confirm Order';
             }
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-check-circle"></i> Confirm Order';
         }
 
         function openContact() {
             if(agentViber) {
-                window.open(`viber://add?number=${agentViber}`, '_blank');
+                // Viber connection
+                window.location.href = "viber://chat?number=" + agentViber.replace('+', '').replace(/\s/g, '');
             } else {
                 alert("ဆိုင်၏ Viber နံပါတ် မရှိသေးပါ။");
             }
@@ -309,6 +329,12 @@
             loadShopSettings();
             loadProducts();
         };
+
+        // Modal အပြင်ဘက်ကို နှိပ်ရင် ပိတ်ဖို့
+        window.onclick = (event) => {
+            const modal = document.getElementById('orderModal');
+            if (event.target == modal) closeModal();
+        }
     </script>
 </body>
 </html>
