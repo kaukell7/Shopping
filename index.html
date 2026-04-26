@@ -210,7 +210,7 @@
         function openOrderModal(name) {
             selectedProduct = name;
             document.getElementById('modalProductTitle').innerText = name + " မှာယူမည်";
-            document.getElementById('orderQty').value = 1; // Reset quantity to 1
+            document.getElementById('orderQty').value = 1; 
             document.getElementById('orderModal').style.display = "flex";
         }
 
@@ -316,31 +316,42 @@
             }
         }
 
-        // Updated submitOrder to include Quantity
+        // Dashboard နှင့် ကိုက်ညီအောင် ပြင်ဆင်ထားသော submitOrder
         async function submitOrder() {
-            const name = document.getElementById('userName').value;
-            const phone = document.getElementById('userPhone').value;
-            const address = document.getElementById('userAddress').value;
+            const name = document.getElementById('userName').value.trim();
+            const phone = document.getElementById('userPhone').value.trim();
+            const address = document.getElementById('userAddress').value.trim();
             const qty = document.getElementById('orderQty').value;
 
             if(!name || !phone || !address || !qty) return alert("အချက်အလက်စုံလင်စွာ ဖြည့်ပေးပါ");
 
+            const submitBtn = document.getElementById('orderSubmitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerText = "ခေတ္တစောင့်ပါ...";
+
             try {
                 await db.collection("orders").add({
+                    agent_name: "kid kid", // Dashboard filter အတွက် အမည်ကို တိုက်ရိုက်ထည့်ပါသည်
                     product_name: selectedProduct,
+                    quantity: parseInt(qty),
                     customer_name: name,
                     customer_phone: phone,
-                    customer_address: address,
-                    quantity: parseInt(qty), // အရေအတွက်အား number အဖြစ်သိမ်းဆည်းခြင်း
-                    status: "pending",
-                    agent_name: "kid kid", // Dashboard မှာကြည့်ဖို့ agent အမည်ထည့်ပေးထားပါတယ်
+                    address: address, // Dashboard က 'address' field ကို သုံးထားပါသည်
+                    status: "Pending", // Dashboard မှာ အရောင်ပေါ်ရန် စာလုံးအကြီးသုံးပါသည်
                     created_at: firebase.firestore.FieldValue.serverTimestamp()
                 });
                 alert("မှာယူမှု အောင်မြင်ပါသည်။");
                 closeModal();
+                // Form reset လုပ်ခြင်း
+                document.getElementById('userName').value = "";
+                document.getElementById('userPhone').value = "";
+                document.getElementById('userAddress').value = "";
             } catch (e) {
                 console.error(e);
                 alert("အမှားတစ်ခု ဖြစ်သွားပါသည်");
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = "အော်ဒါတင်မည်";
             }
         }
 
