@@ -10,7 +10,7 @@
         :root { --primary: #4f46e5; --bg: #0f172a; --card: #ffffff; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f1f5f9; margin: 0; display: flex; }
         
-        /* Sidebar - z-index ထည့်ပြီး အပေါ်တင်ထားသည် */
+        /* Sidebar */
         .sidebar { 
             width: 260px; 
             background: var(--bg); 
@@ -18,8 +18,10 @@
             min-height: 100vh; 
             padding: 1.5rem 1rem; 
             position: fixed; 
-            z-index: 9999; /* အခြား element များထက် အပေါ်ရောက်နေစေရန် */
+            z-index: 9999;
+            box-sizing: border-box;
         }
+        .sidebar h2 { padding-left: 1rem; margin-bottom: 2.5rem; color: #fff; font-weight: 800; display: flex; align-items: center; gap: 12px; font-size: 1.4rem; }
         .nav-item { 
             padding: 0.8rem 1rem; 
             border-radius: 12px; 
@@ -36,7 +38,7 @@
         .nav-item.active { background: var(--primary); color: white; }
 
         /* Main Content */
-        .main-content { margin-left: 260px; padding: 2.5rem; width: calc(100% - 260px); position: relative; }
+        .main-content { margin-left: 260px; padding: 2.5rem; width: calc(100% - 260px); position: relative; box-sizing: border-box; }
         .settings-container { max-width: 700px; background: var(--card); padding: 2rem; border-radius: 24px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         
         .form-group { margin-bottom: 1.5rem; }
@@ -52,19 +54,20 @@
         .save-btn:disabled { background: #94a3b8; cursor: not-allowed; }
 
         @media (max-width: 900px) {
-            .sidebar { width: 70px; padding: 1.5rem 0.5rem; }
-            .sidebar span { display: none; }
-            .main-content { margin-left: 70px; width: calc(100% - 70px); }
+            .sidebar { width: 85px; padding: 1.5rem 0.5rem; }
+            .sidebar h2 span, .nav-item span { display: none; }
+            .main-content { margin-left: 85px; width: calc(100% - 85px); padding: 1.5rem; }
         }
     </style>
 </head>
 <body>
     <div class="sidebar">
-        <div style="font-size: 1.5rem; font-weight: 800; margin-bottom: 2rem; padding-left: 1rem;"><i class="fas fa-spider"></i> <span>Spider.io</span></div>
-        <a href="agent-dashboard.html" class="nav-item"><i class="fas fa-th-large"></i> &nbsp;<span>Dashboard</span></a>
-        <a href="inventory.html" class="nav-item"><i class="fas fa-box"></i> &nbsp;<span>Inventory</span></a>
-        <a href="user_list.html" class="nav-item"><i class="fas fa-users"></i> &nbsp;<span>Customers</span></a>
-        <a href="shop-settings.html" class="nav-item active"><i class="fas fa-store"></i> &nbsp;<span>Shop Settings</span></a>
+        <h2><i class="fas fa-spider"></i> <span>Spider.io</span></h2>
+        <a id="navDash" href="#" class="nav-item"><i class="fas fa-th-large"></i> &nbsp;<span>Dashboard</span></a>
+        <a id="navInv" href="#" class="nav-item"><i class="fas fa-box"></i> &nbsp;<span>Inventory</span></a>
+        <a id="navCust" href="#" class="nav-item"><i class="fas fa-users"></i> &nbsp;<span>Customers</span></a>
+        <a id="navSettings" href="#" class="nav-item active"><i class="fas fa-store"></i> &nbsp;<span>Shop Settings</span></a>
+        <a href="#" onclick="handleLogout()" class="nav-item" style="margin-top: 5rem; color: #fb7185;"><i class="fas fa-sign-out-alt"></i> &nbsp;<span>Logout</span></a>
     </div>
 
     <div class="main-content">
@@ -115,8 +118,29 @@
         const db = firebase.firestore();
         const storage = firebase.storage();
 
-        const agentData = JSON.parse(localStorage.getItem('currentAgent'));
-        const currentAgent = agentData ? agentData.name : "hein";
+        let currentAgent = "";
+
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const agentFromUrl = urlParams.get('agent');
+            const agentData = JSON.parse(localStorage.getItem('currentAgent'));
+            
+            currentAgent = agentFromUrl || (agentData ? agentData.name : null);
+
+            if (!currentAgent) {
+                window.location.href = "login.html";
+                return;
+            }
+
+            // Sidebar Links Update
+            const param = `?agent=${encodeURIComponent(currentAgent)}`;
+            document.getElementById('navDash').href = `agent-dashboard.html${param}`;
+            document.getElementById('navInv').href = `inventory.html${param}`;
+            document.getElementById('navCust').href = `user_list.html${param}`;
+            document.getElementById('navSettings').href = `shop-settings.html${param}`;
+
+            loadOldSettings();
+        };
 
         async function loadOldSettings() {
             try {
@@ -159,7 +183,8 @@
             try {
                 let logoUrl = "";
                 if (file) {
-                    const ref = storage.ref().child(`logos/${currentAgent}_logo_${Date.now()}`);
+                    // အေးဂျင့်အလိုက် သီးသန့် folder နဲ့ သိမ်းမယ်
+                    const ref = storage.ref().child(`logos/${currentAgent}/${Date.now()}_${file.name}`);
                     const uploadTask = await ref.put(file);
                     logoUrl = await uploadTask.ref.getDownloadURL();
                 }
@@ -189,7 +214,10 @@
             }
         }
 
-        window.onload = loadOldSettings;
+        function handleLogout() {
+            localStorage.removeItem('currentAgent');
+            window.location.href = "login.html";
+        }
     </script>
 </body>
 </html>
