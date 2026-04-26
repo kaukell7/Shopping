@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="my">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,7 +21,6 @@
         .main-content { margin-left: 280px; padding: 2.5rem; width: calc(100% - 280px); }
         .welcome-card { background: linear-gradient(135deg, #4f46e5, #818cf8); color: white; padding: 2.5rem; border-radius: 20px; margin-bottom: 2rem; box-shadow: 0 10px 20px rgba(79, 70, 229, 0.2); }
         .welcome-card h1 { margin: 0; font-size: 2rem; }
-        .welcome-card p { opacity: 0.9; margin-top: 10px; }
         
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; }
         .card { background: white; padding: 1.5rem; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; transition: 0.3s; }
@@ -34,24 +33,20 @@
         
         .status-badge { background: #dcfce7; color: #166534; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
 
-        /* Order Table Style */
+        /* Order Table */
         .order-section { margin-top: 2rem; background: white; padding: 1.5rem; border-radius: 16px; border: 1px solid #e2e8f0; }
         table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
         th { text-align: left; background: #f1f5f9; padding: 12px; color: #64748b; font-size: 0.85rem; }
         td { padding: 12px; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; color: #1e293b; }
-        .qty-badge { background: #e0e7ff; color: #4338ca; padding: 2px 8px; border-radius: 4px; font-weight: 700; }
 
         .contact-form label { display: block; font-size: 0.85rem; color: #64748b; margin-bottom: 8px; margin-top: 15px; font-weight: 600; }
-        .contact-form input { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; outline: none; transition: 0.3s; font-family: inherit; }
-        .contact-form input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); }
-        .save-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 14px; border-radius: 10px; cursor: pointer; font-weight: 700; margin-top: 25px; transition: 0.2s; font-size: 1rem; }
-        .save-btn:hover { background: #4338ca; transform: scale(1.01); }
+        .contact-form input { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; outline: none; transition: 0.3s; }
+        .save-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 14px; border-radius: 10px; cursor: pointer; font-weight: 700; margin-top: 25px; transition: 0.2s; }
 
         @media (max-width: 768px) {
             .sidebar { width: 80px; padding: 1rem 0.5rem; }
             .sidebar h2, .nav-item span { display: none; }
-            .main-content { margin-left: 100px; width: calc(100% - 100px); padding: 1.5rem; }
-            .order-section { overflow-x: auto; }
+            .main-content { margin-left: 100px; width: calc(100% - 100px); }
         }
     </style>
 </head>
@@ -59,24 +54,11 @@
 
     <div class="sidebar">
         <h2>Spider.io</h2>
-        <a href="agent-dashboard.html" class="nav-item active">
-            <i class="fas fa-home"></i> <span>Dashboard</span>
-        </a>
-        <a href="inventory.html" class="nav-item">
-            <i class="fas fa-box-open"></i> <span>My Products</span>
-        </a>
-        <a href="banners.html" class="nav-item">
-            <i class="fas fa-ad"></i> <span>Shop Banner</span>
-        </a>
-        <a href="#contact-section" class="nav-item">
-            <i class="fas fa-headset"></i> <span>Contact Settings</span>
-        </a>
-        <a href="profile-settings.html" class="nav-item">
-            <i class="fas fa-user-cog"></i> <span>Profile Settings</span>
-        </a>
-        <button class="nav-item" onclick="handleLogout()" style="margin-top: 40px; opacity: 0.7; color: #f87171;">
-            <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
-        </button>
+        <a href="#" class="nav-item active"><i class="fas fa-home"></i> <span>Dashboard</span></a>
+        <a href="inventory.html" id="linkInventory" class="nav-item"><i class="fas fa-box-open"></i> <span>My Products</span></a>
+        <a href="user_list.html" id="linkUsers" class="nav-item"><i class="fas fa-users"></i> <span>Customer List</span></a>
+        <a href="banners.html" class="nav-item"><i class="fas fa-ad"></i> <span>Shop Banner</span></a>
+        <button class="nav-item" onclick="handleLogout()" style="margin-top: 40px; color: #f87171;"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></button>
     </div>
 
     <div class="main-content">
@@ -87,73 +69,34 @@
 
         <div class="grid">
             <div class="card">
-                <h3><i class="fas fa-store text-primary"></i> Shop Information</h3>
-                <div class="info-row">
-                    <span class="info-label">Shop Name:</span>
-                    <span class="info-value" id="shopNameDisplay">Loading...</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">Email/Phone:</span>
-                    <span class="info-value" id="shopContact">Loading...</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">Account Status:</span>
-                    <span class="status-badge" id="accountStatus">Active</span>
-                </div>
+                <h3><i class="fas fa-store"></i> Shop Info</h3>
+                <div class="info-row"><span class="info-label">Shop Name:</span><span class="info-value" id="shopNameDisplay">Loading...</span></div>
+                <div class="info-row"><span class="info-label">Contact:</span><span class="info-value" id="shopContact">Loading...</span></div>
+                <div class="info-row"><span class="info-label">Status:</span><span class="status-badge" id="accountStatus">Active</span></div>
             </div>
 
             <div class="card">
-                <h3><i class="fas fa-chart-line text-primary"></i> Quick Stats</h3>
-                <div class="info-row">
-                    <span class="info-label">Total Products:</span>
-                    <span class="info-value" id="totalProducts" style="font-size: 1.2rem; color: var(--primary);">0</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">Current Orders:</span>
-                    <span class="info-value" id="totalOrders" style="font-size: 1.2rem; color: #10b981;">0</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">Last Updated:</span>
-                    <span class="info-value" style="font-size: 0.8rem; color: #94a3b8;" id="lastUpdate">Just Now</span>
-                </div>
+                <h3><i class="fas fa-chart-line"></i> Quick Stats</h3>
+                <div class="info-row"><span class="info-label">Products:</span><span class="info-value" id="totalProducts">0</span></div>
+                <div class="info-row"><span class="info-label">Orders:</span><span class="info-value" id="totalOrders">0</span></div>
+                <div class="info-row"><span class="info-label">Last Sync:</span><span class="info-value" id="lastUpdate" style="font-size: 0.8rem;">-</span></div>
             </div>
 
-            <div class="card" id="contact-section">
-                <h3><i class="fas fa-comments text-primary"></i> Live Chat Settings</h3>
+            <div class="card">
+                <h3><i class="fas fa-comments"></i> Chat Settings</h3>
                 <div class="contact-form">
-                    <label><i class="fab fa-viber" style="color: #7360f2;"></i> Viber Number</label>
-                    <input type="text" id="viberInput" placeholder="959777xxxxxx">
-                    
-                    <label><i class="fab fa-telegram" style="color: #0088cc;"></i> Telegram Username</label>
-                    <input type="text" id="telegramInput" placeholder="username (without @)">
-                    
-                    <label><i class="fas fa-phone-alt" style="color: #2ecc71;"></i> Public Phone Number</label>
-                    <input type="text" id="phoneInput" placeholder="09xxxxxxxxx">
-                    
-                    <button class="save-btn" id="saveBtn" onclick="saveContactSettings()">
-                        <i class="fas fa-save"></i> Update Live Chat
-                    </button>
+                    <label>Viber Number</label><input type="text" id="viberInput" placeholder="959...">
+                    <label>Telegram Username</label><input type="text" id="telegramInput" placeholder="username">
+                    <button class="save-btn" id="saveBtn" onclick="saveContactSettings()">Update Settings</button>
                 </div>
             </div>
         </div>
 
         <div class="order-section">
-            <h3><i class="fas fa-shopping-cart text-primary"></i> Recent Orders</h3>
+            <h3><i class="fas fa-shopping-cart"></i> Recent Orders</h3>
             <table>
-                <thead>
-                    <tr>
-                        <th>Product</th>
-                        <th>Qty</th>
-                        <th>Customer</th>
-                        <th>Phone</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody id="orderTableBody">
-                    <tr>
-                        <td colspan="5" style="text-align:center; padding: 20px; color: #94a3b8;">အော်ဒါများ ဆွဲယူနေသည်...</td>
-                    </tr>
-                </tbody>
+                <thead><tr><th>Product</th><th>Qty</th><th>Customer</th><th>Phone</th><th>Status</th></tr></thead>
+                <tbody id="orderTableBody"><tr><td colspan="5" style="text-align:center;">Loading orders...</td></tr></tbody>
             </table>
         </div>
     </div>
@@ -171,115 +114,62 @@
             messagingSenderId: "1073972515996",
             appId: "1:1073972515996:web:28049f5e5977e3a8e74959"
         };
-        
-        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-        const auth = firebase.auth();
 
         window.onload = function() {
             const agentData = JSON.parse(localStorage.getItem('currentAgent'));
+            if (!agentData) { window.location.href = "login.html"; return; }
 
-            if (agentData) {
-                const displayName = agentData.name || agentData.shop_name || "Agent";
-                document.getElementById('welcomeAgent').innerText = `Welcome back, ${displayName}!`;
-                document.getElementById('shopNameDisplay').innerText = displayName;
-                document.getElementById('shopContact').innerText = agentData.gmail_phone || agentData.email || "Not Set";
-                
-                const statusBadge = document.getElementById('accountStatus');
-                statusBadge.innerText = agentData.status || "Active";
+            const agentName = agentData.name;
+            document.getElementById('welcomeAgent').innerText = `Welcome, ${agentName}!`;
+            document.getElementById('shopNameDisplay').innerText = agentName;
+            document.getElementById('shopContact').innerText = agentData.gmail_phone || "N/A";
 
-                // Products Count (Real-time)
-                db.collection("products")
-                  .where("agent_name", "==", displayName)
-                  .onSnapshot((snapshot) => {
-                      document.getElementById('totalProducts').innerText = snapshot.size;
-                  });
+            // Sidebar links updates
+            document.getElementById('linkInventory').href = `inventory.html?agent=${agentName}`;
+            document.getElementById('linkUsers').href = `user_list.html?agent=${agentName}`;
 
-                // Orders List & Count (Real-time Updates)
-                db.collection("orders")
-                  .where("agent_name", "==", displayName)
-                  .orderBy("created_at", "desc")
-                  .onSnapshot((snapshot) => {
-                      document.getElementById('totalOrders').innerText = snapshot.size;
-                      renderOrders(snapshot);
-                      document.getElementById('lastUpdate').innerText = new Date().toLocaleTimeString();
-                  }, (err) => {
-                      console.error("Order fetch error:", err);
-                      // အကယ်၍ created_at index မရှိသေးပါက sorting မပါဘဲ ပြန်ကြိုးစားရန်
-                      db.collection("orders")
-                        .where("agent_name", "==", displayName)
-                        .onSnapshot((snap) => renderOrders(snap));
-                  });
+            // Real-time Stats
+            db.collection("products").where("agent_name", "==", agentName).onSnapshot(snap => {
+                document.getElementById('totalProducts').innerText = snap.size;
+            });
 
-                loadContactSettings();
-            } else {
-                window.location.href = "login.html"; 
-            }
-        };
+            db.collection("orders").where("agent_name", "==", agentName).orderBy("created_at", "desc").onSnapshot(snap => {
+                document.getElementById('totalOrders').innerText = snap.size;
+                const tbody = document.getElementById('orderTableBody');
+                tbody.innerHTML = snap.empty ? '<tr><td colspan="5" style="text-align:center;">အော်ဒါမရှိပါ။</td></tr>' : 
+                    snap.docs.map(doc => `<tr><td>${doc.data().product_name}</td><td>${doc.data().quantity || 1}</td><td>${doc.data().customer_name}</td><td>${doc.data().customer_phone}</td><td>${doc.data().status || 'Pending'}</td></tr>`).join('');
+                document.getElementById('lastUpdate').innerText = new Date().toLocaleTimeString();
+            });
 
-        function renderOrders(snapshot) {
-            const tbody = document.getElementById('orderTableBody');
-            if (snapshot.empty) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px;">အော်ဒါမရှိသေးပါ။</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = snapshot.docs.map(doc => {
-                const order = doc.data();
-                return `
-                    <tr>
-                        <td style="font-weight:600;">${order.product_name}</td>
-                        <td><span class="qty-badge">${order.quantity || 1}</span></td>
-                        <td>${order.customer_name}</td>
-                        <td>${order.customer_phone}</td>
-                        <td><span class="status-badge" style="background:#fef3c7; color:#92400e;">${order.status || 'Pending'}</span></td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        function loadContactSettings() {
-            db.collection("shop_settings").doc("contact").get().then((doc) => {
-                if(doc.exists) {
-                    const data = doc.data();
+            // Load Private Settings
+            db.collection("agents").where("name", "==", agentName).get().then(snap => {
+                if(!snap.empty) {
+                    const data = snap.docs[0].data();
                     document.getElementById('viberInput').value = data.viber || '';
                     document.getElementById('telegramInput').value = data.telegram || '';
-                    document.getElementById('phoneInput').value = data.phone || '';
                 }
             });
-        }
+        };
 
         async function saveContactSettings() {
-            const btn = document.getElementById('saveBtn');
-            const viber = document.getElementById('viberInput').value.trim();
-            const telegram = document.getElementById('telegramInput').value.trim();
-            const phone = document.getElementById('phoneInput').value.trim();
-
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
-
+            const agentData = JSON.parse(localStorage.getItem('currentAgent'));
+            const viber = document.getElementById('viberInput').value;
+            const telegram = document.getElementById('telegramInput').value;
+            
             try {
-                await db.collection("shop_settings").doc("contact").set({
-                    viber: viber,
-                    telegram: telegram,
-                    phone: phone,
-                    last_updated: firebase.firestore.FieldValue.serverTimestamp()
-                }, { merge: true });
-                alert("Live Chat အချက်အလက်များ အောင်မြင်စွာ ပြင်ဆင်ပြီးပါပြီ။");
-            } catch (error) {
-                alert("Error: " + error.message);
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-save"></i> Update Live Chat';
-            }
+                const snap = await db.collection("agents").where("name", "==", agentData.name).get();
+                if(!snap.empty) {
+                    await db.collection("agents").doc(snap.docs[0].id).update({ viber, telegram });
+                    alert("Settings updated!");
+                }
+            } catch (e) { alert("Error updating settings."); }
         }
 
-        async function handleLogout() {
-            if(confirm("အကောင့်ထဲက ထွက်မှာ သေချာပါသလား?")) {
-                await auth.signOut();
-                localStorage.removeItem('currentAgent');
-                window.location.href = "login.html";
-            }
+        function handleLogout() {
+            localStorage.removeItem('currentAgent');
+            window.location.href = "login.html";
         }
     </script>
 </body>
