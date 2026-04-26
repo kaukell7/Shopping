@@ -3,85 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spider.io Login</title>
+    <title>Login - Spider.io</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root { --primary: #4f46e5; --primary-hover: #4338ca; --bg: #f8fafc; }
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: #f1f5f9; 
+            background-color: var(--bg); 
             display: flex; 
             align-items: center; 
             justify-content: center; 
             height: 100vh; 
             margin: 0; 
             background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
-            background-size: 20px 20px;
+            background-size: 24px 24px;
         }
         .login-card { 
             background: white; 
             padding: 2.5rem; 
-            border-radius: 20px; 
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); 
+            border-radius: 24px; 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08); 
             width: 100%; 
             max-width: 400px; 
             text-align: center; 
             border: 1px solid #e2e8f0;
+            box-sizing: border-box;
         }
-        .logo { font-size: 2rem; font-weight: 800; color: #4f46e5; margin-bottom: 0.5rem; letter-spacing: -1px; }
-        h1 { margin-bottom: 1.5rem; color: #1e293b; font-size: 1.25rem; font-weight: 600; }
+        .logo { 
+            font-size: 2.2rem; 
+            font-weight: 800; 
+            color: var(--primary); 
+            margin-bottom: 0.5rem; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        h1 { margin-bottom: 2rem; color: #1e293b; font-size: 1.2rem; font-weight: 600; }
+        
         .form-group { text-align: left; margin-bottom: 1.2rem; }
-        label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: #64748b; font-size: 0.85rem; }
+        label { display: block; margin-bottom: 0.6rem; font-weight: 600; color: #475569; font-size: 0.85rem; }
+        
         .input-wrapper { position: relative; }
-        .input-wrapper i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
+        .input-wrapper i { 
+            position: absolute; 
+            left: 14px; 
+            top: 50%; 
+            transform: translateY(-50%); 
+            color: #94a3b8; 
+            font-size: 1.1rem;
+        }
         input { 
             width: 100%; 
-            padding: 0.8rem 0.8rem 0.8rem 2.5rem; 
+            padding: 12px 12px 12px 42px; 
             border: 1px solid #e2e8f0; 
-            border-radius: 10px; 
+            border-radius: 12px; 
             box-sizing: border-box; 
             font-size: 1rem; 
             outline: none; 
-            transition: 0.3s; 
+            transition: all 0.3s; 
+            background: #f8fafc;
         }
-        input:focus { border-color: #4f46e5; box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); }
+        input:focus { 
+            border-color: var(--primary); 
+            background: white;
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); 
+        }
+        
         .btn-login { 
             width: 100%; 
-            padding: 0.9rem; 
-            background: #4f46e5; 
+            padding: 14px; 
+            background: var(--primary); 
             color: white; 
             border: none; 
-            border-radius: 10px; 
+            border-radius: 12px; 
             font-weight: 700; 
             cursor: pointer; 
-            margin-top: 1rem; 
+            margin-top: 1.5rem; 
             transition: 0.3s; 
             font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
-        .btn-login:hover { background: #4338ca; transform: translateY(-1px); }
+        .btn-login:hover { background: var(--primary-hover); transform: translateY(-1px); }
+        .btn-login:active { transform: translateY(0); }
+        .btn-login:disabled { background: #94a3b8; cursor: not-allowed; }
+
         #error { 
             color: #ef4444; 
             font-size: 0.85rem; 
-            margin-top: 1rem; 
+            margin-top: 1.2rem; 
             display: none; 
             background: #fef2f2; 
             padding: 12px; 
-            border-radius: 8px; 
+            border-radius: 10px; 
             border: 1px solid #fee2e2; 
+            animation: shake 0.4s ease-in-out;
         }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .footer-text { margin-top: 2rem; color: #94a3b8; font-size: 0.85rem; }
     </style>
 </head>
 <body>
 
     <div class="login-card">
-        <div class="logo">Spider.io</div>
-        <h1>Agent Portal Login</h1>
+        <div class="logo"><i class="fas fa-spider"></i> Spider.io</div>
+        <h1>Agent Portal Access</h1>
         
         <div class="form-group">
             <label>Gmail / Phone Number</label>
             <div class="input-wrapper">
-                <i class="fas fa-user"></i>
-                <input type="text" id="loginId" placeholder="example@gmail.com">
+                <i class="fas fa-envelope"></i>
+                <input type="text" id="loginId" placeholder="example@gmail.com" autocomplete="username">
             </div>
         </div>
 
@@ -89,12 +131,19 @@
             <label>Password</label>
             <div class="input-wrapper">
                 <i class="fas fa-lock"></i>
-                <input type="password" id="loginPass" placeholder="••••••••">
+                <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password">
             </div>
         </div>
 
-        <button class="btn-login" id="loginBtn" onclick="handleLogin()">Login to Dashboard</button>
-        <p id="error"></p>
+        <button class="btn-login" id="loginBtn" onclick="handleLogin()">
+            <span>Login to Dashboard</span>
+        </button>
+        
+        <div id="error"></div>
+        
+        <div class="footer-text">
+            © 2026 Spider.io System Admin
+        </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -127,15 +176,15 @@
             const loginBtn = document.getElementById('loginBtn');
 
             if (!id || !pass) {
-                showError("အချက်အလက်အားလုံးကို ဖြည့်သွင်းပေးပါ။");
+                showError("အချက်အလက်များကို ပြည့်စုံစွာ ဖြည့်သွင်းပါ။");
                 return;
             }
 
+            errorMsg.style.display = 'none';
             loginBtn.disabled = true;
-            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
+            loginBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Checking account...';
 
             try {
-                // agents collection ထဲတွင် gmail_phone နှင့် password တူသည်ကို ရှာမည်
                 const snapshot = await db.collection("agents")
                     .where("gmail_phone", "==", id)
                     .where("password", "==", pass)
@@ -146,12 +195,11 @@
                     const agentData = doc.data();
                     
                     if (agentData.status === "Disabled") {
-                        showError("ဤအကောင့်မှာ ခေတ္တပိတ်ထားခြင်း ခံရပါသည်။");
+                        showError("ဤအကောင့်မှာ အသုံးပြုခွင့် ပိတ်ထားခြင်းခံရပါသည်။");
                         resetBtn();
                         return;
                     }
 
-                    // Dashboard တွင် ပြန်သုံးရန် အချက်အလက်များကို သိမ်းမည်
                     const userData = {
                         uid: doc.id,
                         name: agentData.name || "Agent", 
@@ -162,12 +210,12 @@
                     localStorage.setItem('currentAgent', JSON.stringify(userData));
                     window.location.href = "agent-dashboard.html";
                 } else {
-                    showError("Email (သို့) Password မှားယွင်းနေပါသည်။");
+                    showError("အိုင်ဒီ (သို့မဟုတ်) စကားဝှက် မှားယွင်းနေပါသည်။");
                     resetBtn();
                 }
             } catch (err) {
                 console.error(err);
-                showError("ချိတ်ဆက်မှု အဆင်မပြေပါ။ ခဏနေမှ ပြန်ကြိုးစားပါ။");
+                showError("စနစ်ချိတ်ဆက်မှု အဆင်မပြေပါ။ ခဏနေမှ ပြန်ကြိုးစားပါ။");
                 resetBtn();
             }
         }
@@ -175,7 +223,7 @@
         function resetBtn() {
             const loginBtn = document.getElementById('loginBtn');
             loginBtn.disabled = false;
-            loginBtn.innerText = "Login to Dashboard";
+            loginBtn.innerHTML = '<span>Login to Dashboard</span>';
         }
 
         function showError(msg) {
