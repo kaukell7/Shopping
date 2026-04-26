@@ -21,6 +21,7 @@
         .main-content { margin-left: 260px; padding: 40px; width: calc(100% - 260px); min-height: 100vh; }
         .page-header { margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
         .page-header h2 { font-size: 24px; font-weight: 800; }
+        .agent-badge { background: #4f46e5; color: white; padding: 5px 15px; border-radius: 8px; font-size: 14px; margin-top: 5px; display: inline-block; }
         
         .card { background: white; border-radius: 24px; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.02); }
         
@@ -35,7 +36,7 @@
         .phone-number { color: #4f46e5; font-weight: 600; text-decoration: none; }
         
         /* Status Badges */
-        .status-badge { padding: 6px 14px; border-radius: 50px; font-size: 12px; font-weight: 700; display: inline-block; }
+        .status-badge { padding: 6px 14px; border-radius: 50px; font-size: 12px; font-weight: 700; display: inline-block; cursor: pointer; border: none; }
         .status-pending { background: #fff7ed; color: #ea580c; }
         .status-completed { background: #f0fdf4; color: #16a34a; }
 
@@ -50,9 +51,10 @@
 
     <div class="sidebar">
         <a href="#" class="logo">Spider.io</a>
-        <a href="index.html" class="menu-item"><span>🏠 Dashboard</span></a>
+        <a href="index.html" class="menu-item" id="navHome"><span>🏠 Dashboard</span></a>
         <a href="#" class="menu-item"><span>📦 My Products</span></a>
-        <a href="orders.html" class="menu-item active"><span>🛒 Orders</span></a>
+        <a href="orders.html" class="menu-item active" id="navOrders"><span>🛒 Orders</span></a>
+        <a href="user_list.html" class="menu-item" id="navUsers"><span>👥 User List</span></a>
         <a href="#" class="menu-item"><span>⚙️ Settings</span></a>
     </div>
 
@@ -60,7 +62,8 @@
         <div class="page-header">
             <div>
                 <h2>Customer Orders</h2>
-                <p style="color: #64748b; margin-top: 5px;">နောက်ဆုံးဝင်ထားသော အော်ဒါများကို ဤနေရာတွင် စစ်ဆေးနိုင်ပါသည်။</p>
+                <div id="agentDisplay" class="agent-badge">Loading Agent...</div>
+                <p style="color: #64748b; margin-top: 10px;">သင့်ဆိုင်သို့ ဝင်ရောက်လာသော အော်ဒါများကို ဤနေရာတွင် စစ်ဆေးနိုင်ပါသည်။</p>
             </div>
         </div>
 
@@ -91,7 +94,17 @@
     </div>
 
     <script>
-        // Firebase Configuration
+        // URL မှ Agent နာမည်ကို ယူခြင်း (ဥပမာ: orders.html?agent=kid_kid)
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentAgent = urlParams.get('agent') || "kid kid"; 
+        
+        document.getElementById('agentDisplay').innerText = `Agent: ${currentAgent.toUpperCase()}`;
+
+        // Sidebar Links တွေကိုလည်း Agent ပါအောင် Update လုပ်ခြင်း
+        document.getElementById('navHome').href = `index.html?agent=${currentAgent}`;
+        document.getElementById('navOrders').href = `orders.html?agent=${currentAgent}`;
+        document.getElementById('navUsers').href = `user_list.html?agent=${currentAgent}`;
+
         const firebaseConfig = {
             apiKey: "AIzaSyCt1SMVSMqdX3u2viQ-n_BVwp6KgQwDLOM",
             authDomain: "my-shop-admin-cedb1.firebaseapp.com",
@@ -106,9 +119,9 @@
 
         // Fetch Orders Function
         function fetchOrders() {
-            // Index Error မတက်စေရန် orderBy ကို ခေတ္တဖြုတ်ထားပါသည်
+            // အဓိကပြင်ဆင်ချက်: လက်ရှိ Agent ရဲ့ အော်ဒါများကိုသာ စစ်ထုတ်ယူမည်
             db.collection("orders")
-              .where("agent_name", "==", "kid kid")
+              .where("agent_name", "==", currentAgent)
               .onSnapshot((snapshot) => {
                 const tbody = document.getElementById('orderTableBody');
                 
@@ -117,7 +130,6 @@
                     return;
                 }
 
-                // Sorting ကို JavaScript ဘက်မှာ လုပ်ပေးထားပါသည် (Error မတက်စေရန်)
                 const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 docs.sort((a, b) => (b.created_at?.seconds || 0) - (a.created_at?.seconds || 0));
 
@@ -131,7 +143,11 @@
                             <td class="customer-name">${data.customer_name}</td>
                             <td><a href="tel:${data.customer_phone}" class="phone-number">${data.customer_phone}</a></td>
                             <td style="max-width: 200px; font-size: 13px; line-height: 1.4;">${data.address || '-'}</td>
-                            <td><span class="status-badge ${statusClass}">${data.status}</span></td>
+                            <td>
+                                <button onclick="toggleStatus('${data.id}', '${data.status}')" class="status-badge ${statusClass}">
+                                    ${data.status}
+                                </button>
+                            </td>
                         </tr>
                     `;
                 }).join('');
@@ -139,6 +155,20 @@
                 console.error("Firebase Error:", error);
                 document.getElementById('orderTableBody').innerHTML = `<tr><td colspan="6" style="text-align:center; color: red; padding: 20px;">Error: ${error.message}</td></tr>`;
             });
+        }
+
+        // Status ကို Pending မှ Completed သို့ ပြောင်းရန်
+        async function toggleStatus(orderId, currentStatus) {
+            const nextStatus = currentStatus === "Pending" ? "Completed" : "Pending";
+            if(confirm(`Order Status ကို ${nextStatus} သို့ ပြောင်းမလား?`)) {
+                try {
+                    await db.collection("orders").doc(orderId).update({
+                        status: nextStatus
+                    });
+                } catch (e) {
+                    alert("Status update လုပ်ရာတွင် အမှားအယွင်းရှိပါသည်။");
+                }
+            }
         }
 
         window.onload = fetchOrders;
