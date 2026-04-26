@@ -11,9 +11,9 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--main-bg); margin: 0; display: flex; }
         
         /* Sidebar Style */
-        .sidebar { width: 260px; background: var(--bg); color: white; min-height: 100vh; padding: 1.5rem 1rem; position: fixed; z-index: 1000; transition: 0.3s; }
+        .sidebar { width: 260px; background: var(--bg); color: white; min-height: 100vh; padding: 1.5rem 1rem; position: fixed; z-index: 1000; transition: 0.3s; box-sizing: border-box; }
         .sidebar h2 { padding-left: 1rem; margin-bottom: 2.5rem; color: #fff; font-weight: 800; display: flex; align-items: center; gap: 12px; font-size: 1.4rem; }
-        .nav-item { padding: 0.9rem 1.1rem; border-radius: 14px; color: #94a3b8; text-decoration: none; margin-bottom: 0.6rem; display: flex; align-items: center; transition: 0.3s; font-weight: 600; }
+        .nav-item { padding: 0.9rem 1.1rem; border-radius: 14px; color: #94a3b8; text-decoration: none; margin-bottom: 0.6rem; display: flex; align-items: center; transition: 0.3s; font-weight: 600; cursor: pointer; }
         .nav-item:hover { background: rgba(255,255,255,0.05); color: white; }
         .nav-item.active { background: var(--primary); color: white; box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3); }
         .nav-item i { width: 24px; font-size: 1.1rem; }
@@ -52,10 +52,10 @@
 
     <div class="sidebar">
         <h2><i class="fas fa-spider"></i> <span>Spider.io</span></h2>
-        <a id="navDash" href="agent-dashboard.html" class="nav-item"><i class="fas fa-th-large"></i> <span>Dashboard</span></a>
-        <a href="inventory.html" class="nav-item"><i class="fas fa-box"></i> <span>Inventory</span></a>
-        <a href="user_list.html" class="nav-item active"><i class="fas fa-users"></i> <span>Customers</span></a>
-        <a href="shop-settings.html" class="nav-item"><i class="fas fa-cog"></i> <span>Shop Settings</span></a>
+        <a id="navDash" href="#" class="nav-item"><i class="fas fa-th-large"></i> <span>Dashboard</span></a>
+        <a id="navInv" href="#" class="nav-item"><i class="fas fa-box"></i> <span>Inventory</span></a>
+        <a id="navCust" href="#" class="nav-item active"><i class="fas fa-users"></i> <span>Customers</span></a>
+        <a id="navSettings" href="#" class="nav-item"><i class="fas fa-cog"></i> <span>Shop Settings</span></a>
         <a href="#" onclick="handleLogout()" class="nav-item" style="margin-top: 5rem; color: #fb7185;"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
     </div>
 
@@ -67,7 +67,7 @@
             </div>
             <div class="search-wrapper">
                 <i class="fas fa-search"></i>
-                <input type="text" id="userSearch" placeholder="ရှာဖွေရန်..." onkeyup="filterTable()">
+                <input type="text" id="userSearch" placeholder="အမည်ဖြင့် ရှာဖွေရန်..." onkeyup="filterTable()">
             </div>
         </div>
 
@@ -103,7 +103,6 @@
         const db = firebase.firestore();
 
         window.onload = function() {
-            // URL Parameter နဲ့ LocalStorage နှစ်ခုလုံးကို စစ်ဆေးမယ်
             const urlParams = new URLSearchParams(window.location.search);
             const agentFromUrl = urlParams.get('agent');
             const loggedInAgent = JSON.parse(localStorage.getItem('currentAgent'));
@@ -115,20 +114,28 @@
                 return;
             }
 
-            // Dashboard Link မှာ နာမည်ပါအောင် ပြန်ပြင်မယ်
-            document.getElementById('navDash').href = `agent-dashboard.html?agent=${encodeURIComponent(agentName)}`;
+            // Sidebar Links Update (Parameter ထိန်းသိမ်းရန်)
+            const param = `?agent=${encodeURIComponent(agentName)}`;
+            document.getElementById('navDash').href = `agent-dashboard.html${param}`;
+            document.getElementById('navInv').href = `inventory.html${param}`;
+            document.getElementById('navCust').href = `user_list.html${param}`;
+            document.getElementById('navSettings').href = `shop-settings.html${param}`;
+
             document.getElementById('pageTitle').innerText = `${agentName}'s Customers`;
 
             fetchUsers(agentName);
         };
 
         function fetchUsers(agentName) {
-            // "users" collection ထဲက ဒီ agent နဲ့ဆိုင်တဲ့ ဝယ်သူတွေကိုပဲ ဆွဲထုတ်မယ်
-            db.collection("users").where("agent_name", "==", agentName).orderBy("createdAt", "desc").onSnapshot(snapshot => {
+            // "users" collection ထဲမှာ agent_name နဲ့ Filter လုပ်ပြီး ဆွဲထုတ်မယ်
+            db.collection("users")
+              .where("agent_name", "==", agentName)
+              .orderBy("createdAt", "desc")
+              .onSnapshot(snapshot => {
                 const tbody = document.getElementById('userTableBody');
                 
                 if (snapshot.empty) {
-                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 60px;"><i class="fas fa-user-slash" style="font-size: 2.5rem; color: #e2e8f0; display: block; margin-bottom: 15px;"></i>အကောင့်ဖွင့်ထားသည့် user မရှိသေးပါ။</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 60px;"><i class="fas fa-user-slash" style="font-size: 2.5rem; color: #e2e8f0; display: block; margin-bottom: 15px;"></i>ဤအေးဂျင့်အောက်တွင် ဝယ်ယူသူ မရှိသေးပါ။</td></tr>';
                     return;
                 }
 
@@ -158,7 +165,8 @@
                 }).join('');
             }, err => {
                 console.error("Error:", err);
-                document.getElementById('userTableBody').innerHTML = '<tr><td colspan="4" style="text-align:center; color:#ef4444; padding: 40px;">ဒေတာကြည့်ရှုရန် ခွင့်ပြုချက်မရှိပါ။ Firebase Rules ကို စစ်ဆေးပါ။</td></tr>';
+                // Error ဖြစ်ရင် (ဥပမာ- Index မရှိရင်) User အားလုံးကို Filter မပါဘဲ ပြပေးဖို့ ကြိုးစားကြည့်မယ် (သို့မဟုတ်) Error message ပြမယ်
+                document.getElementById('userTableBody').innerHTML = '<tr><td colspan="4" style="text-align:center; color:#ef4444; padding: 40px;">ဒေတာကြည့်ရှုရန် ခွင့်ပြုချက်မရှိပါ သို့မဟုတ် Index လိုအပ်နေပါသည်။</td></tr>';
             });
         }
 
