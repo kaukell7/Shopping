@@ -40,6 +40,9 @@
         <a href="index.html" class="nav-item">
             <i class="fas fa-store"></i> <span>View Shop</span>
         </a>
+        <button class="nav-item" onclick="handleLogout()" style="margin-top: 20px; opacity: 0.7;">
+            <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
+        </button>
     </div>
 
     <div class="main-content">
@@ -93,9 +96,9 @@
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     
     <script>
-        // Firebase Config (သင့် Project ID နှင့် ကိုက်ညီရပါမည်)
         const firebaseConfig = {
             apiKey: "AIzaSyCt1SMVSMqdX3u2viQ-n_BVwp6KgQwDLOM",
             authDomain: "my-shop-admin-cedb1.firebaseapp.com",
@@ -107,6 +110,14 @@
         
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        // Security Check: အကောင့်ဝင်မထားလျှင် login page သို့ ပြန်ပို့မည်
+        window.onload = function() {
+            if (!localStorage.getItem('currentAgent')) {
+                window.location.href = "login.html";
+            }
+        };
 
         // ဈေးနှုန်း တွက်ချက်ခြင်း
         function calculateDiscount() {
@@ -137,7 +148,11 @@
             const imageUrl = document.getElementById('imageUrl').value;
             const agentData = JSON.parse(localStorage.getItem('currentAgent'));
 
-            if (!agentData) return alert("ကျေးဇူးပြု၍ အရင် Login ဝင်ပေးပါ!");
+            if (!agentData) {
+                alert("ကျေးဇူးပြု၍ အရင် Login ဝင်ပေးပါ!");
+                window.location.href = "login.html";
+                return;
+            }
 
             uploadBtn.disabled = true;
             uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
@@ -158,7 +173,7 @@
                 });
 
                 alert("ပစ္စည်းတင်ခြင်း အောင်မြင်ပါသည်!");
-                window.location.href = "agent-dashboard.html"; // အောင်မြင်ရင် Dashboard ကို ပြန်ပို့မည်
+                window.location.href = "agent-dashboard.html"; 
             } catch (error) {
                 console.error(error);
                 alert("Error: " + error.message);
@@ -166,6 +181,21 @@
                 uploadBtn.innerHTML = 'Save Product';
             }
         });
+
+        // Logout လုပ်ဆောင်ချက်
+        async function handleLogout() {
+            if(confirm("အကောင့်ထဲက ထွက်မှာ သေချာပါသလား?")) {
+                try {
+                    await auth.signOut();
+                    localStorage.removeItem('currentAgent');
+                    window.location.href = "login.html";
+                } catch (error) {
+                    console.error("Logout Error:", error);
+                    localStorage.removeItem('currentAgent');
+                    window.location.href = "login.html";
+                }
+            }
+        }
     </script>
 </body>
 </html>
