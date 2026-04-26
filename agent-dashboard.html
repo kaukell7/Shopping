@@ -22,6 +22,13 @@
         .welcome-card { background: linear-gradient(135deg, #4f46e5, #6366f1); color: white; padding: 2.5rem; border-radius: 24px; margin-bottom: 2rem; box-shadow: 0 10px 25px rgba(79, 70, 229, 0.15); }
         .welcome-card h1 { margin: 0; font-size: 2rem; letter-spacing: -0.5px; }
         
+        /* Shopping Link Box */
+        .link-box { margin-top: 1.5rem; background: rgba(255, 255, 255, 0.15); padding: 12px 18px; border-radius: 12px; display: inline-flex; align-items: center; gap: 12px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.1); }
+        .link-text { font-size: 0.85rem; color: #e0e7ff; }
+        .link-value { font-family: monospace; background: rgba(0,0,0,0.2); padding: 4px 10px; border-radius: 6px; font-size: 0.9rem; color: #fff; }
+        .btn-copy { background: white; color: var(--primary); border: none; padding: 6px 12px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 0.75rem; transition: 0.2s; }
+        .btn-copy:hover { background: #e0e7ff; }
+
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; }
         .card { background: white; padding: 1.8rem; border-radius: 22px; border: 1px solid #e2e8f0; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
         .card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px -10px rgba(0,0,0,0.1); }
@@ -54,10 +61,10 @@
 
     <div class="sidebar">
         <h2><i class="fas fa-spider"></i> <span>Spider.io</span></h2>
-        <a href="agent-dashboard.html" class="nav-item active"><i class="fas fa-th-large"></i> <span>Dashboard</span></a>
-        <a href="inventory.html" class="nav-item"><i class="fas fa-box"></i> <span>Inventory</span></a>
-        <a href="user_list.html" class="nav-item"><i class="fas fa-users"></i> <span>Customers</span></a>
-        <a href="shop-settings.html" class="nav-item"><i class="fas fa-store"></i> <span>Shop Settings</span></a>
+        <a id="navDash" href="agent-dashboard.html" class="nav-item active"><i class="fas fa-th-large"></i> <span>Dashboard</span></a>
+        <a id="navInv" href="inventory.html" class="nav-item"><i class="fas fa-box"></i> <span>Inventory</span></a>
+        <a id="navCust" href="user_list.html" class="nav-item"><i class="fas fa-users"></i> <span>Customers</span></a>
+        <a id="navSettings" href="shop-settings.html" class="nav-item"><i class="fas fa-store"></i> <span>Shop Settings</span></a>
         <a href="#" onclick="handleLogout()" class="nav-item" style="margin-top: 5rem; color: #fb7185;"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
     </div>
 
@@ -65,6 +72,12 @@
         <div class="welcome-card">
             <h1 id="welcomeAgent">မင်္ဂလာပါ!</h1>
             <p style="opacity: 0.9; margin-top: 10px;">သင့်ဆိုင်ရဲ့ အခြေအနေနဲ့ အော်ဒါများကို တစ်နေရာတည်းမှာ စီမံခန့်ခွဲပါ။</p>
+            
+            <div class="link-box">
+                <span class="link-text"><i class="fas fa-link"></i> Your Shop Link:</span>
+                <span class="link-value" id="shopLinkDisplay">Loading...</span>
+                <button class="btn-copy" onclick="copyShopLink()"><i class="fas fa-copy"></i> Copy Link</button>
+            </div>
         </div>
 
         <div class="grid">
@@ -120,24 +133,33 @@
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
+        let generatedShopLink = "";
+
         window.onload = function() {
-            // URL ကနေ အေးဂျင့်နာမည်ကို အရင်ရှာမယ်
             const urlParams = new URLSearchParams(window.location.search);
             const agentFromUrl = urlParams.get('agent');
-            
-            // localStorage ထဲက အေးဂျင့်ဒေတာကို ယူမယ်
             const loggedInAgent = JSON.parse(localStorage.getItem('currentAgent'));
-
-            // URL မှာပါရင် အဲ့ဒါကိုယူ၊ မပါရင် Login ဝင်ထားတဲ့သူကိုယူ
             const agentName = agentFromUrl || (loggedInAgent ? loggedInAgent.name : null);
 
-            // နှစ်ခုလုံးမရှိရင် Login Page ကို ပြန်လွှတ်မယ်
             if (!agentName) { 
                 window.location.href = "login.html"; 
                 return; 
             }
 
+            // Sidebar Links Update (URL Parameter ကို ထိန်းသိမ်းရန်)
+            const param = `?agent=${encodeURIComponent(agentName)}`;
+            document.getElementById('navDash').href = `agent-dashboard.html${param}`;
+            document.getElementById('navInv').href = `inventory.html${param}`;
+            document.getElementById('navCust').href = `user_list.html${param}`;
+            document.getElementById('navSettings').href = `shop-settings.html${param}`;
+
             document.getElementById('welcomeAgent').innerText = `မင်္ဂလာပါ ${agentName}!`;
+
+            // Shopping Link သတ်မှတ်ခြင်း
+            // သင့် Domain အလိုက် index.html လမ်းကြောင်းကို ပြင်ဆင်နိုင်သည်
+            const baseUrl = window.location.origin + window.location.pathname.replace('agent-dashboard.html', 'index.html');
+            generatedShopLink = `${baseUrl}?shop=${encodeURIComponent(agentName)}`;
+            document.getElementById('shopLinkDisplay').innerText = generatedShopLink;
 
             // Shop Settings Data
             db.collection("shop_settings").doc(agentName).onSnapshot(doc => {
@@ -182,6 +204,14 @@
                 document.getElementById('lastUpdate').innerText = new Date().toLocaleTimeString();
             });
         };
+
+        function copyShopLink() {
+            if (generatedShopLink) {
+                navigator.clipboard.writeText(generatedShopLink).then(() => {
+                    alert("Shop link ကို Copy ကူးပြီးပါပြီ။ Customer များထံ ပေးပို့နိုင်ပါသည်။");
+                });
+            }
+        }
 
         function handleLogout() {
             localStorage.removeItem('currentAgent');
