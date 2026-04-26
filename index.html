@@ -4,76 +4,113 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Online Shop - Spider.io</title>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
+        :root { --primary: #4f46e5; --secondary: #0f172a; --bg: #f8fafc; --text-main: #1e293b; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background-color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; color: #1e293b; overflow-x: hidden; }
+        body { background-color: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif; color: var(--text-main); overflow-x: hidden; }
         
-        .main-layout { display: flex; max-width: 1400px; margin: 0 auto; padding: 0 15px; gap: 20px; }
+        .main-layout { display: flex; max-width: 1400px; margin: 0 auto; padding: 0 15px; gap: 30px; }
         
-        /* Sidebar Ads */
-        .sidebar-ad { width: 160px; flex-shrink: 0; padding-top: 100px; }
+        /* Ad Banners - Styling */
+        .sidebar-ad { width: 180px; flex-shrink: 0; padding-top: 100px; }
         .ad-box { 
-            width: 100%; height: 500px; background: #fff; border-radius: 12px; 
-            position: sticky; top: 20px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            width: 100%; height: 600px; background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%); 
+            border-radius: 24px; position: sticky; top: 20px; overflow: hidden; 
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: center;
         }
+        .ad-box::after { content: 'Advertisement'; color: #94a3b8; font-size: 0.8rem; font-weight: 700; transform: rotate(-90deg); }
 
         /* Content Area */
-        .content-wrapper { flex-grow: 1; max-width: 1000px; }
-        .header { text-align: center; padding: 40px 0; }
+        .content-wrapper { flex-grow: 1; max-width: 900px; }
+        .header { text-align: center; padding: 60px 0 40px; }
         
-        .shop-logo-container { width: 100px; height: 100px; margin: 0 auto 15px auto; border-radius: 20px; overflow: hidden; background: white; box-shadow: 0 4px 10px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: center; }
-        .shop-logo-container img { width: 100%; height: 100%; object-fit: contain; }
-        .shop-logo-container i { font-size: 3rem; color: #4f46e5; }
+        .shop-logo-container { 
+            width: 110px; height: 110px; margin: 0 auto 20px; border-radius: 24px; 
+            overflow: hidden; background: white; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); 
+            display: flex; align-items: center; justify-content: center; border: 4px solid white;
+        }
+        .shop-logo-container img { width: 100%; height: 100%; object-fit: cover; }
+        .shop-logo-container i { font-size: 3.5rem; color: var(--primary); }
 
-        .shop-name { font-size: 2.2rem; font-weight: 800; color: #1e293b; margin-bottom: 5px; letter-spacing: -0.5px; }
+        .shop-name { font-size: 2.5rem; font-weight: 800; color: var(--secondary); margin-bottom: 8px; letter-spacing: -1px; }
         
         .marquee-container {
-            background: #4f46e5; color: white; padding: 12px 0; overflow: hidden;
-            margin-top: 20px; border-radius: 50px; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+            background: var(--primary); color: white; padding: 14px 0; overflow: hidden;
+            margin: 25px auto; border-radius: 50px; box-shadow: 0 10px 20px rgba(79, 70, 229, 0.2);
+            max-width: 600px;
         }
-        .marquee-text { display: inline-block; white-space: nowrap; animation: marquee 20s linear infinite; font-weight: 600; padding-left: 100%; }
-        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
+        .marquee-text { display: inline-block; white-space: nowrap; animation: marquee 15s linear infinite; font-weight: 600; font-size: 0.95rem; }
+        @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
-        /* Controls */
+        /* Controls / Filters */
         .controls-container { 
-            margin: 30px 0; display: flex; flex-wrap: wrap; justify-content: space-between; 
-            align-items: center; gap: 15px; background: white; padding: 15px 25px;
-            border-radius: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            margin: 40px 0; display: flex; flex-direction: column; gap: 20px; 
+            background: white; padding: 25px; border-radius: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
-        .filter-group { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; }
+        .filter-group { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; }
         .filter-btn { 
-            white-space: nowrap; background: #f1f5f9; border: none; padding: 10px 24px; 
-            border-radius: 50px; cursor: pointer; font-weight: 600; transition: 0.3s; color: #64748b;
+            white-space: nowrap; background: #f1f5f9; border: none; padding: 12px 28px; 
+            border-radius: 14px; cursor: pointer; font-weight: 700; transition: 0.3s; color: #64748b; font-size: 0.9rem;
         }
-        .filter-btn.active { background: #4f46e5; color: white; }
-        .search-box input { padding: 12px 25px; border-radius: 50px; border: 1px solid #e2e8f0; width: 280px; outline: none; background: #f8fafc; }
+        .filter-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3); }
+        
+        .search-box { position: relative; width: 100%; }
+        .search-box i { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
+        .search-box input { 
+            padding: 15px 15px 15px 50px; border-radius: 16px; border: 1px solid #e2e8f0; 
+            width: 100%; outline: none; background: #f8fafc; font-size: 1rem; transition: 0.3s;
+        }
+        .search-box input:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.05); }
 
         /* Product Grid */
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; margin-bottom: 50px; }
-        .card { background: white; border-radius: 20px; overflow: hidden; border: 1px solid #e2e8f0; transition: 0.4s; position: relative; }
-        .card:hover { transform: translateY(-8px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
-        .card img { width: 100%; height: 240px; object-fit: cover; cursor: pointer; }
-        .discount-badge { position: absolute; top: 15px; right: 15px; background: #ef4444; color: white; padding: 5px 10px; border-radius: 8px; font-size: 12px; font-weight: 700; }
-        .p-info { padding: 20px; }
-        .p-name { font-weight: 700; margin-bottom: 8px; font-size: 1.05rem; }
-        .p-price { font-size: 1.2rem; color: #4f46e5; font-weight: 800; }
-        .old-price { text-decoration: line-through; color: #94a3b8; font-size: 0.9rem; margin-right: 8px; }
-        .buy-btn { width: 100%; background: #0f172a; color: white; border: none; padding: 12px; border-radius: 12px; margin-top: 15px; cursor: pointer; font-weight: 700; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 30px; margin-bottom: 80px; }
+        .card { background: white; border-radius: 24px; overflow: hidden; border: 1px solid #e2e8f0; transition: 0.4s; position: relative; }
+        .card:hover { transform: translateY(-10px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        
+        .img-wrapper { width: 100%; height: 280px; overflow: hidden; background: #f1f5f9; }
+        .card img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+        .card:hover img { scale: 1.05; }
+        
+        .discount-badge { position: absolute; top: 15px; left: 15px; background: #ef4444; color: white; padding: 6px 12px; border-radius: 12px; font-size: 12px; font-weight: 800; z-index: 10; }
+        
+        .p-info { padding: 25px; }
+        .p-cat { font-size: 0.75rem; font-weight: 700; color: var(--primary); text-transform: uppercase; margin-bottom: 5px; letter-spacing: 1px; }
+        .p-name { font-weight: 700; margin-bottom: 12px; font-size: 1.1rem; color: var(--secondary); }
+        .p-price-row { display: flex; align-items: baseline; gap: 10px; }
+        .p-price { font-size: 1.4rem; color: var(--primary); font-weight: 800; }
+        .old-price { text-decoration: line-through; color: #94a3b8; font-size: 0.95rem; }
+        
+        .buy-btn { 
+            width: 100%; background: var(--secondary); color: white; border: none; padding: 14px; 
+            border-radius: 14px; margin-top: 20px; cursor: pointer; font-weight: 700; font-size: 1rem;
+            transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .buy-btn:hover { background: #1e293b; gap: 12px; }
 
-        /* Modal Area */
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.8); align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px); }
-        .modal-content { background: white; padding: 35px; border-radius: 28px; width: 100%; max-width: 420px; position: relative; }
-        .modal-content input, .modal-content textarea { width: 100%; padding: 14px; margin-top: 12px; border-radius: 12px; border: 1px solid #e2e8f0; }
-        .close { position: absolute; right: 25px; top: 20px; font-size: 28px; cursor: pointer; color: #94a3b8; }
+        /* Modal */
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(8px); }
+        .modal-content { background: white; padding: 40px; border-radius: 32px; width: 100%; max-width: 450px; position: relative; animation: slideUp 0.4s ease-out; }
+        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        
+        .modal-content h3 { font-size: 1.5rem; margin-bottom: 20px; color: var(--secondary); }
+        .modal-content input, .modal-content textarea { 
+            width: 100%; padding: 15px; margin-top: 15px; border-radius: 14px; 
+            border: 1px solid #e2e8f0; background: #f8fafc; font-family: inherit; font-size: 1rem;
+        }
+        .close { position: absolute; right: 25px; top: 25px; font-size: 24px; cursor: pointer; color: #94a3b8; transition: 0.3s; }
+        .close:hover { color: var(--secondary); }
 
-        .chat-btn { position: fixed; bottom: 30px; right: 30px; width: 65px; height: 65px; background: #4f46e5; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; border: none; cursor: pointer; z-index: 999; }
+        .chat-btn { position: fixed; bottom: 30px; right: 30px; width: 70px; height: 70px; background: #2563eb; color: white; border-radius: 24px; display: flex; align-items: center; justify-content: center; font-size: 28px; border: none; cursor: pointer; z-index: 999; box-shadow: 0 15px 30px rgba(37, 99, 235, 0.3); transition: 0.3s; }
+        .chat-btn:hover { transform: scale(1.1) rotate(5deg); }
 
-        @media (max-width: 768px) { .sidebar-ad { display: none; } .search-box input { width: 100%; } }
+        @media (max-width: 900px) { 
+            .sidebar-ad { display: none; } 
+            .header { padding: 40px 0 20px; }
+            .shop-name { font-size: 2rem; }
+        }
     </style>
 </head>
 <body>
@@ -88,7 +125,7 @@
                 </div>
                 <h1 class="shop-name" id="shopNameDisplay">Spider Shop</h1>
                 <div class="marquee-container">
-                    <div class="marquee-text" id="taglineDisplay">Welcome to our shop!</div>
+                    <div class="marquee-text" id="taglineDisplay">🔥 အထူးအစီအစဉ်များစွာဖြင့် စောင့်ကြိုနေပါသည်... အခုပဲ စျေးဝယ်လိုက်ပါ။</div>
                 </div>
             </div>
 
@@ -100,41 +137,53 @@
                     <button class="filter-btn" onclick="filterCategory('kid', this)">Kid</button>
                 </div>
                 <div class="search-box">
-                    <input type="text" id="searchInput" placeholder="Search products..." onkeyup="handleSearch()">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="ရှာဖွေလိုသည့် ပစ္စည်းအမည် ရိုက်ထည့်ပါ..." onkeyup="handleSearch()">
                 </div>
             </div>
 
-            <div class="product-grid" id="productGrid"></div>
+            <div class="product-grid" id="productGrid">
+                </div>
         </div>
 
         <aside class="sidebar-ad"><div class="ad-box"></div></aside>
     </div>
 
-    <button class="chat-btn" onclick="openContact()"><i class="fas fa-comment-dots"></i></button>
+    <button class="chat-btn" onclick="openContact()"><i class="fab fa-viber"></i></button>
 
     <div id="orderModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
-            <h3 id="modalTitle">Order Item</h3>
+            <h3 id="modalTitle">မှာယူမည့် ပစ္စည်း</h3>
+            <p id="selectedItemName" style="color: #64748b; font-weight: 600; margin-bottom: 10px;"></p>
+            
             <input type="text" id="cusName" placeholder="သင့်နာမည်">
             <input type="text" id="cusPhone" placeholder="ဖုန်းနံပါတ်">
-            <input type="number" id="cusQty" value="1" min="1">
-            <textarea id="cusAddress" rows="3" placeholder="လိပ်စာအပြည့်အစုံ"></textarea>
-            <button class="buy-btn" style="background:#10b981;" id="submitBtn" onclick="sendOrder()">Confirm Order</button>
+            <div style="margin-top: 15px;">
+                <label style="font-size: 0.85rem; font-weight: 700; color: #64748b;">အရေအတွက်</label>
+                <input type="number" id="cusQty" value="1" min="1">
+            </div>
+            <textarea id="cusAddress" rows="3" placeholder="လိပ်စာ (မြို့နယ်/ရပ်ကွက်)"></textarea>
+            
+            <button class="buy-btn" style="background:#10b981;" id="submitBtn" onclick="sendOrder()">
+                <i class="fas fa-check-circle"></i> Confirm Order
+            </button>
         </div>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
     <script>
         const urlParams = new URLSearchParams(window.location.search);
-        // အေးဂျင့်နာမည်ကို URL ကနေယူမယ်၊ မရှိရင် "hein" လို့ default ထားမယ် (သင့်ပုံထဲက နာမည်ဖြစ်တဲ့အတွက်)
-        const agentName = urlParams.get('agent') || "hein"; 
+        // Default agent ကို "hein" (သို့) "kid kid" လို့ သတ်မှတ်နိုင်ပါတယ်
+        const agentName = urlParams.get('agent') || "kid kid"; 
 
         const firebaseConfig = {
             apiKey: "AIzaSyCt1SMVSMqdX3u2viQ-n_BVwp6KgQwDLOM",
             authDomain: "my-shop-admin-cedb1.firebaseapp.com",
             projectId: "my-shop-admin-cedb1",
             storageBucket: "my-shop-admin-cedb1.firebasestorage.app",
-            messagingSenderId: "1073972515996",
             appId: "1:1073972515996:web:28049f5e5977e3a8e74959"
         };
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
@@ -144,55 +193,52 @@
         let currentItem = null;
         let agentViber = "";
 
-        // ၁။ ဆိုင်အချက်အလက်များကို Firebase မှ ဆွဲယူခြင်း
+        // ၁။ ဆိုင် Settings (Logo, Name, Tagline)
         function loadShopSettings() {
             db.collection("shop_settings").doc(agentName).onSnapshot(doc => {
                 if(doc.exists) {
                     const data = doc.data();
                     document.getElementById('shopNameDisplay').innerText = data.shopName || agentName;
-                    if(data.shopTagline) document.getElementById('taglineDisplay').innerText = data.shopTagline;
+                    if(data.shopTagline) document.getElementById('taglineDisplay').innerText = "🔥 " + data.shopTagline;
                     if(data.logoUrl) {
                         document.getElementById('logoArea').innerHTML = `<img src="${data.logoUrl}" alt="logo">`;
                     }
                     agentViber = data.viber || "";
-                } else {
-                    // ဒေတာမရှိသေးရင် Loading စာသားကို ဖျောက်လိုက်မယ်
-                    document.getElementById('shopNameDisplay').innerText = agentName;
                 }
-            }, error => {
-                console.error("Error loading settings:", error);
-                alert("Firebase Permission Error! ဆိုင်ဒေတာ ဖတ်မရပါ။");
             });
         }
 
-        // ၂။ ပစ္စည်းများကို ဆွဲယူခြင်း
+        // ၂။ ပစ္စည်းများ
         function loadProducts() {
             db.collection("products").where("agent_name", "==", agentName)
               .onSnapshot(snapshot => {
                   allProducts = snapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
                   renderGrid(allProducts);
-              }, error => {
-                  console.error("Error loading products:", error);
               });
         }
 
         function renderGrid(items) {
             const grid = document.getElementById('productGrid');
             if(items.length === 0) {
-                grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; padding:60px;">ပစ္စည်းမရှိသေးပါ။</p>';
+                grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:100px; color:#94a3b8;"><i class="fas fa-box-open" style="font-size:3rem; margin-bottom:15px;"></i><p>ပစ္စည်းများ မရှိသေးပါ။</p></div>';
                 return;
             }
             grid.innerHTML = items.map(p => `
                 <div class="card">
-                    ${p.discount_percent > 0 ? `<div class="discount-badge">-${p.discount_percent}% OFF</div>` : ''}
-                    <img src="${p.imageUrl}" onclick="window.open('${p.imageUrl}', '_blank')">
+                    ${p.discount_percent > 0 ? `<div class="discount-badge">${p.discount_percent}% OFF</div>` : ''}
+                    <div class="img-wrapper">
+                        <img src="${p.imageUrl}" loading="lazy" onclick="window.open('${p.imageUrl}', '_blank')">
+                    </div>
                     <div class="p-info">
+                        <div class="p-cat">${p.category || 'General'}</div>
                         <div class="p-name">${p.name}</div>
-                        <div class="p-price">
-                            ${p.original_price > p.price ? `<span class="old-price">${p.original_price} Ks</span>` : ''}
-                            ${p.price} Ks
+                        <div class="p-price-row">
+                            <div class="p-price">${Number(p.price).toLocaleString()} Ks</div>
+                            ${p.original_price > p.price ? `<div class="old-price">${Number(p.original_price).toLocaleString()} Ks</div>` : ''}
                         </div>
-                        <button class="buy-btn" onclick="openOrder('${p.name}')">မှာယူမည်</button>
+                        <button class="buy-btn" onclick="openOrder('${p.name}')">
+                            <i class="fas fa-shopping-cart"></i> မှာယူမည်
+                        </button>
                     </div>
                 </div>
             `).join('');
@@ -213,23 +259,23 @@
 
         function openOrder(name) {
             currentItem = name;
-            document.getElementById('modalTitle').innerText = name + " မှာယူမည်";
+            document.getElementById('selectedItemName').innerText = "Item: " + name;
             document.getElementById('orderModal').style.display = 'flex';
         }
 
         function closeModal() { document.getElementById('orderModal').style.display = 'none'; }
 
         async function sendOrder() {
-            const name = document.getElementById('cusName').value;
-            const phone = document.getElementById('cusPhone').value;
-            const address = document.getElementById('cusAddress').value;
+            const name = document.getElementById('cusName').value.trim();
+            const phone = document.getElementById('cusPhone').value.trim();
+            const address = document.getElementById('cusAddress').value.trim();
             const qty = document.getElementById('cusQty').value;
 
             if(!name || !phone || !address) return alert("အချက်အလက်ပြည့်စုံစွာဖြည့်ပါ");
 
             const btn = document.getElementById('submitBtn');
             btn.disabled = true;
-            btn.innerText = "Processing...";
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
 
             try {
                 await db.collection("orders").add({
@@ -242,18 +288,20 @@
                     status: "Pending",
                     created_at: firebase.firestore.FieldValue.serverTimestamp()
                 });
-                alert("မှာယူမှုအောင်မြင်ပါသည်။ အေးဂျင့်မှ ပြန်လည်ဆက်သွယ်ပေးပါမည်။");
+                alert("မှာယူမှု အောင်မြင်ပါသည်။ ဆိုင်မှ ပြန်လည်ဆက်သွယ်ပေးပါမည်။");
                 closeModal();
-            } catch(e) { alert("Error: " + e.message); }
+            } catch(e) { 
+                alert("အမှားအယွင်းရှိပါသည်။: " + e.message); 
+            }
             btn.disabled = false;
-            btn.innerText = "Confirm Order";
+            btn.innerHTML = '<i class="fas fa-check-circle"></i> Confirm Order';
         }
 
         function openContact() {
             if(agentViber) {
                 window.open(`viber://add?number=${agentViber}`, '_blank');
             } else {
-                alert("အေးဂျင့်က Viber ချိတ်ဆက်ထားခြင်းမရှိသေးပါ။");
+                alert("ဆိုင်၏ Viber နံပါတ် မရှိသေးပါ။");
             }
         }
 
