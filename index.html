@@ -264,7 +264,8 @@
         }
 
         function fetchProducts() {
-            db.collection("products").orderBy("created_at", "desc").onSnapshot((snapshot) => {
+            // orderBy ကို ခေတ္တဖြုတ်ထားသည် (Index Error မတက်စေရန်)
+            db.collection("products").onSnapshot((snapshot) => {
                 allProducts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderProducts(allProducts);
             }, (error) => {
@@ -312,7 +313,6 @@
             }
         }
 
-        // Dashboard/Orders Page နှင့် အပြည့်အဝ ချိတ်ဆက်ထားသော Function
         async function submitOrder() {
             const name = document.getElementById('userName').value.trim();
             const phone = document.getElementById('userPhone').value.trim();
@@ -326,7 +326,6 @@
             submitBtn.innerText = "ခေတ္တစောင့်ပါ...";
 
             try {
-                // Dashboard filter အတွက် data format များအား အတိအကျ ထည့်သွင်းပေးထားပါသည်
                 await db.collection("orders").add({
                     agent_name: "kid kid", 
                     product_name: selectedProduct,
@@ -341,7 +340,6 @@
                 alert("မှာယူမှု အောင်မြင်ပါသည်။");
                 closeModal();
                 
-                // Form Fields များအား Clear လုပ်ခြင်း
                 document.getElementById('userName').value = "";
                 document.getElementById('userPhone').value = "";
                 document.getElementById('userAddress').value = "";
