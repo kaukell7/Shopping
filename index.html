@@ -18,21 +18,14 @@
         /* Sidebar Ads */
         .sidebar-ad { width: 160px; flex-shrink: 0; padding-top: 100px; }
         .ad-box { 
-            width: 100%; 
-            height: 500px; 
-            background: #fff; 
-            border-radius: 12px; 
-            position: sticky; 
-            top: 20px; 
-            overflow: hidden; 
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            width: 100%; height: 500px; background: #fff; border-radius: 12px; 
+            position: sticky; top: 20px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
         }
 
         /* Content Area */
         .content-wrapper { flex-grow: 1; max-width: 1000px; }
         .header { text-align: center; padding: 40px 0; }
         
-        /* Dynamic Shop Logo Style */
         .shop-logo-container { width: 100px; height: 100px; margin: 0 auto 15px auto; border-radius: 20px; overflow: hidden; background: white; box-shadow: 0 4px 10px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: center; }
         .shop-logo-container img { width: 100%; height: 100%; object-fit: contain; }
         .shop-logo-container i { font-size: 3rem; color: #4f46e5; }
@@ -40,83 +33,53 @@
         .shop-name { font-size: 2.2rem; font-weight: 800; color: #1e293b; margin-bottom: 5px; letter-spacing: -0.5px; }
         
         .marquee-container {
-            background: #4f46e5;
-            color: white;
-            padding: 12px 0;
-            overflow: hidden;
-            margin-top: 20px;
-            border-radius: 50px;
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+            background: #4f46e5; color: white; padding: 12px 0; overflow: hidden;
+            margin-top: 20px; border-radius: 50px; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
         }
         .marquee-text { display: inline-block; white-space: nowrap; animation: marquee 20s linear infinite; font-weight: 600; padding-left: 100%; }
         @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
 
         /* Controls */
         .controls-container { 
-            margin: 30px 0; 
-            display: flex; 
-            flex-wrap: wrap; 
-            justify-content: space-between; 
-            align-items: center; 
-            gap: 15px;
-            background: white;
-            padding: 15px 25px;
-            border-radius: 20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            margin: 30px 0; display: flex; flex-wrap: wrap; justify-content: space-between; 
+            align-items: center; gap: 15px; background: white; padding: 15px 25px;
+            border-radius: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
         .filter-group { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; }
         .filter-btn { 
-            white-space: nowrap;
-            background: #f1f5f9; 
-            border: none; 
-            padding: 10px 24px; 
-            border-radius: 50px; 
-            cursor: pointer; 
-            font-weight: 600; 
-            transition: 0.3s;
-            color: #64748b;
+            white-space: nowrap; background: #f1f5f9; border: none; padding: 10px 24px; 
+            border-radius: 50px; cursor: pointer; font-weight: 600; transition: 0.3s; color: #64748b;
         }
         .filter-btn.active { background: #4f46e5; color: white; }
-        .search-box input { padding: 12px 25px; border-radius: 50px; border: 1px solid #e2e8f0; width: 280px; outline: none; background: #f8fafc; transition: 0.3s; }
-        .search-box input:focus { border-color: #4f46e5; background: white; box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); }
+        .search-box input { padding: 12px 25px; border-radius: 50px; border: 1px solid #e2e8f0; width: 280px; outline: none; background: #f8fafc; }
 
         /* Product Grid */
         .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; margin-bottom: 50px; }
-        .card { background: white; border-radius: 20px; overflow: hidden; border: 1px solid #e2e8f0; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); position: relative; }
+        .card { background: white; border-radius: 20px; overflow: hidden; border: 1px solid #e2e8f0; transition: 0.4s; position: relative; }
         .card:hover { transform: translateY(-8px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
-        .card img { width: 100%; height: 240px; object-fit: cover; cursor: pointer; transition: 0.5s; }
-        .card:hover img { transform: scale(1.05); }
-        .discount-badge { position: absolute; top: 15px; right: 15px; background: #ef4444; color: white; padding: 5px 10px; border-radius: 8px; font-size: 12px; font-weight: 700; z-index: 10; }
+        .card img { width: 100%; height: 240px; object-fit: cover; cursor: pointer; }
+        .discount-badge { position: absolute; top: 15px; right: 15px; background: #ef4444; color: white; padding: 5px 10px; border-radius: 8px; font-size: 12px; font-weight: 700; }
         .p-info { padding: 20px; }
-        .p-name { font-weight: 700; margin-bottom: 8px; font-size: 1.05rem; color: #1e293b; }
+        .p-name { font-weight: 700; margin-bottom: 8px; font-size: 1.05rem; }
         .p-price { font-size: 1.2rem; color: #4f46e5; font-weight: 800; }
         .old-price { text-decoration: line-through; color: #94a3b8; font-size: 0.9rem; margin-right: 8px; }
-        .buy-btn { width: 100%; background: #0f172a; color: white; border: none; padding: 12px; border-radius: 12px; margin-top: 15px; cursor: pointer; font-weight: 700; transition: 0.3s; }
-        .buy-btn:hover { background: #4f46e5; }
+        .buy-btn { width: 100%; background: #0f172a; color: white; border: none; padding: 12px; border-radius: 12px; margin-top: 15px; cursor: pointer; font-weight: 700; }
 
         /* Modal Area */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.8); align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px); }
-        .modal-content { background: white; padding: 35px; border-radius: 28px; width: 100%; max-width: 420px; position: relative; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
-        .modal-content h3 { margin-bottom: 20px; font-weight: 800; color: #0f172a; }
-        .modal-content input, .modal-content textarea { width: 100%; padding: 14px; margin-top: 12px; border-radius: 12px; border: 1px solid #e2e8f0; font-family: inherit; font-size: 0.95rem; }
+        .modal-content { background: white; padding: 35px; border-radius: 28px; width: 100%; max-width: 420px; position: relative; }
+        .modal-content input, .modal-content textarea { width: 100%; padding: 14px; margin-top: 12px; border-radius: 12px; border: 1px solid #e2e8f0; }
         .close { position: absolute; right: 25px; top: 20px; font-size: 28px; cursor: pointer; color: #94a3b8; }
 
-        /* Chat Button */
-        .chat-btn { position: fixed; bottom: 30px; right: 30px; width: 65px; height: 65px; background: #4f46e5; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4); border: none; cursor: pointer; z-index: 999; transition: 0.3s; }
-        .chat-btn:hover { transform: scale(1.1) rotate(5deg); }
+        .chat-btn { position: fixed; bottom: 30px; right: 30px; width: 65px; height: 65px; background: #4f46e5; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; border: none; cursor: pointer; z-index: 999; }
 
-        @media (max-width: 768px) {
-            .sidebar-ad { display: none; }
-            .header { padding: 30px 0; }
-            .shop-name { font-size: 1.8rem; }
-            .search-box input { width: 100%; }
-        }
+        @media (max-width: 768px) { .sidebar-ad { display: none; } .search-box input { width: 100%; } }
     </style>
 </head>
 <body>
 
     <div class="main-layout">
-        <aside class="sidebar-ad"><div class="ad-box" id="leftAdBox"></div></aside>
+        <aside class="sidebar-ad"><div class="ad-box"></div></aside>
 
         <div class="content-wrapper">
             <div class="header">
@@ -125,7 +88,7 @@
                 </div>
                 <h1 class="shop-name" id="shopNameDisplay">Spider Shop</h1>
                 <div class="marquee-container">
-                    <div class="marquee-text" id="taglineDisplay">ကျွန်ုပ်တို့၏ ဆိုင်မှ ကြိုဆိုပါတယ်။ လူကြီးမင်းတို့ လိုအပ်သော ပစ္စည်းများကို ယုံကြည်စိတ်ချစွာ ဝယ်ယူနိုင်ပါသည်။</div>
+                    <div class="marquee-text" id="taglineDisplay">Welcome to our shop!</div>
                 </div>
             </div>
 
@@ -141,11 +104,10 @@
                 </div>
             </div>
 
-            <div class="product-grid" id="productGrid">
-                </div>
+            <div class="product-grid" id="productGrid"></div>
         </div>
 
-        <aside class="sidebar-ad"><div class="ad-box" id="rightAdBox"></div></aside>
+        <aside class="sidebar-ad"><div class="ad-box"></div></aside>
     </div>
 
     <button class="chat-btn" onclick="openContact()"><i class="fas fa-comment-dots"></i></button>
@@ -158,13 +120,14 @@
             <input type="text" id="cusPhone" placeholder="ဖုန်းနံပါတ်">
             <input type="number" id="cusQty" value="1" min="1">
             <textarea id="cusAddress" rows="3" placeholder="လိပ်စာအပြည့်အစုံ"></textarea>
-            <button class="buy-btn" style="background:#10b981; font-size: 1rem;" id="submitBtn" onclick="sendOrder()">Confirm Order</button>
+            <button class="buy-btn" style="background:#10b981;" id="submitBtn" onclick="sendOrder()">Confirm Order</button>
         </div>
     </div>
 
     <script>
         const urlParams = new URLSearchParams(window.location.search);
-        const agentName = urlParams.get('agent') || "kid kid"; 
+        // အေးဂျင့်နာမည်ကို URL ကနေယူမယ်၊ မရှိရင် "hein" လို့ default ထားမယ် (သင့်ပုံထဲက နာမည်ဖြစ်တဲ့အတွက်)
+        const agentName = urlParams.get('agent') || "hein"; 
 
         const firebaseConfig = {
             apiKey: "AIzaSyCt1SMVSMqdX3u2viQ-n_BVwp6KgQwDLOM",
@@ -192,7 +155,13 @@
                         document.getElementById('logoArea').innerHTML = `<img src="${data.logoUrl}" alt="logo">`;
                     }
                     agentViber = data.viber || "";
+                } else {
+                    // ဒေတာမရှိသေးရင် Loading စာသားကို ဖျောက်လိုက်မယ်
+                    document.getElementById('shopNameDisplay').innerText = agentName;
                 }
+            }, error => {
+                console.error("Error loading settings:", error);
+                alert("Firebase Permission Error! ဆိုင်ဒေတာ ဖတ်မရပါ။");
             });
         }
 
@@ -202,13 +171,15 @@
               .onSnapshot(snapshot => {
                   allProducts = snapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
                   renderGrid(allProducts);
+              }, error => {
+                  console.error("Error loading products:", error);
               });
         }
 
         function renderGrid(items) {
             const grid = document.getElementById('productGrid');
             if(items.length === 0) {
-                grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; padding:60px; color:#94a3b8;">ပစ္စည်းမရှိသေးပါ။</p>';
+                grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; padding:60px;">ပစ္စည်းမရှိသေးပါ။</p>';
                 return;
             }
             grid.innerHTML = items.map(p => `
@@ -273,7 +244,7 @@
                 });
                 alert("မှာယူမှုအောင်မြင်ပါသည်။ အေးဂျင့်မှ ပြန်လည်ဆက်သွယ်ပေးပါမည်။");
                 closeModal();
-            } catch(e) { alert("Error!"); }
+            } catch(e) { alert("Error: " + e.message); }
             btn.disabled = false;
             btn.innerText = "Confirm Order";
         }
