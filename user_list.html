@@ -7,36 +7,44 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --primary: #4f46e5; --bg: #0f172a; --main-bg: #f1f5f9; }
+        :root { --primary: #4f46e5; --bg: #0f172a; --main-bg: #f1f5f9; --text-slate: #64748b; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--main-bg); margin: 0; display: flex; }
         
         /* Sidebar Style */
-        .sidebar { width: 260px; background: var(--bg); color: white; min-height: 100vh; padding: 1.5rem 1rem; position: fixed; z-index: 1000; }
-        .sidebar h2 { padding-left: 1rem; margin-bottom: 2rem; color: #fff; font-weight: 800; display: flex; align-items: center; gap: 10px; }
-        .nav-item { padding: 0.8rem 1rem; border-radius: 12px; color: #94a3b8; text-decoration: none; margin-bottom: 0.5rem; display: flex; align-items: center; transition: 0.3s; font-weight: 600; }
-        .nav-item:hover, .nav-item.active { background: var(--primary); color: white; }
-        .nav-item i { width: 24px; }
+        .sidebar { width: 260px; background: var(--bg); color: white; min-height: 100vh; padding: 1.5rem 1rem; position: fixed; z-index: 1000; transition: 0.3s; }
+        .sidebar h2 { padding-left: 1rem; margin-bottom: 2.5rem; color: #fff; font-weight: 800; display: flex; align-items: center; gap: 12px; font-size: 1.4rem; }
+        .nav-item { padding: 0.9rem 1.1rem; border-radius: 14px; color: #94a3b8; text-decoration: none; margin-bottom: 0.6rem; display: flex; align-items: center; transition: 0.3s; font-weight: 600; }
+        .nav-item:hover { background: rgba(255,255,255,0.05); color: white; }
+        .nav-item.active { background: var(--primary); color: white; box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3); }
+        .nav-item i { width: 24px; font-size: 1.1rem; }
 
         /* Main Content */
-        .main-content { margin-left: 260px; padding: 2.5rem; width: calc(100% - 260px); box-sizing: border-box; }
-        .header-section { margin-bottom: 2rem; }
-        .header-section h1 { margin: 0; font-size: 1.8rem; color: #1e293b; }
+        .main-content { margin-left: 260px; padding: 2.5rem; width: calc(100% - 260px); box-sizing: border-box; min-height: 100vh; }
+        .header-section { margin-bottom: 2.5rem; display: flex; justify-content: space-between; align-items: flex-end; }
+        .header-section h1 { margin: 0 0 5px 0; font-size: 1.9rem; color: #0f172a; font-weight: 800; letter-spacing: -0.5px; }
         
-        /* Table Style */
-        .table-card { background: white; border-radius: 20px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        /* Table Card */
+        .table-card { background: white; border-radius: 24px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); }
         table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; background: #f8fafc; padding: 16px; color: #64748b; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #e2e8f0; }
-        td { padding: 16px; border-bottom: 1px solid #f1f5f9; font-size: 0.95rem; color: #1e293b; }
+        th { text-align: left; background: #f8fafc; padding: 18px 20px; color: var(--text-slate); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; border-bottom: 1px solid #e2e8f0; font-weight: 700; }
+        td { padding: 20px; border-bottom: 1px solid #f1f5f9; font-size: 0.95rem; color: #1e293b; vertical-align: middle; }
+        tr:last-child td { border-bottom: none; }
         
-        .user-info { display: flex; align-items: center; gap: 12px; }
-        .user-avatar { width: 40px; height: 40px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #64748b; font-weight: 700; }
+        .user-info { display: flex; align-items: center; gap: 14px; }
+        .user-avatar { width: 44px; height: 44px; background: linear-gradient(135deg, #4f46e5, #818cf8); border-radius: 14px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.1rem; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2); }
         
-        .badge { padding: 4px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; background: #dcfce7; color: #15803d; }
+        .badge { padding: 6px 14px; border-radius: 10px; font-size: 0.75rem; font-weight: 700; background: #dcfce7; color: #166534; display: inline-flex; align-items: center; gap: 5px; }
+        .badge::before { content: ''; width: 6px; height: 6px; background: currentColor; border-radius: 50%; }
+
+        .search-wrapper { position: relative; width: 300px; }
+        .search-wrapper i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-slate); }
+        .search-wrapper input { width: 100%; padding: 12px 15px 12px 42px; border-radius: 14px; border: 1px solid #e2e8f0; outline: none; transition: 0.3s; font-family: inherit; }
+        .search-wrapper input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); }
 
         @media (max-width: 900px) {
-            .sidebar { width: 80px; padding: 2rem 0.5rem; }
+            .sidebar { width: 85px; padding: 2rem 0.8rem; }
             .sidebar h2 span, .nav-item span { display: none; }
-            .main-content { margin-left: 80px; width: calc(100% - 80px); padding: 1.5rem; }
+            .main-content { margin-left: 85px; width: calc(100% - 85px); padding: 1.5rem; }
         }
     </style>
 </head>
@@ -48,27 +56,33 @@
         <a href="inventory.html" class="nav-item"><i class="fas fa-box"></i> <span>Inventory</span></a>
         <a href="user_list.html" class="nav-item active"><i class="fas fa-users"></i> <span>Customers</span></a>
         <a href="shop-settings.html" class="nav-item"><i class="fas fa-cog"></i> <span>Shop Settings</span></a>
-        <a href="#" onclick="handleLogout()" class="nav-item" style="margin-top: auto; color: #fb7185;"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+        <a href="#" onclick="handleLogout()" class="nav-item" style="margin-top: 5rem; color: #fb7185;"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
     </div>
 
     <div class="main-content">
         <div class="header-section">
-            <h1>Customer Information</h1>
-            <p style="color: #64748b;">သင့် shopping မှာ အကောင့်ဖွင့်ထားသော အသုံးပြုသူများစာရင်း</p>
+            <div>
+                <h1>Customer Database</h1>
+                <p style="color: var(--text-slate); font-weight: 500;">သင့်ဆိုင်တွင် မှတ်ပုံတင်ထားသော ဝယ်ယူသူများစာရင်း</p>
+            </div>
+            <div class="search-wrapper">
+                <i class="fas fa-search"></i>
+                <input type="text" id="userSearch" placeholder="ရှာဖွေရန်..." onkeyup="filterTable()">
+            </div>
         </div>
 
         <div class="table-card">
             <table>
                 <thead>
                     <tr>
-                        <th>Customer Name</th>
-                        <th>Email / ID</th>
+                        <th>Customer / Client</th>
+                        <th>Contact Detail</th>
                         <th>Joined Date</th>
                         <th>Status</th>
                     </tr>
                 </thead>
                 <tbody id="userTableBody">
-                    <tr><td colspan="4" style="text-align:center; padding: 40px; color: #94a3b8;">Loading customers...</td></tr>
+                    <tr><td colspan="4" style="text-align:center; padding: 60px; color: #94a3b8;"><i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 15px; display: block;"></i>Loading data...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -88,19 +102,23 @@
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
+        // လက်ရှိ Login ဝင်ထားတဲ့ Agent နာမည်ကို ယူမယ် (သင့် Dashboard အရ kid kid သို့မဟုတ် hein ဖြစ်နိုင်ပါတယ်)
+        const currentAgent = localStorage.getItem('agentName') || "kid kid"; 
+
         function fetchUsers() {
-            // "users" collection ထဲက data တွေကို ဆွဲထုတ်ခြင်း
+            // "users" collection ထဲက ဒီ agent နဲ့သက်ဆိုင်တဲ့ data တွေကို ဆွဲထုတ်ခြင်း
+            // မှတ်ချက် - Users တွေကို Agent အလိုက်ခွဲသိမ်းထားရင် .where("agent_name", "==", currentAgent) သုံးနိုင်ပါတယ်
             db.collection("users").orderBy("createdAt", "desc").onSnapshot(snapshot => {
                 const tbody = document.getElementById('userTableBody');
                 
                 if (snapshot.empty) {
-                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 40px;">အကောင့်ဖွင့်ထားသည့် user မရှိသေးပါ။</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 60px;"><i class="fas fa-user-slash" style="font-size: 2.5rem; color: #e2e8f0; display: block; margin-bottom: 15px;"></i>အကောင့်ဖွင့်ထားသည့် user မရှိသေးပါ။</td></tr>';
                     return;
                 }
 
                 tbody.innerHTML = snapshot.docs.map(doc => {
                     const user = doc.data();
-                    const joinedDate = user.createdAt ? new Date(user.createdAt.seconds * 1000).toLocaleDateString() : '-';
+                    const joinedDate = user.createdAt ? new Date(user.createdAt.seconds * 1000).toLocaleDateString('en-GB') : 'Just now';
                     const initial = user.name ? user.name.charAt(0).toUpperCase() : '?';
                     
                     return `
@@ -108,23 +126,48 @@
                             <td>
                                 <div class="user-info">
                                     <div class="user-avatar">${initial}</div>
-                                    <div style="font-weight: 700;">${user.name || 'Unknown User'}</div>
+                                    <div>
+                                        <div style="font-weight: 700; color: #0f172a;">${user.name || 'Client User'}</div>
+                                        <div style="font-size: 0.8rem; color: var(--text-slate);">ID: ${doc.id.substring(0, 8)}</div>
+                                    </div>
                                 </div>
                             </td>
-                            <td style="color: #64748b;">${user.email || user.phone || doc.id}</td>
-                            <td>${joinedDate}</td>
+                            <td style="color: #475569; font-weight: 500;">
+                                <i class="far fa-envelope" style="margin-right: 5px; color: #94a3b8;"></i> ${user.email || user.phone || 'No Contact'}
+                            </td>
+                            <td style="color: #64748b;">${joinedDate}</td>
                             <td><span class="badge">Active</span></td>
                         </tr>
                     `;
                 }).join('');
             }, err => {
-                console.error("Error fetching users:", err);
-                document.getElementById('userTableBody').innerHTML = '<tr><td colspan="4" style="text-align:center; color:red; padding: 20px;">ဒေတာကြည့်ရှုရန် ခွင့်ပြုချက်မရှိပါ။ (Firebase Rules ကိုစစ်ပါ)</td></tr>';
+                console.error("Error:", err);
+                document.getElementById('userTableBody').innerHTML = '<tr><td colspan="4" style="text-align:center; color:#ef4444; padding: 40px;">ဒေတာကြည့်ရှုရန် ခွင့်ပြုချက်မရှိပါ။ Firebase Rules ကို စစ်ဆေးပါ။</td></tr>';
             });
         }
 
+        function filterTable() {
+            const input = document.getElementById("userSearch");
+            const filter = input.value.toUpperCase();
+            const table = document.querySelector("table");
+            const tr = table.getElementsByTagName("tr");
+
+            for (let i = 1; i < tr.length; i++) {
+                let td = tr[i].getElementsByTagName("td")[0];
+                if (td) {
+                    let textValue = td.textContent || td.innerText;
+                    if (textValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
         function handleLogout() {
-            localStorage.removeItem('currentAgent');
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('agentName');
             window.location.href = "login.html";
         }
 
