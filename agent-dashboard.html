@@ -7,103 +7,102 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --primary: #4f46e5; --bg: #f8fafc; --sidebar: #1e293b; }
+        :root { --primary: #4f46e5; --bg: #f1f5f9; --sidebar: #0f172a; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); margin: 0; display: flex; }
         
         /* Sidebar Style */
         .sidebar { width: 260px; background: var(--sidebar); color: white; min-height: 100vh; padding: 2rem 1rem; position: fixed; z-index: 1000; }
-        .sidebar h2 { padding-left: 1rem; margin-bottom: 2rem; color: #fff; font-weight: 800; letter-spacing: 1px; }
-        .nav-item { padding: 0.8rem 1rem; border-radius: 8px; color: #cbd5e1; text-decoration: none; margin-bottom: 0.5rem; display: flex; align-items: center; transition: 0.3s; cursor: pointer; border: none; background: transparent; width: 100%; font-size: 1rem; text-align: left; }
+        .sidebar h2 { padding-left: 1rem; margin-bottom: 2.5rem; color: #fff; font-weight: 800; display: flex; align-items: center; gap: 10px; }
+        .nav-item { padding: 0.9rem 1rem; border-radius: 12px; color: #94a3b8; text-decoration: none; margin-bottom: 0.5rem; display: flex; align-items: center; transition: 0.3s; font-weight: 600; }
         .nav-item:hover, .nav-item.active { background: var(--primary); color: white; }
-        .nav-item i { width: 20px; margin-right: 10px; }
+        .nav-item i { width: 24px; font-size: 1.1rem; }
 
         /* Main Content */
         .main-content { margin-left: 280px; padding: 2.5rem; width: calc(100% - 280px); }
-        .welcome-card { background: linear-gradient(135deg, #4f46e5, #818cf8); color: white; padding: 2.5rem; border-radius: 20px; margin-bottom: 2rem; box-shadow: 0 10px 20px rgba(79, 70, 229, 0.2); }
-        .welcome-card h1 { margin: 0; font-size: 2rem; }
+        .welcome-card { background: linear-gradient(135deg, #4f46e5, #6366f1); color: white; padding: 2rem; border-radius: 24px; margin-bottom: 2rem; box-shadow: 0 10px 25px rgba(79, 70, 229, 0.15); position: relative; overflow: hidden; }
+        .welcome-card h1 { margin: 0; font-size: 1.8rem; }
         
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; }
-        .card { background: white; padding: 1.5rem; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; transition: 0.3s; }
-        .card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
-        .card h3 { margin-top: 0; color: #1e293b; font-size: 1.1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 12px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+        .card { background: white; padding: 1.5rem; border-radius: 20px; border: 1px solid #e2e8f0; transition: 0.3s; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 12px 20px -5px rgba(0,0,0,0.05); }
+        .card h3 { margin-top: 0; color: #1e293b; font-size: 1.1rem; display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem; }
         
-        .info-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f8fafc; }
+        .info-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
         .info-label { color: #64748b; font-weight: 500; }
         .info-value { color: #1e293b; font-weight: 700; }
         
-        .status-badge { background: #dcfce7; color: #166534; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
+        .status-badge { background: #dcfce7; color: #15803d; padding: 4px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 700; }
 
         /* Order Table */
-        .order-section { margin-top: 2rem; background: white; padding: 1.5rem; border-radius: 16px; border: 1px solid #e2e8f0; }
+        .order-section { margin-top: 2rem; background: white; padding: 1.5rem; border-radius: 20px; border: 1px solid #e2e8f0; }
         table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-        th { text-align: left; background: #f1f5f9; padding: 12px; color: #64748b; font-size: 0.85rem; }
-        td { padding: 12px; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; color: #1e293b; }
+        th { text-align: left; background: #f8fafc; padding: 14px; color: #64748b; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        td { padding: 14px; border-bottom: 1px solid #f1f5f9; font-size: 0.95rem; color: #1e293b; }
 
-        .contact-form label { display: block; font-size: 0.85rem; color: #64748b; margin-bottom: 8px; margin-top: 15px; font-weight: 600; }
-        .contact-form input { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; outline: none; transition: 0.3s; }
-        .save-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 14px; border-radius: 10px; cursor: pointer; font-weight: 700; margin-top: 25px; transition: 0.2s; }
-
-        @media (max-width: 768px) {
-            .sidebar { width: 80px; padding: 1rem 0.5rem; }
+        @media (max-width: 900px) {
+            .sidebar { width: 80px; padding: 2rem 0.5rem; }
             .sidebar h2, .nav-item span { display: none; }
-            .main-content { margin-left: 100px; width: calc(100% - 100px); }
+            .main-content { margin-left: 80px; width: calc(100% - 80px); padding: 1.5rem; }
         }
     </style>
 </head>
 <body>
 
     <div class="sidebar">
-        <h2>Spider.io</h2>
-        <a href="#" class="nav-item active"><i class="fas fa-home"></i> <span>Dashboard</span></a>
-        <a href="inventory.html" id="linkInventory" class="nav-item"><i class="fas fa-box-open"></i> <span>My Products</span></a>
-        <a href="user_list.html" id="linkUsers" class="nav-item"><i class="fas fa-users"></i> <span>Customer List</span></a>
-        <a href="banners.html" class="nav-item"><i class="fas fa-ad"></i> <span>Shop Banner</span></a>
-        <button class="nav-item" onclick="handleLogout()" style="margin-top: 40px; color: #f87171;"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></button>
+        <h2><i class="fas fa-spider"></i> <span>Spider.io</span></h2>
+        <a href="agent-dashboard.html" class="nav-item active"><i class="fas fa-th-large"></i> <span>Dashboard</span></a>
+        <a href="inventory.html" class="nav-item"><i class="fas fa-box"></i> <span>Inventory</span></a>
+        <a href="user_list.html" class="nav-item"><i class="fas fa-users"></i> <span>Customers</span></a>
+        <a href="shop-settings.html" class="nav-item"><i class="fas fa-store"></i> <span>Shop Settings</span></a>
+        <a href="#" onclick="handleLogout()" class="nav-item" style="margin-top: auto; color: #fb7185;"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
     </div>
 
     <div class="main-content">
         <div class="welcome-card">
             <h1 id="welcomeAgent">Welcome back!</h1>
-            <p>သင့်ဆိုင်ရဲ့ အခြေအနေနဲ့ အချက်အလက်များကို ဤနေရာတွင် စစ်ဆေးနိုင်ပါသည်။</p>
+            <p style="opacity: 0.9;">သင့်ဆိုင်ရဲ့ အခြေအနေနဲ့ အော်ဒါများကို တစ်နေရာတည်းမှာ စီမံခန့်ခွဲပါ။</p>
         </div>
 
         <div class="grid">
             <div class="card">
-                <h3><i class="fas fa-store"></i> Shop Info</h3>
+                <h3><i class="fas fa-shop" style="color: #4f46e5;"></i> Shop Overview</h3>
                 <div class="info-row"><span class="info-label">Shop Name:</span><span class="info-value" id="shopNameDisplay">Loading...</span></div>
-                <div class="info-row"><span class="info-label">Contact:</span><span class="info-value" id="shopContact">Loading...</span></div>
-                <div class="info-row"><span class="info-label">Status:</span><span class="status-badge" id="accountStatus">Active</span></div>
+                <div class="info-row"><span class="info-label">Viber:</span><span class="info-value" id="shopContact">-</span></div>
+                <div class="info-row"><span class="info-label">Status:</span><span class="status-badge">Active</span></div>
             </div>
 
             <div class="card">
-                <h3><i class="fas fa-chart-line"></i> Quick Stats</h3>
-                <div class="info-row"><span class="info-label">Products:</span><span class="info-value" id="totalProducts">0</span></div>
-                <div class="info-row"><span class="info-label">Orders:</span><span class="info-value" id="totalOrders">0</span></div>
-                <div class="info-row"><span class="info-label">Last Sync:</span><span class="info-value" id="lastUpdate" style="font-size: 0.8rem;">-</span></div>
-            </div>
-
-            <div class="card">
-                <h3><i class="fas fa-comments"></i> Chat Settings</h3>
-                <div class="contact-form">
-                    <label>Viber Number</label><input type="text" id="viberInput" placeholder="959...">
-                    <label>Telegram Username</label><input type="text" id="telegramInput" placeholder="username">
-                    <button class="save-btn" id="saveBtn" onclick="saveContactSettings()">Update Settings</button>
-                </div>
+                <h3><i class="fas fa-chart-pie" style="color: #10b981;"></i> Quick Stats</h3>
+                <div class="info-row"><span class="info-label">Total Products:</span><span class="info-value" id="totalProducts">0</span></div>
+                <div class="info-row"><span class="info-label">Total Orders:</span><span class="info-value" id="totalOrders">0</span></div>
+                <div class="info-row"><span class="info-label">Last Update:</span><span class="info-value" id="lastUpdate" style="font-size: 0.75rem; color: #94a3b8;">-</span></div>
             </div>
         </div>
 
         <div class="order-section">
-            <h3><i class="fas fa-shopping-cart"></i> Recent Orders</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0;"><i class="fas fa-shopping-bag"></i> Recent Orders</h3>
+                <a href="#" style="font-size: 0.85rem; color: var(--primary); text-decoration: none; font-weight: 600;">View All</a>
+            </div>
             <table>
-                <thead><tr><th>Product</th><th>Qty</th><th>Customer</th><th>Phone</th><th>Status</th></tr></thead>
-                <tbody id="orderTableBody"><tr><td colspan="5" style="text-align:center;">Loading orders...</td></tr></tbody>
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Customer</th>
+                        <th>Phone</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody id="orderTableBody">
+                    <tr><td colspan="5" style="text-align:center; padding: 40px; color: #94a3b8;">Loading orders...</td></tr>
+                </tbody>
             </table>
         </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 
     <script>
         const firebaseConfig = {
@@ -122,50 +121,49 @@
             if (!agentData) { window.location.href = "login.html"; return; }
 
             const agentName = agentData.name;
-            document.getElementById('welcomeAgent').innerText = `Welcome, ${agentName}!`;
-            document.getElementById('shopNameDisplay').innerText = agentName;
-            document.getElementById('shopContact').innerText = agentData.gmail_phone || "N/A";
+            document.getElementById('welcomeAgent').innerText = `မင်္ဂလာပါ ${agentName}!`;
 
-            // Sidebar links updates
-            document.getElementById('linkInventory').href = `inventory.html?agent=${agentName}`;
-            document.getElementById('linkUsers').href = `user_list.html?agent=${agentName}`;
+            // Load Shop Settings (နာမည်နဲ့ ဖုန်းကို settings ထဲက ယူမယ်)
+            db.collection("shop_settings").doc(agentName).onSnapshot(doc => {
+                if(doc.exists) {
+                    const data = doc.data();
+                    document.getElementById('shopNameDisplay').innerText = data.shopName || agentName;
+                    document.getElementById('shopContact').innerText = data.viber || "သတ်မှတ်မထားပါ";
+                } else {
+                    document.getElementById('shopNameDisplay').innerText = agentName;
+                }
+            });
 
-            // Real-time Stats
+            // Count Products
             db.collection("products").where("agent_name", "==", agentName).onSnapshot(snap => {
                 document.getElementById('totalProducts').innerText = snap.size;
             });
 
-            db.collection("orders").where("agent_name", "==", agentName).orderBy("created_at", "desc").onSnapshot(snap => {
+            // Load Orders
+            db.collection("orders").where("agent_name", "==", agentName).orderBy("created_at", "desc").limit(5).onSnapshot(snap => {
                 document.getElementById('totalOrders').innerText = snap.size;
                 const tbody = document.getElementById('orderTableBody');
-                tbody.innerHTML = snap.empty ? '<tr><td colspan="5" style="text-align:center;">အော်ဒါမရှိပါ။</td></tr>' : 
-                    snap.docs.map(doc => `<tr><td>${doc.data().product_name}</td><td>${doc.data().quantity || 1}</td><td>${doc.data().customer_name}</td><td>${doc.data().customer_phone}</td><td>${doc.data().status || 'Pending'}</td></tr>`).join('');
+                
+                if (snap.empty) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 30px;">အော်ဒါမရှိသေးပါ။</td></tr>';
+                } else {
+                    tbody.innerHTML = snap.docs.map(doc => {
+                        const d = doc.data();
+                        const orderDate = d.created_at ? new Date(d.created_at.seconds * 1000).toLocaleDateString() : '-';
+                        return `
+                            <tr>
+                                <td style="font-weight:600;">${d.product_name}</td>
+                                <td>${d.customer_name}</td>
+                                <td>${d.customer_phone}</td>
+                                <td><span class="status-badge" style="background:#fef3c7; color:#92400e;">${d.status || 'Pending'}</span></td>
+                                <td style="color:#64748b; font-size: 0.85rem;">${orderDate}</td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
                 document.getElementById('lastUpdate').innerText = new Date().toLocaleTimeString();
             });
-
-            // Load Private Settings
-            db.collection("agents").where("name", "==", agentName).get().then(snap => {
-                if(!snap.empty) {
-                    const data = snap.docs[0].data();
-                    document.getElementById('viberInput').value = data.viber || '';
-                    document.getElementById('telegramInput').value = data.telegram || '';
-                }
-            });
         };
-
-        async function saveContactSettings() {
-            const agentData = JSON.parse(localStorage.getItem('currentAgent'));
-            const viber = document.getElementById('viberInput').value;
-            const telegram = document.getElementById('telegramInput').value;
-            
-            try {
-                const snap = await db.collection("agents").where("name", "==", agentData.name).get();
-                if(!snap.empty) {
-                    await db.collection("agents").doc(snap.docs[0].id).update({ viber, telegram });
-                    alert("Settings updated!");
-                }
-            } catch (e) { alert("Error updating settings."); }
-        }
 
         function handleLogout() {
             localStorage.removeItem('currentAgent');
