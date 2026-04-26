@@ -12,36 +12,40 @@
         
         /* Sidebar Style */
         .sidebar { width: 260px; background: var(--sidebar); color: white; min-height: 100vh; padding: 2rem 1rem; position: fixed; z-index: 1000; }
-        .sidebar h2 { padding-left: 1rem; margin-bottom: 2rem; color: #fff; }
+        .sidebar h2 { padding-left: 1rem; margin-bottom: 2rem; color: #fff; font-weight: 800; letter-spacing: 1px; }
         .nav-item { padding: 0.8rem 1rem; border-radius: 8px; color: #cbd5e1; text-decoration: none; margin-bottom: 0.5rem; display: flex; align-items: center; transition: 0.3s; cursor: pointer; border: none; background: transparent; width: 100%; font-size: 1rem; text-align: left; }
         .nav-item:hover, .nav-item.active { background: var(--primary); color: white; }
         .nav-item i { width: 20px; margin-right: 10px; }
 
         /* Main Content */
         .main-content { margin-left: 280px; padding: 2.5rem; width: calc(100% - 280px); }
-        .welcome-card { background: linear-gradient(135deg, #4f46e5, #818cf8); color: white; padding: 2rem; border-radius: 16px; margin-bottom: 2rem; }
+        .welcome-card { background: linear-gradient(135deg, #4f46e5, #818cf8); color: white; padding: 2.5rem; border-radius: 20px; margin-bottom: 2rem; box-shadow: 0 10px 20px rgba(79, 70, 229, 0.2); }
+        .welcome-card h1 { margin: 0; font-size: 2rem; }
+        .welcome-card p { opacity: 0.9; margin-top: 10px; }
         
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
-        .card { background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
-        .card h3 { margin-top: 0; color: #1e293b; font-size: 1.1rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 15px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; }
+        .card { background: white; padding: 1.5rem; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; transition: 0.3s; }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        .card h3 { margin-top: 0; color: #1e293b; font-size: 1.1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 12px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
         
-        .info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f8fafc; }
+        .info-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f8fafc; }
         .info-label { color: #64748b; font-weight: 500; }
-        .info-value { color: #1e293b; font-weight: 600; }
+        .info-value { color: #1e293b; font-weight: 700; }
         
-        .status-badge { background: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; }
+        .status-badge { background: #dcfce7; color: #166534; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
 
-        /* Input Styles for Contact Settings */
-        .contact-form label { display: block; font-size: 0.85rem; color: #64748b; margin-bottom: 5px; margin-top: 10px; }
-        .contact-form input { width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; outline: none; transition: 0.3s; }
-        .contact-form input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
-        .save-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 600; margin-top: 20px; transition: 0.2s; }
-        .save-btn:hover { background: #4338ca; }
+        /* Contact Settings Form */
+        .contact-form label { display: block; font-size: 0.85rem; color: #64748b; margin-bottom: 8px; margin-top: 15px; font-weight: 600; }
+        .contact-form input { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; outline: none; transition: 0.3s; font-family: inherit; }
+        .contact-form input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); }
+        .save-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 14px; border-radius: 10px; cursor: pointer; font-weight: 700; margin-top: 25px; transition: 0.2s; font-size: 1rem; }
+        .save-btn:hover { background: #4338ca; transform: scale(1.01); }
+        .save-btn:active { transform: scale(0.99); }
 
         @media (max-width: 768px) {
             .sidebar { width: 80px; padding: 1rem 0.5rem; }
             .sidebar h2, .nav-item span { display: none; }
-            .main-content { margin-left: 100px; width: calc(100% - 100px); }
+            .main-content { margin-left: 100px; width: calc(100% - 100px); padding: 1.5rem; }
         }
     </style>
 </head>
@@ -64,7 +68,7 @@
         <a href="profile-settings.html" class="nav-item">
             <i class="fas fa-user-cog"></i> <span>Profile Settings</span>
         </a>
-        <button class="nav-item" onclick="handleLogout()" style="margin-top: 20px; opacity: 0.7;">
+        <button class="nav-item" onclick="handleLogout()" style="margin-top: 40px; opacity: 0.7; color: #f87171;">
             <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
         </button>
     </div>
@@ -72,12 +76,12 @@
     <div class="main-content">
         <div class="welcome-card">
             <h1 id="welcomeAgent">Welcome back!</h1>
-            <p>Here is your shop performance and account overview.</p>
+            <p>သင့်ဆိုင်ရဲ့ အခြေအနေနဲ့ အချက်အလက်များကို ဤနေရာတွင် စစ်ဆေးနိုင်ပါသည်။</p>
         </div>
 
         <div class="grid">
             <div class="card">
-                <h3>Shop Information</h3>
+                <h3><i class="fas fa-store text-primary"></i> Shop Information</h3>
                 <div class="info-row">
                     <span class="info-label">Shop Name:</span>
                     <span class="info-value" id="shopNameDisplay">Loading...</span>
@@ -87,36 +91,42 @@
                     <span class="info-value" id="shopContact">Loading...</span>
                 </div>
                 <div class="info-row">
-                    <span class="info-label">Status:</span>
+                    <span class="info-label">Account Status:</span>
                     <span class="status-badge" id="accountStatus">Active</span>
                 </div>
             </div>
 
             <div class="card">
-                <h3>Quick Stats</h3>
+                <h3><i class="fas fa-chart-line text-primary"></i> Quick Stats</h3>
                 <div class="info-row">
                     <span class="info-label">Total Products:</span>
-                    <span class="info-value" id="totalProducts">0</span>
+                    <span class="info-value" id="totalProducts" style="font-size: 1.2rem; color: var(--primary);">0</span>
                 </div>
                 <div class="info-row">
                     <span class="info-label">Current Orders:</span>
-                    <span class="info-value" id="totalOrders">0</span>
+                    <span class="info-value" id="totalOrders" style="font-size: 1.2rem; color: #10b981;">0</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Last Updated:</span>
+                    <span class="info-value" style="font-size: 0.8rem; color: #94a3b8;">Just Now</span>
                 </div>
             </div>
 
             <div class="card" id="contact-section">
-                <h3>Live Chat Settings</h3>
+                <h3><i class="fas fa-comments text-primary"></i> Live Chat Settings</h3>
                 <div class="contact-form">
-                    <label><i class="fab fa-viber"></i> Viber Number (e.g. 959xxx)</label>
+                    <label><i class="fab fa-viber" style="color: #7360f2;"></i> Viber Number</label>
                     <input type="text" id="viberInput" placeholder="959777xxxxxx">
                     
-                    <label><i class="fab fa-telegram"></i> Telegram Username</label>
+                    <label><i class="fab fa-telegram" style="color: #0088cc;"></i> Telegram Username</label>
                     <input type="text" id="telegramInput" placeholder="username (without @)">
                     
-                    <label><i class="fas fa-phone-alt"></i> Public Phone Number</label>
+                    <label><i class="fas fa-phone-alt" style="color: #2ecc71;"></i> Public Phone Number</label>
                     <input type="text" id="phoneInput" placeholder="09xxxxxxxxx">
                     
-                    <button class="save-btn" onclick="saveContactSettings()">Update Live Chat</button>
+                    <button class="save-btn" id="saveBtn" onclick="saveContactSettings()">
+                        <i class="fas fa-save"></i> Update Live Chat
+                    </button>
                 </div>
             </div>
         </div>
@@ -140,15 +150,15 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
 
-        // Security Check: အကောင့်ဝင်မထားလျှင် login page သို့ ပြန်ပို့မည်
         window.onload = function() {
             const agentData = JSON.parse(localStorage.getItem('currentAgent'));
 
             if (agentData) {
+                // Dashboard UI အချက်အလက်များ ထည့်သွင်းခြင်း
                 const displayName = agentData.name || agentData.shop_name || "Agent";
                 document.getElementById('welcomeAgent').innerText = `Welcome back, ${displayName}!`;
                 document.getElementById('shopNameDisplay').innerText = displayName;
-                document.getElementById('shopContact').innerText = agentData.gmail_phone;
+                document.getElementById('shopContact').innerText = agentData.gmail_phone || agentData.email || "Not Set";
                 
                 const statusBadge = document.getElementById('accountStatus');
                 statusBadge.innerText = agentData.status || "Active";
@@ -157,34 +167,27 @@
                     statusBadge.style.color = "#991b1b";
                 }
 
-                // ပစ္စည်းအရေအတွက်ကို Live ရေတွက်ခြင်း
+                // ပစ္စည်းအရေအတွက်ကို Live ရေတွက်ခြင်း (Filter ကို agent_name ဖြင့် စစ်သည်)
                 db.collection("products")
                   .where("agent_name", "==", displayName)
                   .onSnapshot((snapshot) => {
                       document.getElementById('totalProducts').innerText = snapshot.size;
-                  });
+                  }, (err) => console.log("Product fetch error:", err));
 
                 // အော်ဒါအရေအတွက်ကို Live ရေတွက်ခြင်း
                 db.collection("orders")
                   .where("agent_name", "==", displayName)
                   .onSnapshot((snapshot) => {
                       document.getElementById('totalOrders').innerText = snapshot.size;
-                  });
+                  }, (err) => console.log("Order fetch error:", err));
 
                 loadContactSettings();
             } else {
-                // localStorage မှာ data မရှိလျှင် login page သို့ ပြန်သွားမည်
                 window.location.href = "login.html"; 
             }
         };
 
-        // Auth state ပြောင်းလဲမှုကို စောင့်ကြည့်ရန် (အပိုဆောင်းလုံခြုံရေး)
-        auth.onAuthStateChanged((user) => {
-            if (!user && !localStorage.getItem('currentAgent')) {
-                window.location.href = "login.html";
-            }
-        });
-
+        // အချက်အလက်များ ပြန်ဆွဲထုတ်ခြင်း
         function loadContactSettings() {
             db.collection("shop_settings").doc("contact").get().then((doc) => {
                 if(doc.exists) {
@@ -193,38 +196,45 @@
                     document.getElementById('telegramInput').value = data.telegram || '';
                     document.getElementById('phoneInput').value = data.phone || '';
                 }
-            });
+            }).catch(err => console.error("Load settings error:", err));
         }
 
-        function saveContactSettings() {
-            const viber = document.getElementById('viberInput').value;
-            const telegram = document.getElementById('telegramInput').value;
-            const phone = document.getElementById('phoneInput').value;
+        // အချက်အလက်များ သိမ်းဆည်းခြင်း
+        async function saveContactSettings() {
+            const btn = document.getElementById('saveBtn');
+            const viber = document.getElementById('viberInput').value.trim();
+            const telegram = document.getElementById('telegramInput').value.trim();
+            const phone = document.getElementById('phoneInput').value.trim();
 
-            db.collection("shop_settings").doc("contact").set({
-                viber: viber,
-                telegram: telegram,
-                phone: phone
-            }).then(() => {
-                alert("Live Chat အချက်အလက်များ ပြင်ဆင်ပြီးပါပြီ။");
-            }).catch((error) => {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+
+            try {
+                await db.collection("shop_settings").doc("contact").set({
+                    viber: viber,
+                    telegram: telegram,
+                    phone: phone,
+                    last_updated: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true }); // merge: true ထည့်ထားခြင်းဖြင့် ရှိပြီးသား data မပျက်စေပါ
+                
+                alert("Live Chat အချက်အလက်များ အောင်မြင်စွာ ပြင်ဆင်ပြီးပါပြီ။");
+            } catch (error) {
                 console.error("Error updating contact: ", error);
-                alert("ပြင်ဆင်မှု မအောင်မြင်ပါ။");
-            });
+                alert("ပြင်ဆင်မှု မအောင်မြင်ပါ။ Error: " + error.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-save"></i> Update Live Chat';
+            }
         }
 
         async function handleLogout() {
             if(confirm("အကောင့်ထဲက ထွက်မှာ သေချာပါသလား?")) {
                 try {
-                    // Firebase Logout လုပ်ခြင်း
                     await auth.signOut();
-                    // LocalStorage ရှင်းလင်းခြင်း
                     localStorage.removeItem('currentAgent');
-                    // Login စာမျက်နှာသို့ ပြန်ပို့ခြင်း
                     window.location.href = "login.html";
                 } catch (error) {
                     console.error("Logout Error:", error);
-                    // Error တက်သော်လည်း Local Storage ကို ရှင်းပြီး ပြန်ထုတ်ပေးမည်
                     localStorage.removeItem('currentAgent');
                     window.location.href = "login.html";
                 }
