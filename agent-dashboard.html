@@ -121,10 +121,22 @@
         const db = firebase.firestore();
 
         window.onload = function() {
-            const agentData = JSON.parse(localStorage.getItem('currentAgent'));
-            if (!agentData) { window.location.href = "login.html"; return; }
+            // URL ကနေ အေးဂျင့်နာမည်ကို အရင်ရှာမယ်
+            const urlParams = new URLSearchParams(window.location.search);
+            const agentFromUrl = urlParams.get('agent');
+            
+            // localStorage ထဲက အေးဂျင့်ဒေတာကို ယူမယ်
+            const loggedInAgent = JSON.parse(localStorage.getItem('currentAgent'));
 
-            const agentName = agentData.name;
+            // URL မှာပါရင် အဲ့ဒါကိုယူ၊ မပါရင် Login ဝင်ထားတဲ့သူကိုယူ
+            const agentName = agentFromUrl || (loggedInAgent ? loggedInAgent.name : null);
+
+            // နှစ်ခုလုံးမရှိရင် Login Page ကို ပြန်လွှတ်မယ်
+            if (!agentName) { 
+                window.location.href = "login.html"; 
+                return; 
+            }
+
             document.getElementById('welcomeAgent').innerText = `မင်္ဂလာပါ ${agentName}!`;
 
             // Shop Settings Data
