@@ -85,8 +85,8 @@
             <div class="card">
                 <h3><i class="fas fa-shop" style="color: #4f46e5;"></i> Shop Overview</h3>
                 <div class="info-row"><span class="info-label">Shop Name:</span><span class="info-value" id="shopNameDisplay">Loading...</span></div>
-                <div class="info-row"><span class="info-label">Viber:</span><span class="info-value" id="shopContact">-</span></div>
-                <div class="info-row"><span class="info-label">Status:</span><span class="status-badge-active">Active</span></div>
+                <div class="info-row"><span class="info-label">Contact:</span><span class="info-value" id="shopContact">-</span></div>
+                <div class="info-row"><span class="info-label">Status:</span><span class="status-badge-active" id="agentStatusBadge">Active</span></div>
             </div>
 
             <div class="card">
@@ -121,27 +121,17 @@
         </div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyCt1SMVSMqdX3u2viQ-n_BVwp6KgQwDLOM",
-            authDomain: "my-shop-admin-cedb1.firebaseapp.com",
-            projectId: "my-shop-admin-cedb1",
-            storageBucket: "my-shop-admin-cedb1.firebasestorage.app",
-            messagingSenderId: "1073972515996",
-            appId: "1:1073972515996:web:28049f5e5977e3a8e74959"
-        };
-        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
+        // Vercel API Base URL
+        const API_BASE_URL = "https://shopping-sable-sigma.vercel.app/api";
         let generatedShopLink = "";
 
-        window.onload = function() {
+        window.onload = async function() {
             const urlParams = new URLSearchParams(window.location.search);
             const agentFromUrl = urlParams.get('agent');
             const loggedInAgent = JSON.parse(localStorage.getItem('currentAgent'));
+            
+            // Login check: URL သို့မဟုတ် LocalStorage တစ်ခုခုမှာ ရှိရမယ်
             const agentName = agentFromUrl || (loggedInAgent ? loggedInAgent.name : null);
 
             if (!agentName) { 
@@ -159,70 +149,88 @@
 
             document.getElementById('welcomeAgent').innerText = `မင်္ဂလာပါ ${agentName}!`;
 
-            // Shopping Link သတ်မှတ်ခြင်း (GitHub Pages သို့မဟုတ် Hosting URL အမှန်ဖြစ်အောင် window.location.origin သုံးထားသည်)
+            // Shopping Link သတ်မှတ်ခြင်း
             const baseUrl = window.location.origin + window.location.pathname.replace('agent-dashboard.html', 'index.html');
             generatedShopLink = `${baseUrl}?shop=${encodeURIComponent(agentName)}`;
             document.getElementById('shopLinkDisplay').innerText = generatedShopLink;
 
-            // Shop Settings Data ဆွဲခြင်း
-            db.collection("shop_settings").doc(agentName).onSnapshot(doc => {
-                if(doc.exists) {
-                    const data = doc.data();
-                    document.getElementById('shopNameDisplay').innerText = data.shopName || agentName;
-                    document.getElementById('shopContact').innerText = data.viber || "သတ်မှတ်မထားပါ";
-                } else {
-                    document.getElementById('shopNameDisplay').innerText = agentName;
+            // Fetch Data
+            fetchAgentData(agentName);
+            fetchStatsAndOrders(agentName);
+        };
+
+        async function fetchAgentData(agentName) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/agents/list`);
+                const agents = await response.json();
+                const currentAgent = agents.find(a => a.shopName === agentName || a.name === agentName);
+
+                if (currentAgent) {
+                    document.getElementById('shopNameDisplay').innerText = currentAgent.shopName || currentAgent.name;
+                    document.getElementById('shopContact').innerText = currentAgent.contact || currentAgent.gmail_phone || "-";
+                    document.getElementById('agentStatusBadge').innerText = currentAgent.status || "Active";
+                    
+                    if(currentAgent.status === "Disabled") {
+                        document.getElementById('agentStatusBadge').style.background = "#fee2e2";
+                        document.getElementById('agentStatusBadge').style.color = "#ef4444";
+                    }
                 }
-            }, error => {
-                console.error("Settings Error:", error);
-                document.getElementById('shopNameDisplay').innerText = "Permission Denied";
-            });
+            } catch (err) {
+                console.error("Agent Data Error:", err);
+                document.getElementById('shopNameDisplay').innerText = "Error loading data";
+            }
+        }
 
-            // Products Count (Filter ပတ်ထားသည်)
-            db.collection("products").where("agent_name", "==", agentName).onSnapshot(snap => {
-                document.getElementById('totalProducts').innerText = snap.size;
-            });
+        async function fetchStatsAndOrders(agentName) {
+            const tbody = document.getElementById('orderTableBody');
+            
+            try {
+                // 1. Fetch Products for Count
+                const prodRes = await fetch(`${API_BASE_URL}/products?agent=${encodeURIComponent(agentName)}`);
+                const products = await prodRes.json();
+                document.getElementById('totalProducts').innerText = products.length;
 
-            // Recent Orders (orderBy ပါဝင်သောကြောင့် Index လိုအပ်နိုင်သည်)
-            db.collection("orders")
-              .where("agent_name", "==", agentName)
-              .orderBy("created_at", "desc")
-              .limit(5)
-              .onSnapshot(snap => {
-                document.getElementById('totalOrders').innerText = snap.size;
-                const tbody = document.getElementById('orderTableBody');
+                // 2. Fetch Orders
+                const orderRes = await fetch(`${API_BASE_URL}/orders?agent=${encodeURIComponent(agentName)}`);
+                const orders = await orderRes.json();
                 
-                if (snap.empty) {
+                document.getElementById('totalOrders').innerText = orders.length;
+                document.getElementById('lastUpdate').innerText = new Date().toLocaleTimeString();
+
+                if (!orders || orders.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 40px; color: #94a3b8;">လက်ရှိတွင် အော်ဒါမရှိသေးပါ။</td></tr>';
                 } else {
-                    tbody.innerHTML = snap.docs.map(doc => {
-                        const d = doc.data();
-                        const orderDate = d.created_at ? new Date(d.created_at.seconds * 1000).toLocaleDateString('en-GB') : '-';
-                        let statusColor = d.status === 'Completed' ? 'background:#dcfce7; color:#15803d;' : 'background:#fef3c7; color:#92400e;';
+                    // လတ်တလော အော်ဒါ ၅ ခုပဲပြမယ်
+                    const recentOrders = orders.slice(0, 5);
+                    tbody.innerHTML = recentOrders.map(d => {
+                        const orderDate = d.createdAt ? new Date(d.createdAt).toLocaleDateString('en-GB') : '-';
+                        let statusStyle = d.status === 'Completed' ? 'background:#dcfce7; color:#15803d;' : 'background:#fef3c7; color:#92400e;';
                         
                         return `
                             <tr>
-                                <td style="font-weight:700;">${d.product_name || 'Unknown'}</td>
-                                <td>${d.customer_name || 'Guest'}</td>
-                                <td>${d.customer_phone || '-'}</td>
-                                <td><span class="order-status" style="${statusColor}">${d.status || 'Pending'}</span></td>
+                                <td style="font-weight:700;">${d.productName || 'Unknown'}</td>
+                                <td>${d.customerName || 'Guest'}</td>
+                                <td>${d.customerPhone || '-'}</td>
+                                <td><span class="order-status" style="${statusStyle}">${d.status || 'Pending'}</span></td>
                                 <td style="color:#64748b; font-size: 0.85rem;">${orderDate}</td>
                             </tr>
                         `;
                     }).join('');
                 }
-                document.getElementById('lastUpdate').innerText = new Date().toLocaleTimeString();
-            }, error => {
-                console.error("Order Load Error:", error);
-                // အကယ်၍ Index မရှိပါက Console တွင်ပါသော Link ကိုနှိပ်၍ Index ဆောက်ပေးပါ
-                document.getElementById('orderTableBody').innerHTML = `<tr><td colspan="5" style="text-align:center; color:red;">Error: ${error.message}. Please check Firestore Index.</td></tr>`;
-            });
-        };
+            } catch (err) {
+                console.error("Order/Stats Load Error:", err);
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#ef4444;">API Connection Error.</td></tr>';
+            }
+        }
 
         function copyShopLink() {
             if (generatedShopLink) {
                 navigator.clipboard.writeText(generatedShopLink).then(() => {
-                    alert("Shop link ကို Copy ကူးပြီးပါပြီ။ Customer များထံ ပေးပို့နိုင်ပါသည်။");
+                    const btn = document.querySelector('.btn-copy');
+                    btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                    setTimeout(() => {
+                        btn.innerHTML = '<i class="fas fa-copy"></i> Copy Link';
+                    }, 2000);
                 });
             }
         }
