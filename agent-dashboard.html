@@ -7,53 +7,59 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --primary: #4f46e5; --bg: #f1f5f9; --sidebar: #0f172a; }
+        :root { --primary: #4f46e5; --bg: #f1f5f9; --sidebar: #0f172a; --accent: #10b981; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); margin: 0; display: flex; }
         
         /* Sidebar Style */
-        .sidebar { width: 260px; background: var(--sidebar); color: white; min-height: 100vh; padding: 2rem 1rem; position: fixed; z-index: 1000; box-sizing: border-box; }
+        .sidebar { width: 260px; background: var(--sidebar); color: white; min-height: 100vh; padding: 2rem 1rem; position: fixed; z-index: 1000; box-sizing: border-box; transition: 0.3s; }
         .sidebar h2 { padding-left: 1rem; margin-bottom: 2.5rem; color: #fff; font-weight: 800; display: flex; align-items: center; gap: 10px; }
         .nav-item { padding: 0.9rem 1rem; border-radius: 12px; color: #94a3b8; text-decoration: none; margin-bottom: 0.5rem; display: flex; align-items: center; transition: 0.3s; font-weight: 600; cursor: pointer; }
         .nav-item:hover, .nav-item.active { background: var(--primary); color: white; }
         .nav-item i { width: 24px; font-size: 1.1rem; }
 
         /* Main Content */
-        .main-content { margin-left: 260px; padding: 2.5rem; width: calc(100% - 260px); position: relative; box-sizing: border-box; }
-        .welcome-card { background: linear-gradient(135deg, #4f46e5, #6366f1); color: white; padding: 2.5rem; border-radius: 24px; margin-bottom: 2rem; box-shadow: 0 10px 25px rgba(79, 70, 229, 0.15); }
+        .main-content { margin-left: 260px; padding: 2.5rem; width: calc(100% - 260px); position: relative; box-sizing: border-box; min-height: 100vh; }
+        
+        .welcome-card { 
+            background: linear-gradient(135deg, #4f46e5, #6366f1); color: white; 
+            padding: 2.5rem; border-radius: 24px; margin-bottom: 2rem; 
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.15); position: relative; overflow: hidden;
+        }
+        .welcome-card::after { content: '\f121'; font-family: 'Font Awesome 6 Free'; font-weight: 900; position: absolute; right: -20px; bottom: -20px; font-size: 10rem; opacity: 0.1; }
         .welcome-card h1 { margin: 0; font-size: 2rem; letter-spacing: -0.5px; }
         
         /* Shopping Link Box */
-        .link-box { margin-top: 1.5rem; background: rgba(255, 255, 255, 0.15); padding: 12px 18px; border-radius: 12px; display: inline-flex; align-items: center; gap: 12px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.1); flex-wrap: wrap; }
-        .link-text { font-size: 0.85rem; color: #e0e7ff; }
-        .link-value { font-family: monospace; background: rgba(0,0,0,0.2); padding: 4px 10px; border-radius: 6px; font-size: 0.9rem; color: #fff; overflow-x: auto; max-width: 250px; white-space: nowrap; }
-        .btn-copy { background: white; color: var(--primary); border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 0.75rem; transition: 0.2s; white-space: nowrap; }
-        .btn-copy:hover { background: #e0e7ff; transform: scale(1.05); }
+        .link-box { margin-top: 1.5rem; background: rgba(255, 255, 255, 0.15); padding: 12px 18px; border-radius: 14px; display: inline-flex; align-items: center; gap: 12px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.1); width: 100%; max-width: 600px; justify-content: space-between; }
+        .link-text-group { display: flex; align-items: center; gap: 10px; overflow: hidden; }
+        .link-value { font-family: monospace; font-size: 0.9rem; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .btn-copy { background: white; color: var(--primary); border: none; padding: 8px 16px; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 0.75rem; transition: 0.2s; flex-shrink: 0; }
+        .btn-copy:hover { background: #f8fafc; transform: translateY(-2px); }
 
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
-        .card { background: white; padding: 1.8rem; border-radius: 22px; border: 1px solid #e2e8f0; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
-        .card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px -10px rgba(0,0,0,0.1); }
-        .card h3 { margin-top: 0; color: #1e293b; font-size: 1.15rem; display: flex; align-items: center; gap: 12px; margin-bottom: 1.8rem; font-weight: 700; }
+        .card { background: white; padding: 1.8rem; border-radius: 22px; border: 1px solid #e2e8f0; transition: 0.3s; }
+        .card h3 { margin-top: 0; color: #1e293b; font-size: 1.1rem; display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem; font-weight: 700; }
         
-        .info-row { display: flex; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid #f1f5f9; align-items: center; }
+        .info-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f1f5f9; align-items: center; }
         .info-row:last-child { border-bottom: none; }
-        .info-label { color: #64748b; font-weight: 500; font-size: 0.95rem; }
+        .info-label { color: #64748b; font-size: 0.9rem; font-weight: 500; }
         .info-value { color: #1e293b; font-weight: 700; }
         
-        .status-badge-active { background: #dcfce7; color: #15803d; padding: 6px 14px; border-radius: 12px; font-size: 0.8rem; font-weight: 700; }
+        .status-badge { padding: 6px 12px; border-radius: 10px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; }
+        .status-active { background: #dcfce7; color: #15803d; }
 
-        /* Order Table */
-        .order-section { margin-top: 2rem; background: white; padding: 1.8rem; border-radius: 22px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
-        .table-container { width: 100%; overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; margin-top: 1.5rem; min-width: 600px; }
-        th { text-align: left; background: #f8fafc; padding: 16px; color: #64748b; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; }
-        td { padding: 16px; border-bottom: 1px solid #f1f5f9; font-size: 0.95rem; color: #1e293b; vertical-align: middle; }
+        /* Order Table Section */
+        .order-section { margin-top: 2rem; background: white; padding: 1.8rem; border-radius: 24px; border: 1px solid #e2e8f0; }
+        .table-container { width: 100%; overflow-x: auto; margin-top: 1rem; }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        th { text-align: left; background: #f8fafc; padding: 16px; color: #64748b; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        td { padding: 16px; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; color: #1e293b; }
         
-        .order-status { padding: 5px 12px; border-radius: 10px; font-size: 0.75rem; font-weight: 700; }
+        .order-status-chip { padding: 5px 10px; border-radius: 8px; font-size: 0.7rem; font-weight: 700; }
 
         @media (max-width: 1024px) {
-            .sidebar { width: 85px; padding: 2rem 0.5rem; }
+            .sidebar { width: 80px; padding: 2rem 0.5rem; }
             .sidebar h2 span, .nav-item span { display: none; }
-            .main-content { margin-left: 85px; width: calc(100% - 85px); padding: 1.5rem; }
+            .main-content { margin-left: 80px; width: calc(100% - 80px); padding: 1.5rem; }
         }
     </style>
 </head>
@@ -65,57 +71,80 @@
         <a id="navInv" class="nav-item"><i class="fas fa-box"></i> <span>Inventory</span></a>
         <a id="navCust" class="nav-item"><i class="fas fa-users"></i> <span>Customers</span></a>
         <a id="navSettings" class="nav-item"><i class="fas fa-store"></i> <span>Shop Settings</span></a>
-        <a href="#" onclick="handleLogout()" class="nav-item" style="margin-top: 5rem; color: #fb7185;"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+        <div style="margin-top: 4rem;">
+            <a href="#" onclick="handleLogout()" class="nav-item" style="color: #fb7185;"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+        </div>
     </div>
 
     <div class="main-content">
         <div class="welcome-card">
             <h1 id="welcomeAgent">မင်္ဂလာပါ!</h1>
-            <p style="opacity: 0.9; margin-top: 10px;">သင့်ဆိုင်ရဲ့ အခြေအနေနဲ့ အော်ဒါများကို တစ်နေရာတည်းမှာ စီမံခန့်ခွဲပါ။</p>
+            <p style="opacity: 0.9; margin-top: 10px;">ယနေ့အတွက် သင့်ဆိုင်ရဲ့ အရောင်းစာရင်းများကို စစ်ဆေးကြည့်ပါ။</p>
             
             <div class="link-box">
-                <span class="link-text"><i class="fas fa-link"></i> Your Shop Link:</span>
-                <span class="link-value" id="shopLinkDisplay">Loading...</span>
+                <div class="link-text-group">
+                    <i class="fas fa-globe"></i>
+                    <span class="link-value" id="shopLinkDisplay">Generating link...</span>
+                </div>
                 <button class="btn-copy" onclick="copyShopLink()"><i class="fas fa-copy"></i> Copy Link</button>
             </div>
         </div>
 
         <div class="grid">
             <div class="card">
-                <h3><i class="fas fa-shop" style="color: #4f46e5;"></i> Shop Overview</h3>
-                <div class="info-row"><span class="info-label">Shop Name:</span><span class="info-value" id="shopNameDisplay">Loading...</span></div>
-                <div class="info-row"><span class="info-label">Contact:</span><span class="info-value" id="shopContact">-</span></div>
-                <div class="info-row"><span class="info-label">Status:</span><span class="status-badge-active" id="agentStatusBadge">Active</span></div>
+                <h3><i class="fas fa-id-badge" style="color: var(--primary);"></i> ဆိုင်အချက်အလက်</h3>
+                <div class="info-row">
+                    <span class="info-label">Shop Name</span>
+                    <span class="info-value" id="shopNameDisplay">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Viber / Contact</span>
+                    <span class="info-value" id="shopContact">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Status</span>
+                    <span class="status-badge status-active">Active</span>
+                </div>
             </div>
 
             <div class="card">
-                <h3><i class="fas fa-chart-pie" style="color: #10b981;"></i> Quick Stats</h3>
-                <div class="info-row"><span class="info-label">Total Products:</span><span class="info-value" id="totalProducts">0</span></div>
-                <div class="info-row"><span class="info-label">Total Orders:</span><span class="info-value" id="totalOrders">0</span></div>
-                <div class="info-row"><span class="info-label">Last Update:</span><span class="info-value" id="lastUpdate" style="font-size: 0.8rem; color: #94a3b8;">-</span></div>
+                <h3><i class="fas fa-chart-line" style="color: var(--accent);"></i> စာရင်းအနှစ်ချုပ်</h3>
+                <div class="info-row">
+                    <span class="info-label">စုစုပေါင်း ပစ္စည်း</span>
+                    <span class="info-value" id="totalProducts">0</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">စုစုပေါင်း အော်ဒါ</span>
+                    <span class="info-value" id="totalOrders">0</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">ယနေ့အော်ဒါ</span>
+                    <span class="info-value" style="color: var(--primary);">0</span>
+                </div>
             </div>
         </div>
 
         <div class="order-section">
             <div style="display: flex; justify-content: space-between; align-items: center;">
-                <h3 style="margin: 0; color: #1e293b;"><i class="fas fa-shopping-bag" style="color: #f59e0b; margin-right: 10px;"></i> Recent Orders</h3>
-                <a href="#" id="viewAllBtn" style="font-size: 0.9rem; color: var(--primary); text-decoration: none; font-weight: 700; background: #eef2ff; padding: 8px 16px; border-radius: 10px;">View All</a>
+                <h3 style="margin: 0; font-weight: 800; color: var(--sidebar);"><i class="fas fa-clock-rotate-left" style="color: #f59e0b; margin-right: 10px;"></i> လတ်တလော အော်ဒါများ</h3>
+                <a href="user_list.html" id="viewAllBtn" style="font-size: 0.8rem; font-weight: 700; color: var(--primary); text-decoration: none;">View All <i class="fas fa-arrow-right" style="font-size: 0.7rem;"></i></a>
             </div>
+            
             <div class="table-container">
                 <table>
                     <thead>
                         <tr>
-                            <th>Product</th>
+                            <th>Product Name</th>
                             <th>Customer</th>
                             <th>Phone</th>
                             <th>Status</th>
-                            <th>Date</th>
+                            <th>Time</th>
                         </tr>
                     </thead>
                     <tbody id="orderTableBody">
                         <tr>
-                            <td colspan="5" style="text-align:center; padding: 50px; color: #94a3b8;">
-                                <i class="fas fa-spinner fa-spin" style="margin-right: 8px;"></i> Loading orders...
+                            <td colspan="5" style="text-align:center; padding: 40px; color: #94a3b8;">
+                                <i class="fas fa-circle-notch fa-spin"></i> Data ရယူနေသည်...
                             </td>
                         </tr>
                     </tbody>
@@ -124,134 +153,115 @@
         </div>
     </div>
 
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
     <script>
-        const API_BASE_URL = "https://shopping-sable-sigma.vercel.app/api";
-        let generatedShopLink = "";
-        let currentAgentName = "";
+        // Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyCt1SMVSMqdX3u2viQ-n_BVwp6KgQwDLOM",
+            authDomain: "my-shop-admin-cedb1.firebaseapp.com",
+            projectId: "my-shop-admin-cedb1",
+            storageBucket: "my-shop-admin-cedb1.firebasestorage.app",
+            appId: "1:1073972515996:web:28049f5e5977e3a8e74959"
+        };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
 
-        window.onload = async function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const agentFromUrl = urlParams.get('agent');
-            const loggedInAgent = JSON.parse(localStorage.getItem('currentAgent'));
-            
-            currentAgentName = agentFromUrl || (loggedInAgent ? loggedInAgent.name : null);
+        const urlParams = new URLSearchParams(window.location.search);
+        const agentName = urlParams.get('agent') || "spider"; 
+        let shopUrl = "";
 
-            if (!currentAgentName) { 
-                window.location.href = "login.html"; 
-                return; 
-            }
+        window.onload = () => {
+            setupNavigation();
+            loadDashboardData();
+        };
 
-            // Sidebar/Navigation Links update
-            const param = `?agent=${encodeURIComponent(currentAgentName)}`;
+        function setupNavigation() {
+            const param = `?agent=${agentName}`;
             document.getElementById('navDash').href = `agent-dashboard.html${param}`;
             document.getElementById('navInv').href = `inventory.html${param}`;
             document.getElementById('navCust').href = `user_list.html${param}`;
             document.getElementById('navSettings').href = `shop-settings.html${param}`;
             document.getElementById('viewAllBtn').href = `user_list.html${param}`;
 
-            document.getElementById('welcomeAgent').innerText = `မင်္ဂလာပါ ${currentAgentName}!`;
-
-            // Shop Link Generation (Point to your index.html)
+            // Generate Customer Shop Link
             const baseUrl = window.location.origin + window.location.pathname.replace('agent-dashboard.html', 'index.html');
-            generatedShopLink = `${baseUrl}?shop=${encodeURIComponent(currentAgentName)}`;
-            document.getElementById('shopLinkDisplay').innerText = generatedShopLink;
+            shopUrl = `${baseUrl}?agent=${agentName}`;
+            document.getElementById('shopLinkDisplay').innerText = shopUrl;
+        }
 
-            // Load Data
-            fetchAgentProfile();
-            fetchStatsAndOrders();
-        };
-
-        async function fetchAgentProfile() {
+        async function loadDashboardData() {
             try {
-                const response = await fetch(`${API_BASE_URL}/agents/list`);
-                const agents = await response.json();
-                const agent = agents.find(a => a.name === currentAgentName || a.shopName === currentAgentName);
-
-                if (agent) {
-                    document.getElementById('shopNameDisplay').innerText = agent.shopName || agent.name;
-                    document.getElementById('shopContact').innerText = agent.contact || agent.gmail_phone || "Not set";
-                    
-                    const badge = document.getElementById('agentStatusBadge');
-                    badge.innerText = agent.status || "Active";
-                    if(agent.status === "Disabled") {
-                        badge.style.background = "#fee2e2";
-                        badge.style.color = "#ef4444";
+                // 1. Get Shop Settings
+                db.collection("shop_settings").doc(agentName).onSnapshot(doc => {
+                    if(doc.exists) {
+                        const data = doc.data();
+                        document.getElementById('welcomeAgent').innerText = `မင်္ဂလာပါ ${data.shopName || agentName}!`;
+                        document.getElementById('shopNameDisplay').innerText = data.shopName || agentName;
+                        document.getElementById('shopContact').innerText = data.viber || "Not set";
+                    } else {
+                        document.getElementById('shopNameDisplay').innerText = agentName;
                     }
-                }
-            } catch (err) {
-                console.error("Profile Load Error:", err);
+                });
+
+                // 2. Get Products Count
+                db.collection("products").where("agent_name", "==", agentName)
+                  .onSnapshot(snap => {
+                      document.getElementById('totalProducts').innerText = snap.size;
+                  });
+
+                // 3. Get Orders and Count
+                db.collection("orders").where("agent_name", "==", agentName)
+                  .orderBy("created_at", "desc")
+                  .onSnapshot(snap => {
+                      document.getElementById('totalOrders').innerText = snap.size;
+                      renderRecentOrders(snap.docs.slice(0, 5)); // Show only latest 5
+                  });
+
+            } catch (error) {
+                console.error("Data Load Error:", error);
             }
         }
 
-        async function fetchStatsAndOrders() {
+        function renderRecentOrders(docs) {
             const tbody = document.getElementById('orderTableBody');
-            
-            try {
-                // 1. Get Products Count
-                const prodRes = await fetch(`${API_BASE_URL}/products?agent=${encodeURIComponent(currentAgentName)}`);
-                const products = await prodRes.json();
-                document.getElementById('totalProducts').innerText = products.length || 0;
-
-                // 2. Get Orders
-                const orderRes = await fetch(`${API_BASE_URL}/orders?agent=${encodeURIComponent(currentAgentName)}`);
-                const orders = await orderRes.json();
-                
-                document.getElementById('totalOrders').innerText = orders.length || 0;
-                document.getElementById('lastUpdate').innerText = new Date().toLocaleTimeString();
-
-                if (!orders || orders.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 40px; color: #94a3b8;">အော်ဒါစာရင်း မရှိသေးပါ။</td></tr>';
-                    return;
-                }
-
-                // Show only last 5 orders
-                const recent = orders.slice(-5).reverse(); 
-                tbody.innerHTML = recent.map(order => {
-                    const date = order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-GB') : 'Just now';
-                    
-                    // Status Badge Styling
-                    let statusStyle = "background:#fef3c7; color:#92400e;"; // Pending
-                    if (order.status === 'Completed') statusStyle = "background:#dcfce7; color:#15803d;";
-                    if (order.status === 'Cancelled') statusStyle = "background:#fee2e2; color:#ef4444;";
-                    
-                    return `
-                        <tr>
-                            <td style="font-weight:700; color: #4f46e5;">${order.productName || 'Unknown Item'}</td>
-                            <td>${order.customerName || 'Guest User'}</td>
-                            <td style="font-weight:600;">${order.customerPhone || '-'}</td>
-                            <td><span class="order-status" style="${statusStyle}">${order.status || 'Pending'}</span></td>
-                            <td style="color:#64748b; font-size: 0.85rem;">${date}</td>
-                        </tr>
-                    `;
-                }).join('');
-
-            } catch (err) {
-                console.error("Stats Load Error:", err);
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#ef4444; padding:20px;">Database ချိတ်ဆက်မှု အဆင်မပြေပါ။</td></tr>';
+            if(docs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:30px; color:#94a3b8;">အော်ဒါစာရင်း မရှိသေးပါ။</td></tr>';
+                return;
             }
+
+            tbody.innerHTML = docs.map(doc => {
+                const data = doc.data();
+                const time = data.created_at ? new Date(data.created_at.toDate()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'Just now';
+                
+                let statusBg = "#fef3c7"; let statusColor = "#92400e";
+                if(data.status === "Completed") { statusBg = "#dcfce7"; statusColor = "#15803d"; }
+                if(data.status === "Cancelled") { statusBg = "#fee2e2"; statusColor = "#ef4444"; }
+
+                return `
+                    <tr>
+                        <td style="font-weight:700;">${data.product_name}</td>
+                        <td>${data.customer_name}</td>
+                        <td style="font-family:monospace;">${data.customer_phone}</td>
+                        <td><span class="order-status-chip" style="background:${statusBg}; color:${statusColor}">${data.status || 'Pending'}</span></td>
+                        <td style="color:#94a3b8; font-size:0.8rem;">${time}</td>
+                    </tr>
+                `;
+            }).join('');
         }
 
         function copyShopLink() {
-            if (generatedShopLink) {
-                navigator.clipboard.writeText(generatedShopLink).then(() => {
-                    const btn = document.querySelector('.btn-copy');
-                    const originalText = btn.innerHTML;
-                    btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
-                    btn.style.background = "#dcfce7";
-                    btn.style.color = "#15803d";
-                    
-                    setTimeout(() => {
-                        btn.innerHTML = originalText;
-                        btn.style.background = "white";
-                        btn.style.color = "var(--primary)";
-                    }, 2000);
-                });
-            }
+            navigator.clipboard.writeText(shopUrl).then(() => {
+                const btn = document.querySelector('.btn-copy');
+                btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                setTimeout(() => { btn.innerHTML = '<i class="fas fa-copy"></i> Copy Link'; }, 2000);
+            });
         }
 
         function handleLogout() {
-            if(confirm("Logout လုပ်ရန် သေချာပါသလား?")) {
-                localStorage.removeItem('currentAgent');
+            if(confirm("Logout လုပ်မှာ သေချာပါသလား?")) {
                 window.location.href = "login.html";
             }
         }
