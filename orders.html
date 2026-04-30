@@ -4,16 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Orders - Spider.io</title>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f4f7fe; display: flex; color: #1e293b; }
         
         /* Sidebar Styling */
-        .sidebar { width: 260px; background: #1e293b; height: 100vh; padding: 30px 20px; color: white; position: fixed; }
-        .logo { font-size: 24px; font-weight: 800; margin-bottom: 40px; color: #fff; text-decoration: none; display: block; }
+        .sidebar { width: 260px; background: #1e293b; height: 100vh; padding: 30px 20px; color: white; position: fixed; z-index: 1000; }
+        .logo { font-size: 24px; font-weight: 800; margin-bottom: 40px; color: #fff; text-decoration: none; display: flex; align-items: center; gap: 10px; }
         .menu-item { display: flex; align-items: center; gap: 12px; color: #94a3b8; text-decoration: none; padding: 14px 18px; border-radius: 12px; margin-bottom: 8px; transition: 0.3s; font-weight: 600; }
         .menu-item:hover, .menu-item.active { background: #4f46e5; color: white; }
 
@@ -21,41 +20,44 @@
         .main-content { margin-left: 260px; padding: 40px; width: calc(100% - 260px); min-height: 100vh; }
         .page-header { margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
         .page-header h2 { font-size: 24px; font-weight: 800; }
-        .agent-badge { background: #4f46e5; color: white; padding: 5px 15px; border-radius: 8px; font-size: 14px; margin-top: 5px; display: inline-block; }
+        .agent-badge { background: #4f46e5; color: white; padding: 5px 15px; border-radius: 8px; font-size: 14px; margin-top: 5px; display: inline-block; font-weight: 600; }
         
-        .card { background: white; border-radius: 24px; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.02); }
+        .card { background: white; border-radius: 24px; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.02); border: 1px solid #e2e8f0; }
         
         /* Table Styling */
         .table-container { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th { text-align: left; padding: 15px 20px; border-bottom: 2px solid #f1f5f9; color: #64748b; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
+        th { text-align: left; padding: 15px 20px; border-bottom: 2px solid #f1f5f9; color: #64748b; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; }
         td { padding: 18px 20px; border-bottom: 1px solid #f1f5f9; font-size: 15px; vertical-align: middle; }
         
-        .product-info { font-weight: 700; color: #1e293b; }
-        .customer-name { font-weight: 600; }
-        .phone-number { color: #4f46e5; font-weight: 600; text-decoration: none; }
+        .product-info { font-weight: 700; color: #4f46e5; }
+        .customer-name { font-weight: 600; color: #1e293b; }
+        .phone-number { color: #4f46e5; font-weight: 600; text-decoration: none; border-bottom: 1px dashed transparent; transition: 0.2s; }
+        .phone-number:hover { border-bottom-color: #4f46e5; }
         
         /* Status Badges */
-        .status-badge { padding: 6px 14px; border-radius: 50px; font-size: 12px; font-weight: 700; display: inline-block; cursor: pointer; border: none; }
-        .status-pending { background: #fff7ed; color: #ea580c; }
-        .status-completed { background: #f0fdf4; color: #16a34a; }
+        .status-badge { padding: 8px 16px; border-radius: 12px; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; border: 1px solid transparent; transition: 0.2s; }
+        .status-badge:hover { transform: scale(1.05); }
+        .status-pending { background: #fff7ed; color: #ea580c; border-color: #ffedd5; }
+        .status-completed { background: #f0fdf4; color: #16a34a; border-color: #dcfce7; }
+        .status-cancelled { background: #fef2f2; color: #ef4444; border-color: #fee2e2; }
 
         @media (max-width: 900px) {
-            .sidebar { width: 80px; padding: 20px 10px; }
+            .sidebar { width: 85px; padding: 20px 10px; }
             .sidebar .logo, .sidebar span { display: none; }
-            .main-content { margin-left: 80px; width: calc(100% - 80px); padding: 20px; }
+            .main-content { margin-left: 85px; width: calc(100% - 85px); padding: 20px; }
         }
     </style>
 </head>
 <body>
 
     <div class="sidebar">
-        <a href="#" class="logo">Spider.io</a>
-        <a href="index.html" class="menu-item" id="navHome"><span>🏠 Dashboard</span></a>
-        <a href="#" class="menu-item"><span>📦 My Products</span></a>
-        <a href="orders.html" class="menu-item active" id="navOrders"><span>🛒 Orders</span></a>
-        <a href="user_list.html" class="menu-item" id="navUsers"><span>👥 User List</span></a>
-        <a href="#" class="menu-item"><span>⚙️ Settings</span></a>
+        <a href="#" class="logo"><i class="fas fa-spider"></i></a>
+        <a id="navHome" class="menu-item"><span><i class="fas fa-th-large"></i> Dashboard</span></a>
+        <a id="navInv" class="menu-item"><span><i class="fas fa-box"></i> My Products</span></a>
+        <a id="navOrders" class="menu-item active"><span><i class="fas fa-shopping-cart"></i> Orders</span></a>
+        <a id="navUsers" class="menu-item"><span><i class="fas fa-users"></i> User List</span></a>
+        <a id="navSettings" class="menu-item"><span><i class="fas fa-cog"></i> Settings</span></a>
     </div>
 
     <div class="main-content">
@@ -63,8 +65,11 @@
             <div>
                 <h2>Customer Orders</h2>
                 <div id="agentDisplay" class="agent-badge">Loading Agent...</div>
-                <p style="color: #64748b; margin-top: 10px;">သင့်ဆိုင်သို့ ဝင်ရောက်လာသော အော်ဒါများကို ဤနေရာတွင် စစ်ဆေးနိုင်ပါသည်။</p>
+                <p style="color: #64748b; margin-top: 10px;">သင့်ဆိုင်သို့ ဝင်ရောက်လာသော အော်ဒါများကို စီမံခန့်ခွဲပါ။</p>
             </div>
+            <button onclick="fetchOrders()" style="background: white; border: 1px solid #e2e8f0; padding: 10px 20px; border-radius: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
         </div>
 
         <div class="card">
@@ -82,8 +87,8 @@
                     </thead>
                     <tbody id="orderTableBody">
                         <tr>
-                            <td colspan="6" style="text-align:center; padding: 50px; color: #94a3b8;">
-                                <div style="margin-bottom: 10px;">⏳</div>
+                            <td colspan="6" style="text-align:center; padding: 80px; color: #94a3b8;">
+                                <i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 15px; display: block; margin-left: auto; margin-right: auto;"></i>
                                 အော်ဒါများ ဆွဲတင်နေပါသည်...
                             </td>
                         </tr>
@@ -94,84 +99,98 @@
     </div>
 
     <script>
-        // URL မှ Agent နာမည်ကို ယူခြင်း (ဥပမာ: orders.html?agent=kid_kid)
+        const API_BASE_URL = "https://shopping-sable-sigma.vercel.app/api";
         const urlParams = new URLSearchParams(window.location.search);
-        const currentAgent = urlParams.get('agent') || "kid kid"; 
-        
-        document.getElementById('agentDisplay').innerText = `Agent: ${currentAgent.toUpperCase()}`;
+        let currentAgentName = "";
 
-        // Sidebar Links တွေကိုလည်း Agent ပါအောင် Update လုပ်ခြင်း
-        document.getElementById('navHome').href = `index.html?agent=${currentAgent}`;
-        document.getElementById('navOrders').href = `orders.html?agent=${currentAgent}`;
-        document.getElementById('navUsers').href = `user_list.html?agent=${currentAgent}`;
+        window.onload = function() {
+            const agentFromUrl = urlParams.get('agent');
+            const loggedInAgent = JSON.parse(localStorage.getItem('currentAgent'));
+            
+            currentAgentName = agentFromUrl || (loggedInAgent ? loggedInAgent.name : "kid kid");
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyCt1SMVSMqdX3u2viQ-n_BVwp6KgQwDLOM",
-            authDomain: "my-shop-admin-cedb1.firebaseapp.com",
-            projectId: "my-shop-admin-cedb1",
-            storageBucket: "my-shop-admin-cedb1.firebasestorage.app",
-            messagingSenderId: "1073972515996",
-            appId: "1:1073972515996:web:28049f5e5977e3a8e74959"
+            document.getElementById('agentDisplay').innerText = `Agent: ${currentAgentName.toUpperCase()}`;
+
+            // Update Navigation Links
+            const param = `?agent=${encodeURIComponent(currentAgentName)}`;
+            document.getElementById('navHome').href = `agent-dashboard.html${param}`;
+            document.getElementById('navInv').href = `inventory.html${param}`;
+            document.getElementById('navOrders').href = `orders.html${param}`;
+            document.getElementById('navUsers').href = `user_list.html${param}`;
+            document.getElementById('navSettings').href = `shop-settings.html${param}`;
+
+            fetchOrders();
         };
-        
-        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
-        const db = firebase.firestore();
 
-        // Fetch Orders Function
-        function fetchOrders() {
-            // အဓိကပြင်ဆင်ချက်: လက်ရှိ Agent ရဲ့ အော်ဒါများကိုသာ စစ်ထုတ်ယူမည်
-            db.collection("orders")
-              .where("agent_name", "==", currentAgent)
-              .onSnapshot((snapshot) => {
-                const tbody = document.getElementById('orderTableBody');
+        async function fetchOrders() {
+            const tbody = document.getElementById('orderTableBody');
+            try {
+                const response = await fetch(`${API_BASE_URL}/orders?agent=${encodeURIComponent(currentAgentName)}`);
+                const orders = await response.json();
                 
-                if (snapshot.empty) {
-                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 50px; color: #94a3b8;">အော်ဒါစာရင်း မရှိသေးပါ။</td></tr>';
+                if (!orders || orders.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 80px; color: #94a3b8;"><i class="fas fa-shopping-basket" style="font-size: 3rem; margin-bottom: 10px; display: block; margin-left: auto; margin-right: auto; opacity: 0.3;"></i>အော်ဒါစာရင်း မရှိသေးပါ။</td></tr>';
                     return;
                 }
 
-                const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                docs.sort((a, b) => (b.created_at?.seconds || 0) - (a.created_at?.seconds || 0));
+                // Sort: Newest First
+                const sortedOrders = orders.reverse();
 
-                tbody.innerHTML = docs.map(data => {
-                    const statusClass = (data.status === "Pending") ? "status-pending" : "status-completed";
+                tbody.innerHTML = sortedOrders.map(data => {
+                    let statusClass = "status-pending";
+                    if(data.status === "Completed") statusClass = "status-completed";
+                    if(data.status === "Cancelled") statusClass = "status-cancelled";
+                    
+                    const date = data.createdAt ? new Date(data.createdAt).toLocaleDateString('en-GB') : '-';
                     
                     return `
                         <tr>
-                            <td class="product-info">${data.product_name}</td>
-                            <td><span style="background: #f1f5f9; padding: 4px 10px; border-radius: 8px;">${data.quantity || 1}</span></td>
-                            <td class="customer-name">${data.customer_name}</td>
-                            <td><a href="tel:${data.customer_phone}" class="phone-number">${data.customer_phone}</a></td>
-                            <td style="max-width: 200px; font-size: 13px; line-height: 1.4;">${data.address || '-'}</td>
                             <td>
-                                <button onclick="toggleStatus('${data.id}', '${data.status}')" class="status-badge ${statusClass}">
-                                    ${data.status}
+                                <div class="product-info">${data.productName || 'Unknown Item'}</div>
+                                <div style="font-size: 11px; color: #94a3b8; margin-top: 4px;">Date: ${date}</div>
+                            </td>
+                            <td><span style="background: #f1f5f9; padding: 4px 10px; border-radius: 8px; font-weight: 700;">${data.quantity || 1}</span></td>
+                            <td class="customer-name">${data.customerName || 'Guest'}</td>
+                            <td><a href="tel:${data.customerPhone}" class="phone-number"><i class="fas fa-phone-alt" style="font-size: 12px;"></i> ${data.customerPhone || '-'}</a></td>
+                            <td style="max-width: 200px; font-size: 13px; line-height: 1.4; color: #64748b;">${data.address || '-'}</td>
+                            <td>
+                                <button onclick="toggleStatus('${data._id}', '${data.status}')" class="status-badge ${statusClass}">
+                                    <i class="fas ${data.status === 'Completed' ? 'fa-check-circle' : 'fa-clock'}"></i>
+                                    ${data.status || 'Pending'}
                                 </button>
                             </td>
                         </tr>
                     `;
                 }).join('');
-            }, (error) => {
-                console.error("Firebase Error:", error);
-                document.getElementById('orderTableBody').innerHTML = `<tr><td colspan="6" style="text-align:center; color: red; padding: 20px;">Error: ${error.message}</td></tr>`;
-            });
-        }
 
-        // Status ကို Pending မှ Completed သို့ ပြောင်းရန်
-        async function toggleStatus(orderId, currentStatus) {
-            const nextStatus = currentStatus === "Pending" ? "Completed" : "Pending";
-            if(confirm(`Order Status ကို ${nextStatus} သို့ ပြောင်းမလား?`)) {
-                try {
-                    await db.collection("orders").doc(orderId).update({
-                        status: nextStatus
-                    });
-                } catch (e) {
-                    alert("Status update လုပ်ရာတွင် အမှားအယွင်းရှိပါသည်။");
-                }
+            } catch (error) {
+                console.error("API Error:", error);
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: #ef4444; padding: 40px;">Database ချိတ်ဆက်မှု အမှားအယွင်းရှိနေပါသည်။</td></tr>`;
             }
         }
 
-        window.onload = fetchOrders;
+        async function toggleStatus(orderId, currentStatus) {
+            let nextStatus = "Completed";
+            if(currentStatus === "Completed") nextStatus = "Pending";
+            
+            if(confirm(`Order Status ကို "${nextStatus}" သို့ ပြောင်းလဲမှာ သေချာပါသလား?`)) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/orders/${orderId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ status: nextStatus })
+                    });
+
+                    if(response.ok) {
+                        fetchOrders(); // Refresh table
+                    } else {
+                        alert("Update လုပ်မရဖြစ်နေပါသည်။");
+                    }
+                } catch (e) {
+                    alert("Network Error ဖြစ်ပွားနေပါသည်။");
+                }
+            }
+        }
     </script>
 </body>
 </html>
