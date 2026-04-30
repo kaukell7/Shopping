@@ -25,7 +25,7 @@
         /* Shopping Link Box */
         .link-box { margin-top: 1.5rem; background: rgba(255, 255, 255, 0.15); padding: 12px 18px; border-radius: 12px; display: inline-flex; align-items: center; gap: 12px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.1); }
         .link-text { font-size: 0.85rem; color: #e0e7ff; }
-        .link-value { font-family: monospace; background: rgba(0,0,0,0.2); padding: 4px 10px; border-radius: 6px; font-size: 0.9rem; color: #fff; overflow-x: auto; max-width: 200px; }
+        .link-value { font-family: monospace; background: rgba(0,0,0,0.2); padding: 4px 10px; border-radius: 6px; font-size: 0.9rem; color: #fff; overflow-x: auto; max-width: 250px; }
         .btn-copy { background: white; color: var(--primary); border: none; padding: 6px 12px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 0.75rem; transition: 0.2s; white-space: nowrap; }
         .btn-copy:hover { background: #e0e7ff; }
 
@@ -62,10 +62,10 @@
 
     <div class="sidebar">
         <h2><i class="fas fa-spider"></i> <span>Spider.io</span></h2>
-        <a id="navDash" href="agent-dashboard.html" class="nav-item active"><i class="fas fa-th-large"></i> <span>Dashboard</span></a>
-        <a id="navInv" href="inventory.html" class="nav-item"><i class="fas fa-box"></i> <span>Inventory</span></a>
-        <a id="navCust" href="user_list.html" class="nav-item"><i class="fas fa-users"></i> <span>Customers</span></a>
-        <a id="navSettings" href="shop-settings.html" class="nav-item"><i class="fas fa-store"></i> <span>Shop Settings</span></a>
+        <a id="navDash" href="#" class="nav-item active"><i class="fas fa-th-large"></i> <span>Dashboard</span></a>
+        <a id="navInv" href="#" class="nav-item"><i class="fas fa-box"></i> <span>Inventory</span></a>
+        <a id="navCust" href="#" class="nav-item"><i class="fas fa-users"></i> <span>Customers</span></a>
+        <a id="navSettings" href="#" class="nav-item"><i class="fas fa-store"></i> <span>Shop Settings</span></a>
         <a href="#" onclick="handleLogout()" class="nav-item" style="margin-top: 5rem; color: #fb7185;"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
     </div>
 
@@ -100,7 +100,7 @@
         <div class="order-section">
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <h3 style="margin: 0; color: #1e293b;"><i class="fas fa-shopping-bag" style="color: #f59e0b; margin-right: 10px;"></i> Recent Orders</h3>
-                <a href="user_list.html" id="viewAllBtn" style="font-size: 0.9rem; color: var(--primary); text-decoration: none; font-weight: 700; background: #eef2ff; padding: 8px 16px; border-radius: 10px;">View All</a>
+                <a href="#" id="viewAllBtn" style="font-size: 0.9rem; color: var(--primary); text-decoration: none; font-weight: 700; background: #eef2ff; padding: 8px 16px; border-radius: 10px;">View All</a>
             </div>
             <div class="table-container">
                 <table>
@@ -122,104 +122,107 @@
     </div>
 
     <script>
-        // Vercel API Base URL
         const API_BASE_URL = "https://shopping-sable-sigma.vercel.app/api";
         let generatedShopLink = "";
+        let currentAgentName = "";
 
         window.onload = async function() {
             const urlParams = new URLSearchParams(window.location.search);
             const agentFromUrl = urlParams.get('agent');
             const loggedInAgent = JSON.parse(localStorage.getItem('currentAgent'));
             
-            // Login check: URL သို့မဟုတ် LocalStorage တစ်ခုခုမှာ ရှိရမယ်
-            const agentName = agentFromUrl || (loggedInAgent ? loggedInAgent.name : null);
+            currentAgentName = agentFromUrl || (loggedInAgent ? loggedInAgent.name : null);
 
-            if (!agentName) { 
+            if (!currentAgentName) { 
                 window.location.href = "login.html"; 
                 return; 
             }
 
-            // Sidebar Links Update
-            const param = `?agent=${encodeURIComponent(agentName)}`;
+            // Update Sidebar/Navigation Links
+            const param = `?agent=${encodeURIComponent(currentAgentName)}`;
             document.getElementById('navDash').href = `agent-dashboard.html${param}`;
             document.getElementById('navInv').href = `inventory.html${param}`;
             document.getElementById('navCust').href = `user_list.html${param}`;
             document.getElementById('navSettings').href = `shop-settings.html${param}`;
             document.getElementById('viewAllBtn').href = `user_list.html${param}`;
 
-            document.getElementById('welcomeAgent').innerText = `မင်္ဂလာပါ ${agentName}!`;
+            document.getElementById('welcomeAgent').innerText = `မင်္ဂလာပါ ${currentAgentName}!`;
 
-            // Shopping Link သတ်မှတ်ခြင်း
+            // Shop Link Generation (Point to your index.html)
             const baseUrl = window.location.origin + window.location.pathname.replace('agent-dashboard.html', 'index.html');
-            generatedShopLink = `${baseUrl}?shop=${encodeURIComponent(agentName)}`;
+            generatedShopLink = `${baseUrl}?shop=${encodeURIComponent(currentAgentName)}`;
             document.getElementById('shopLinkDisplay').innerText = generatedShopLink;
 
-            // Fetch Data
-            fetchAgentData(agentName);
-            fetchStatsAndOrders(agentName);
+            // Load Data
+            fetchAgentProfile();
+            fetchStatsAndOrders();
         };
 
-        async function fetchAgentData(agentName) {
+        async function fetchAgentProfile() {
             try {
+                // Find agent details from the list
                 const response = await fetch(`${API_BASE_URL}/agents/list`);
                 const agents = await response.json();
-                const currentAgent = agents.find(a => a.shopName === agentName || a.name === agentName);
+                const agent = agents.find(a => a.name === currentAgentName || a.shopName === currentAgentName);
 
-                if (currentAgent) {
-                    document.getElementById('shopNameDisplay').innerText = currentAgent.shopName || currentAgent.name;
-                    document.getElementById('shopContact').innerText = currentAgent.contact || currentAgent.gmail_phone || "-";
-                    document.getElementById('agentStatusBadge').innerText = currentAgent.status || "Active";
+                if (agent) {
+                    document.getElementById('shopNameDisplay').innerText = agent.shopName || agent.name;
+                    document.getElementById('shopContact').innerText = agent.contact || agent.gmail_phone || "Not set";
                     
-                    if(currentAgent.status === "Disabled") {
-                        document.getElementById('agentStatusBadge').style.background = "#fee2e2";
-                        document.getElementById('agentStatusBadge').style.color = "#ef4444";
+                    const badge = document.getElementById('agentStatusBadge');
+                    badge.innerText = agent.status || "Active";
+                    if(agent.status === "Disabled") {
+                        badge.style.background = "#fee2e2";
+                        badge.style.color = "#ef4444";
                     }
                 }
             } catch (err) {
-                console.error("Agent Data Error:", err);
-                document.getElementById('shopNameDisplay').innerText = "Error loading data";
+                console.error("Profile Load Error:", err);
+                document.getElementById('shopNameDisplay').innerText = "Load Failed";
             }
         }
 
-        async function fetchStatsAndOrders(agentName) {
+        async function fetchStatsAndOrders() {
             const tbody = document.getElementById('orderTableBody');
             
             try {
-                // 1. Fetch Products for Count
-                const prodRes = await fetch(`${API_BASE_URL}/products?agent=${encodeURIComponent(agentName)}`);
+                // 1. Get Products Count for this agent
+                const prodRes = await fetch(`${API_BASE_URL}/products?agent=${encodeURIComponent(currentAgentName)}`);
                 const products = await prodRes.json();
-                document.getElementById('totalProducts').innerText = products.length;
+                document.getElementById('totalProducts').innerText = products.length || 0;
 
-                // 2. Fetch Orders
-                const orderRes = await fetch(`${API_BASE_URL}/orders?agent=${encodeURIComponent(agentName)}`);
+                // 2. Get Orders for this agent
+                const orderRes = await fetch(`${API_BASE_URL}/orders?agent=${encodeURIComponent(currentAgentName)}`);
                 const orders = await orderRes.json();
                 
-                document.getElementById('totalOrders').innerText = orders.length;
+                document.getElementById('totalOrders').innerText = orders.length || 0;
                 document.getElementById('lastUpdate').innerText = new Date().toLocaleTimeString();
 
                 if (!orders || orders.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 40px; color: #94a3b8;">လက်ရှိတွင် အော်ဒါမရှိသေးပါ။</td></tr>';
-                } else {
-                    // လတ်တလော အော်ဒါ ၅ ခုပဲပြမယ်
-                    const recentOrders = orders.slice(0, 5);
-                    tbody.innerHTML = recentOrders.map(d => {
-                        const orderDate = d.createdAt ? new Date(d.createdAt).toLocaleDateString('en-GB') : '-';
-                        let statusStyle = d.status === 'Completed' ? 'background:#dcfce7; color:#15803d;' : 'background:#fef3c7; color:#92400e;';
-                        
-                        return `
-                            <tr>
-                                <td style="font-weight:700;">${d.productName || 'Unknown'}</td>
-                                <td>${d.customerName || 'Guest'}</td>
-                                <td>${d.customerPhone || '-'}</td>
-                                <td><span class="order-status" style="${statusStyle}">${d.status || 'Pending'}</span></td>
-                                <td style="color:#64748b; font-size: 0.85rem;">${orderDate}</td>
-                            </tr>
-                        `;
-                    }).join('');
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 40px; color: #94a3b8;">အော်ဒါစာရင်း မရှိသေးပါ။</td></tr>';
+                    return;
                 }
+
+                // Show last 5 orders
+                const recent = orders.slice(-5).reverse(); 
+                tbody.innerHTML = recent.map(order => {
+                    const date = order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-GB') : '-';
+                    const statusColor = order.status === 'Completed' ? 'background:#dcfce7; color:#15803d;' : 'background:#fef3c7; color:#92400e;';
+                    
+                    return `
+                        <tr>
+                            <td style="font-weight:700;">${order.productName || 'Unknown Item'}</td>
+                            <td>${order.customerName || 'Guest'}</td>
+                            <td>${order.customerPhone || '-'}</td>
+                            <td><span class="order-status" style="${statusColor}">${order.status || 'Pending'}</span></td>
+                            <td style="color:#64748b; font-size: 0.85rem;">${date}</td>
+                        </tr>
+                    `;
+                }).join('');
+
             } catch (err) {
-                console.error("Order/Stats Load Error:", err);
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#ef4444;">API Connection Error.</td></tr>';
+                console.error("Stats Load Error:", err);
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#ef4444; padding:20px;">Connection Error with MongoDB API.</td></tr>';
             }
         }
 
@@ -227,10 +230,9 @@
             if (generatedShopLink) {
                 navigator.clipboard.writeText(generatedShopLink).then(() => {
                     const btn = document.querySelector('.btn-copy');
+                    const original = btn.innerHTML;
                     btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
-                    setTimeout(() => {
-                        btn.innerHTML = '<i class="fas fa-copy"></i> Copy Link';
-                    }, 2000);
+                    setTimeout(() => btn.innerHTML = original, 2000);
                 });
             }
         }
