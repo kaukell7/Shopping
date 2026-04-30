@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Spider.io</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --primary: #4f46e5; --bg: #f1f5f9; --text: #1e293b; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); margin: 0; display: flex; }
+        
+        /* Sidebar */
+        .sidebar { width: 260px; background: #0f172a; color: white; height: 100vh; position: sticky; top: 0; padding: 2rem 1rem; }
+        .sidebar h2 { font-size: 1.5rem; margin-bottom: 2rem; padding-left: 1rem; }
+        .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px 1rem; color: #94a3b8; text-decoration: none; border-radius: 12px; margin-bottom: 8px; transition: 0.3s; }
+        .nav-link:hover, .nav-link.active { background: var(--primary); color: white; }
+
+        /* Main Content */
+        .main-content { flex: 1; padding: 2rem; overflow-y: auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        
+        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-card { background: white; padding: 1.5rem; border-radius: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .stat-card h3 { font-size: 0.85rem; color: #64748b; margin-bottom: 0.5rem; }
+        .stat-card p { font-size: 1.5rem; font-weight: 800; color: #0f172a; }
+
+        /* Table */
+        .card-table { background: white; border-radius: 20px; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th { text-align: left; padding: 12px; border-bottom: 2px solid #f1f5f9; color: #64748b; font-size: 0.85rem; }
+        td { padding: 15px 12px; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; }
+        
+        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
+        .pending { background: #fef3c7; color: #d97706; }
+        .completed { background: #dcfce7; color: #16a34a; }
+
+        .btn-refresh { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>Spider Admin</h2>
+        <a href="#" class="nav-link active"><i class="fas fa-shopping-cart"></i> Orders</a>
+        <a href="product-manage.html" class="nav-link"><i class="fas fa-box"></i> Products</a>
+        <a href="shop-settings.html" class="nav-link"><i class="fas fa-cog"></i> Settings</a>
+        <a href="#" onclick="handleLogout()" class="nav-link" style="margin-top: auto;"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h1>Order များစီမံရန်</h1>
+            <button class="btn-refresh" onclick="loadOrders()"><i class="fas fa-sync-alt"></i> Refresh</button>
+        </div>
+
+        <div class="stat-grid">
+            <div class="stat-card"><h3>Total Orders</h3><p id="totalCount">0</p></div>
+            <div class="stat-card"><h3>Pending</h3><p id="pendingCount" style="color: #d97706;">0</p></div>
+        </div>
+
+        <div class="card-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Customer</th>
+                        <th>Product</th>
+                        <th>Qty</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="orderList">
+                    <!-- Orders will load here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'သင့်ရဲ့_SUPABASE_URL_ဒီမှာထည့်ပါ'; 
+        const SUPABASE_KEY = 'သင့်ရဲ့_SUPABASE_ANON_KEY_ဒီမှာထည့်ပါ';
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        const agentName = "spider"; // သင့် Agent အမည်
+
+        async function loadOrders() {
+            const { data, error } = await _supabase
+                .from('orders')
+                .select('*')
+                .eq('agent_name', agentName)
+                .order('created_at', { ascending: false });
+
+            if (data) {
+                renderOrders(data);
+                updateStats(data);
+            }
+        }
+
+        function renderOrders(orders) {
+            const list = document.getElementById('orderList');
+            list.innerHTML = orders.map(order => `
+                <tr>
+                    <td>${new Date(order.created_at).toLocaleDateString()}</td>
+                    <td><b>${order.customer_name}</b><br><small>${order.customer_phone}</small></td>
+                    <td>${order.product_name}</td>
+                    <td>${order.quantity}</td>
+                    <td><span class="status-badge ${order.status.toLowerCase()}">${order.status}</span></td>
+                    <td>
+                        <button onclick="updateStatus('${order.id}', 'Completed')" style="cursor:pointer; border:none; background:#4f46e5; color:white; padding:5px 10px; border-radius:5px;">Done</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function updateStatus(id, newStatus) {
+            const { error } = await _supabase
+                .from('orders')
+                .update({ status: newStatus })
+                .eq('id', id);
+            
+            if(!error) loadOrders();
+        }
+
+        function updateStats(orders) {
+            document.getElementById('totalCount').innerText = orders.length;
+            document.getElementById('pendingCount').innerText = orders.filter(o => o.status === 'Pending').length;
+        }
+
+        async function handleLogout() {
+            await _supabase.auth.signOut();
+            window.location.href = "login.html";
+        }
+
+        window.onload = loadOrders;
+    </script>
+</body>
+</html>
