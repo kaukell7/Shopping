@@ -4,72 +4,229 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Customer List - Spider.io</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --primary: #4f46e5; --bg: #0f172a; --main-bg: #f1f5f9; --text-slate: #64748b; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--main-bg); margin: 0; display: flex; }
+        :root { 
+            --primary: #4f46e5; 
+            --primary-light: #eef2ff;
+            --bg: #0f172a; 
+            --main-bg: #f8fafc; 
+            --text-main: #1e293b;
+            --text-slate: #64748b; 
+        }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: var(--main-bg); 
+            margin: 0; 
+            display: flex; 
+            color: var(--text-main);
+        }
         
         /* Sidebar Styles */
-        .sidebar { width: 260px; background: var(--bg); color: white; min-height: 100vh; padding: 1.5rem 1rem; position: fixed; z-index: 1000; transition: 0.3s; box-sizing: border-box; }
-        .sidebar h2 { padding-left: 1rem; margin-bottom: 2.5rem; color: #fff; font-weight: 800; display: flex; align-items: center; gap: 12px; font-size: 1.4rem; }
-        .nav-item { padding: 0.9rem 1.1rem; border-radius: 14px; color: #94a3b8; text-decoration: none; margin-bottom: 0.6rem; display: flex; align-items: center; transition: 0.3s; font-weight: 600; cursor: pointer; }
-        .nav-item:hover { background: rgba(255,255,255,0.05); color: white; }
-        .nav-item.active { background: var(--primary); color: white; box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3); }
-        .nav-item i { width: 24px; font-size: 1.1rem; }
+        .sidebar { 
+            width: 260px; 
+            background: var(--bg); 
+            color: white; 
+            min-height: 100vh; 
+            padding: 2rem 1rem; 
+            position: fixed; 
+            z-index: 1000; 
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+        .sidebar h2 { 
+            padding-left: 1rem; 
+            margin-bottom: 3rem; 
+            font-weight: 800; 
+            display: flex; 
+            align-items: center; 
+            gap: 12px;
+            letter-spacing: -1px;
+        }
+        .nav-item { 
+            padding: 1rem 1.2rem; 
+            border-radius: 14px; 
+            color: #94a3b8; 
+            text-decoration: none; 
+            margin-bottom: 0.6rem; 
+            display: flex; 
+            align-items: center; 
+            transition: 0.2s; 
+            font-weight: 600;
+        }
+        .nav-item:hover { 
+            background: rgba(255, 255, 255, 0.05); 
+            color: #fff; 
+        }
+        .nav-item.active { 
+            background: var(--primary); 
+            color: white;
+            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
+        }
+        .nav-item i { width: 28px; font-size: 1.2rem; }
 
         /* Main Content */
-        .main-content { margin-left: 260px; padding: 2.5rem; width: calc(100% - 260px); box-sizing: border-box; min-height: 100vh; }
-        .header-section { margin-bottom: 2.5rem; display: flex; justify-content: space-between; align-items: flex-end; }
-        .header-section h1 { margin: 0 0 5px 0; font-size: 1.9rem; color: #0f172a; font-weight: 800; letter-spacing: -0.5px; }
+        .main-content { 
+            margin-left: 260px; 
+            padding: 2.5rem; 
+            width: calc(100% - 260px); 
+            box-sizing: border-box; 
+        }
+
+        .header-section { 
+            margin-bottom: 2.5rem; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        .header-section h1 { 
+            margin: 0; 
+            font-size: 2rem; 
+            font-weight: 800; 
+            letter-spacing: -0.5px;
+        }
         
+        /* Search Box */
+        .search-wrapper { 
+            position: relative; 
+            width: 350px; 
+        }
+        .search-wrapper i { 
+            position: absolute; 
+            left: 18px; 
+            top: 50%; 
+            transform: translateY(-50%); 
+            color: var(--text-slate); 
+        }
+        .search-wrapper input { 
+            width: 100%; 
+            padding: 14px 20px 14px 50px; 
+            border-radius: 18px; 
+            border: 1px solid #e2e8f0; 
+            outline: none; 
+            background: white;
+            transition: 0.3s; 
+            font-family: inherit;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
+        }
+        .search-wrapper input:focus { 
+            border-color: var(--primary); 
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); 
+        }
+
         /* Table Card */
-        .table-card { background: white; border-radius: 24px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); }
-        table { width: 100%; border-collapse: collapse; min-width: 600px; }
-        th { text-align: left; background: #f8fafc; padding: 18px 20px; color: var(--text-slate); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; border-bottom: 1px solid #e2e8f0; font-weight: 700; }
-        td { padding: 20px; border-bottom: 1px solid #f1f5f9; font-size: 0.95rem; color: #1e293b; vertical-align: middle; }
+        .table-card { 
+            background: white; 
+            border-radius: 28px; 
+            border: 1px solid #e2e8f0; 
+            overflow: hidden; 
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.03); 
+        }
+        table { width: 100%; border-collapse: collapse; }
+        th { 
+            text-align: left; 
+            background: #f8fafc; 
+            padding: 20px; 
+            color: var(--text-slate); 
+            font-size: 0.75rem; 
+            text-transform: uppercase; 
+            letter-spacing: 0.05em; 
+            border-bottom: 1px solid #e2e8f0; 
+            font-weight: 700; 
+        }
+        td { 
+            padding: 20px; 
+            border-bottom: 1px solid #f1f5f9; 
+            transition: 0.2s;
+        }
+        tr:hover td { background-color: #fcfdfe; }
         
         /* User Profile UI */
-        .user-info { display: flex; align-items: center; gap: 14px; }
-        .user-avatar { width: 44px; height: 44px; background: linear-gradient(135deg, #4f46e5, #818cf8); border-radius: 14px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.1rem; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2); }
+        .user-info { display: flex; align-items: center; gap: 15px; }
+        .user-avatar { 
+            width: 48px; 
+            height: 48px; 
+            background: var(--primary); 
+            border-radius: 16px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            color: white; 
+            font-weight: 800; 
+            font-size: 1.2rem; 
+        }
         
-        .badge { padding: 6px 14px; border-radius: 10px; font-size: 0.75rem; font-weight: 700; background: #dcfce7; color: #166534; display: inline-flex; align-items: center; gap: 6px; }
-        .badge::before { content: ''; width: 6px; height: 6px; background: currentColor; border-radius: 50%; }
+        .uid-tag {
+            font-family: monospace;
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
 
-        .search-wrapper { position: relative; width: 320px; }
-        .search-wrapper i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-slate); }
-        .search-wrapper input { width: 100%; padding: 12px 15px 12px 42px; border-radius: 14px; border: 1px solid #e2e8f0; outline: none; transition: 0.3s; font-family: inherit; }
-        .search-wrapper input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); }
+        .action-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: 0.2s;
+            border: 1px solid #e2e8f0;
+        }
+        .btn-call { color: #10b981; background: #ecfdf5; border-color: #d1fae5; }
+        .btn-map { color: var(--primary); background: var(--primary-light); border-color: #dbeafe; }
+        .action-btn:hover { transform: translateY(-3px); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
 
-        @media (max-width: 900px) {
+        .badge { 
+            padding: 6px 12px; 
+            border-radius: 12px; 
+            font-size: 0.75rem; 
+            font-weight: 700; 
+            background: #f0fdf4; 
+            color: #166534; 
+            border: 1px solid #dcfce7;
+        }
+
+        @media (max-width: 1000px) {
             .sidebar { width: 85px; padding: 2rem 0.8rem; }
             .sidebar h2 span, .nav-item span { display: none; }
             .main-content { margin-left: 85px; width: calc(100% - 85px); padding: 1.5rem; }
-            .header-section { flex-direction: column; align-items: flex-start; gap: 1rem; }
+            .header-section { flex-direction: column; align-items: flex-start; gap: 1.5rem; }
             .search-wrapper { width: 100%; }
         }
     </style>
 </head>
 <body>
 
-    <div class="sidebar">
-        <h2><i class="fas fa-spider"></i> <span>Spider.io</span></h2>
-        <a id="navDash" class="nav-item"><i class="fas fa-th-large"></i> <span>Dashboard</span></a>
-        <a id="navInv" class="nav-item"><i class="fas fa-box"></i> <span>Inventory</span></a>
-        <a id="navCust" class="nav-item active"><i class="fas fa-users"></i> <span>Customers</span></a>
-        <a id="navSettings" class="nav-item"><i class="fas fa-cog"></i> <span>Shop Settings</span></a>
-        <a href="#" onclick="handleLogout()" class="nav-item" style="margin-top: 5rem; color: #fb7185;"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
-    </div>
+    <aside class="sidebar">
+        <h2><i class="fas fa-spider" style="color: var(--primary);"></i> <span>Spider.io</span></h2>
+        <nav>
+            <a id="navDash" class="nav-item"><i class="fas fa-grid-2"></i> <span>Dashboard</span></a>
+            <a id="navInv" class="nav-item"><i class="fas fa-box-archive"></i> <span>Inventory</span></a>
+            <a id="navCust" class="nav-item active"><i class="fas fa-user-group"></i> <span>Customers</span></a>
+            <a id="navSettings" class="nav-item"><i class="fas fa-sliders"></i> <span>Settings</span></a>
+        </nav>
+        <div style="position: absolute; bottom: 2rem; width: calc(100% - 2rem);">
+            <a href="#" onclick="handleLogout()" class="nav-item" style="color: #ef4444;">
+                <i class="fas fa-arrow-right-from-bracket"></i> <span>Logout</span>
+            </a>
+        </div>
+    </aside>
 
-    <div class="main-content">
+    <main class="main-content">
         <div class="header-section">
             <div>
                 <h1 id="pageTitle">Customer Database</h1>
-                <p id="subTitle" style="color: var(--text-slate); font-weight: 500;">သင့်ဆိုင်တွင် မှတ်ပုံတင်ထားသော ဝယ်ယူသူများစာရင်း</p>
+                <p style="color: var(--text-slate); margin: 5px 0 0 0; font-weight: 500;">Manage and track your registered clients</p>
             </div>
             <div class="search-wrapper">
                 <i class="fas fa-search"></i>
-                <input type="text" id="userSearch" placeholder="အမည်ဖြင့် ရှာဖွေရန်..." onkeyup="filterTable()">
+                <input type="text" id="userSearch" placeholder="Search by name or phone..." onkeyup="filterTable()">
             </div>
         </div>
 
@@ -77,24 +234,24 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Customer / Client</th>
-                        <th>Contact Detail</th>
+                        <th>Customer Name</th>
+                        <th>Contact & Location</th>
                         <th>Joined Date</th>
                         <th>Total Orders</th>
-                        <th>Status</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody id="userTableBody">
                     <tr>
-                        <td colspan="5" style="text-align:center; padding: 80px; color: #94a3b8;">
-                            <i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 15px; display: block; margin-left: auto; margin-right: auto;"></i>
-                            Loading Database...
+                        <td colspan="5" style="text-align:center; padding: 100px;">
+                            <i class="fas fa-circle-notch fa-spin" style="font-size: 2rem; color: var(--primary); margin-bottom: 15px;"></i>
+                            <div style="color: var(--text-slate); font-weight: 600;">Loading Database...</div>
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
-    </div>
+    </main>
 
     <script>
         const API_BASE_URL = "https://shopping-sable-sigma.vercel.app/api";
@@ -105,12 +262,7 @@
             const agentFromUrl = urlParams.get('agent');
             const loggedInAgent = JSON.parse(localStorage.getItem('currentAgent'));
             
-            currentAgentName = agentFromUrl || (loggedInAgent ? loggedInAgent.name : null);
-
-            if (!currentAgentName) {
-                window.location.href = "login.html";
-                return;
-            }
+            currentAgentName = agentFromUrl || (loggedInAgent ? loggedInAgent.name : "spider");
 
             // Navigation Setup
             const param = `?agent=${encodeURIComponent(currentAgentName)}`;
@@ -119,25 +271,24 @@
             document.getElementById('navCust').href = `user_list.html${param}`;
             document.getElementById('navSettings').href = `shop-settings.html${param}`;
 
-            document.getElementById('pageTitle').innerText = `${currentAgentName}'s Customers`;
-
             fetchUsers();
         };
 
         async function fetchUsers() {
             try {
-                // MongoDB API မှတဆင့် အေးဂျင့်အမည်ဖြင့် ဝယ်သူများကို fetch လုပ်ခြင်း
                 const response = await fetch(`${API_BASE_URL}/users?agent=${encodeURIComponent(currentAgentName)}`);
                 const users = await response.json();
-                
                 const tbody = document.getElementById('userTableBody');
                 
                 if (!users || users.length === 0) {
                     tbody.innerHTML = `
                         <tr>
                             <td colspan="5" style="text-align:center; padding: 80px;">
-                                <i class="fas fa-user-friends" style="font-size: 3rem; color: #e2e8f0; display: block; margin-bottom: 20px; margin-left: auto; margin-right: auto;"></i>
-                                <span style="color: #94a3b8; font-weight: 500;">ဝယ်ယူသူ မရှိသေးပါ။</span>
+                                <div style="background: var(--primary-light); width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                                    <i class="fas fa-users-slash" style="font-size: 2rem; color: var(--primary);"></i>
+                                </div>
+                                <h3 style="margin:0; color: var(--text-main);">ဝယ်ယူသူ မရှိသေးပါ။</h3>
+                                <p style="color: var(--text-slate);">သင့်ဆိုင်တွင် စတင်ဝယ်ယူသူများရှိလာပါက ဤနေရာတွင် မြင်တွေ့ရပါမည်။</p>
                             </td>
                         </tr>`;
                     return;
@@ -148,9 +299,11 @@
                         day: '2-digit', month: 'short', year: 'numeric'
                     }) : 'New Member';
                     
-                    const name = user.name || 'Unknown User';
+                    const name = user.name || 'Guest User';
                     const initial = name.charAt(0).toUpperCase();
-                    const orderCount = user.orderCount || 0; // Backend မှ order အရေအတွက်ပို့ပေးလျှင် သုံးရန်
+                    const orderCount = user.orderCount || 0;
+                    const phone = user.phone || 'N/A';
+                    const address = user.address || 'No Address Provided';
                     
                     return `
                         <tr>
@@ -158,22 +311,37 @@
                                 <div class="user-info">
                                     <div class="user-avatar">${initial}</div>
                                     <div>
-                                        <div style="font-weight: 700; color: #0f172a;">${name}</div>
-                                        <div style="font-size: 0.75rem; color: var(--text-slate);">UID: ${user._id.slice(-6).toUpperCase()}</div>
+                                        <div style="font-weight: 700; color: var(--text-main); font-size: 1rem;">${name}</div>
+                                        <div class="uid-tag">ID: ${user._id.slice(-6).toUpperCase()}</div>
                                     </div>
                                 </div>
                             </td>
                             <td>
                                 <div style="display: flex; flex-direction: column; gap: 4px;">
-                                    <span style="font-weight: 600; font-size: 0.9rem;"><i class="fas fa-phone-alt" style="width: 18px; color: #94a3b8;"></i> ${user.phone || 'N/A'}</span>
-                                    <span style="font-size: 0.8rem; color: var(--text-slate);"><i class="fas fa-map-marker-alt" style="width: 18px; color: #94a3b8;"></i> ${user.address || 'No Address'}</span>
+                                    <span style="font-weight: 600; font-size: 0.9rem; display:flex; align-items:center; gap:8px;">
+                                        <i class="fas fa-phone-alt" style="color: #10b981; font-size: 0.8rem;"></i> ${phone}
+                                    </span>
+                                    <span style="font-size: 0.8rem; color: var(--text-slate); display:flex; align-items:center; gap:8px;">
+                                        <i class="fas fa-location-dot" style="color: #ef4444; font-size: 0.8rem;"></i> ${address}
+                                    </span>
                                 </div>
                             </td>
-                            <td style="color: #64748b; font-weight: 500;">${date}</td>
-                            <td style="text-align: center;">
-                                <span style="background: #f1f5f9; padding: 4px 12px; border-radius: 8px; font-weight: 700;">${orderCount}</span>
+                            <td style="color: var(--text-slate); font-weight: 600; font-size: 0.9rem;">${date}</td>
+                            <td>
+                                <span style="background: #f1f5f9; padding: 6px 14px; border-radius: 10px; font-weight: 800; color: var(--text-main); font-size: 0.9rem;">
+                                    ${orderCount} <small style="font-weight:400; opacity:0.6;">orders</small>
+                                </span>
                             </td>
-                            <td><span class="badge">Verified</span></td>
+                            <td>
+                                <div style="display: flex; gap: 8px;">
+                                    <a href="tel:${phone}" class="action-btn btn-call" title="Call Customer">
+                                        <i class="fas fa-phone"></i>
+                                    </a>
+                                    <a href="https://www.google.com/maps/search/${encodeURIComponent(address)}" target="_blank" class="action-btn btn-map" title="View Location">
+                                        <i class="fas fa-map-marked-alt"></i>
+                                    </a>
+                                </div>
+                            </td>
                         </tr>
                     `;
                 }).join('');
@@ -182,9 +350,10 @@
                 console.error("Database Error:", err);
                 document.getElementById('userTableBody').innerHTML = `
                     <tr>
-                        <td colspan="5" style="text-align:center; padding: 40px; color:#ef4444;">
-                            <i class="fas fa-exclamation-triangle" style="font-size: 1.5rem; margin-bottom: 10px;"></i><br>
-                            Database ချိတ်ဆက်မှု အဆင်မပြေပါ။ ခဏနေမှ ပြန်ကြိုးစားပါ။
+                        <td colspan="5" style="text-align:center; padding: 60px;">
+                            <i class="fas fa-triangle-exclamation" style="font-size: 2.5rem; color: #ef4444; margin-bottom: 15px;"></i>
+                            <div style="font-weight: 700; color: #ef4444;">Connection Error</div>
+                            <p style="color: var(--text-slate);">Database ချိတ်ဆက်မှု အဆင်မပြေပါ။ ခဏနေမှ ပြန်ကြိုးစားပါ။</p>
                         </td>
                     </tr>`;
             }
@@ -196,9 +365,10 @@
             const tr = document.getElementById("userTableBody").getElementsByTagName("tr");
 
             for (let i = 0; i < tr.length; i++) {
-                let tdName = tr[i].getElementsByTagName("td")[0];
-                if (tdName) {
-                    let textValue = tdName.textContent || tdName.innerText;
+                const tdName = tr[i].getElementsByTagName("td")[0];
+                const tdContact = tr[i].getElementsByTagName("td")[1];
+                if (tdName || tdContact) {
+                    const textValue = (tdName ? tdName.textContent : "") + (tdContact ? tdContact.textContent : "");
                     tr[i].style.display = textValue.toUpperCase().indexOf(filter) > -1 ? "" : "none";
                 }
             }
