@@ -78,7 +78,7 @@
     </div>
 
     <script>
-        const BACKEND_URL = "https://shopping-sable-sigma.vercel.app";
+        const API_BASE_URL = "https://shopping-sable-sigma.vercel.app/api";
         let currentAgentName = "";
         let existingLogoUrl = "";
 
@@ -94,32 +94,35 @@
                 return;
             }
 
+            // Navigation links update
             const param = `?agent=${encodeURIComponent(currentAgentName)}`;
             document.getElementById('navDash').href = `agent-dashboard.html${param}`;
             document.getElementById('navInv').href = `inventory.html${param}`;
             document.getElementById('navCust').href = `user_list.html${param}`;
             document.getElementById('navSettings').href = `shop-settings.html${param}`;
 
-            loadOldSettings();
+            loadSettings();
         };
 
-        async function loadOldSettings() {
+        async function loadSettings() {
             try {
-                const response = await fetch(`${BACKEND_URL}/api/settings/${currentAgentName}`);
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data) {
-                        document.getElementById('shopName').value = data.shopName || "";
-                        document.getElementById('viberPhone').value = data.viber || "";
-                        document.getElementById('telegramLink').value = data.telegram || "";
-                        if(data.logoUrl) {
-                            existingLogoUrl = data.logoUrl;
-                            document.getElementById('logoPreview').innerHTML = `<img src="${data.logoUrl}" style="width:100%; height:100%; object-fit:contain;">`;
-                        }
+                // Agents list ကနေ လက်ရှိ agent ရဲ့ data ကို ရှာဆွဲထုတ်ခြင်း
+                const response = await fetch(`${API_BASE_URL}/agents/list`);
+                const agents = await response.json();
+                const data = agents.find(a => a.name === currentAgentName || a.shopName === currentAgentName);
+
+                if (data) {
+                    document.getElementById('shopName').value = data.shopName || "";
+                    document.getElementById('viberPhone').value = data.viber || data.contact || "";
+                    document.getElementById('telegramLink').value = data.telegram || "";
+                    
+                    if(data.logoUrl) {
+                        existingLogoUrl = data.logoUrl;
+                        document.getElementById('logoPreview').innerHTML = `<img src="${data.logoUrl}" style="width:100%; height:100%; object-fit:contain;">`;
                     }
                 }
             } catch (err) {
-                console.error("Data loading error:", err);
+                console.error("Settings Load Error:", err);
             }
         }
 
@@ -141,7 +144,8 @@
 
         async function saveToMongoDB() {
             const btn = document.getElementById('saveBtn');
-            const file = document.getElementById('logoFile').files[0];
+            const fileInput = document.getElementById('logoFile');
+            const file = fileInput.files[0];
             const name = document.getElementById('shopName').value;
             const viber = document.getElementById('viberPhone').value;
             const telegram = document.getElementById('telegramLink').value;
@@ -152,10 +156,11 @@
             btn.innerText = "Saving...";
 
             try {
-                let logoUrl = existingLogoUrl;
+                let logoBase64 = existingLogoUrl;
 
+                // ပုံအသစ်ရွေးထားရင် Base64 ပြောင်းမယ်
                 if (file) {
-                    logoUrl = await new Promise((resolve) => {
+                    logoBase64 = await new Promise((resolve) => {
                         const reader = new FileReader();
                         reader.onload = (e) => resolve(e.target.result);
                         reader.readAsDataURL(file);
@@ -163,14 +168,16 @@
                 }
 
                 const payload = {
-                    agentName: currentAgentName,
+                    name: currentAgentName, // ID အနေနဲ့ သုံးဖို့
                     shopName: name,
                     viber: viber,
                     telegram: telegram,
-                    logoUrl: logoUrl
+                    logoUrl: logoBase64,
+                    lastUpdated: new Date().toISOString()
                 };
 
-                const response = await fetch(`${BACKEND_URL}/api/settings/save`, {
+                // Backend Update API ကို လှမ်းပို့ခြင်း
+                const response = await fetch(`${API_BASE_URL}/agents/update`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -180,13 +187,12 @@
                     alert("အောင်မြင်စွာ သိမ်းဆည်းပြီးပါပြီ။");
                     window.location.reload();
                 } else {
-                    const errorData = await response.json().catch(() => ({ message: "Unknown error" }));
-                    alert("သိမ်းဆည်း၍မရပါ- " + (errorData.message || "Server Error"));
+                    alert("သိမ်းဆည်းရာတွင် အမှားအယွင်းရှိပါသည်။");
                 }
 
             } catch (err) {
                 console.error("Save Error:", err);
-                alert("ချိတ်ဆက်မှု အမှားအယွင်းရှိနေပါသည် (Vercel Backend ကို စစ်ဆေးပါ)");
+                alert("ချိတ်ဆက်မှု အမှားအယွင်းရှိနေပါသည်");
             } finally {
                 btn.disabled = false;
                 btn.innerText = "Save Changes";
