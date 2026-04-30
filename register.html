@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Spider.io</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #5850ec; --bg: #f9fafb; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 2.5rem; border-radius: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 400px; text-align: center; }
+        .logo { width: 50px; margin-bottom: 1rem; }
+        h2 { margin-bottom: 0.5rem; color: #111827; }
+        p { color: #6b7280; font-size: 0.9rem; margin-bottom: 2rem; }
+        input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #e5e7eb; border-radius: 12px; box-sizing: border-box; outline: none; transition: 0.3s; }
+        input:focus { border-color: var(--primary); ring: 2px var(--primary); }
+        .btn { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.3s; }
+        .btn:hover { background: #453bc9; }
+        .footer-link { margin-top: 1.5rem; font-size: 0.85rem; }
+        .footer-link a { color: var(--primary); text-decoration: none; font-weight: 600; }
+        #error-msg { color: #ef4444; font-size: 0.85rem; margin-top: 10px; display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <img src="https://cdn-icons-png.flaticon.com/512/2628/2628822.png" alt="Logo" class="logo">
+        <h2>အကောင့်သစ်ဖွင့်ရန်</h2>
+        <p>လိုအပ်သော အချက်အလက်များကို ဖြည့်သွင်းပါ။</p>
+
+        <input type="text" id="regEmail" placeholder="Email သို့မဟုတ် ဖုန်းနံပါတ်">
+        <input type="password" id="regPass" placeholder="လျှို့ဝှက်နံပါတ် (အနည်းဆုံး ၆ လုံး)">
+        <input type="password" id="confirmPass" placeholder="လျှို့ဝှက်နံပါတ် ပြန်ရိုက်ပါ">
+
+        <button class="btn" onclick="handleRegister()">အကောင့်ဖွင့်မည်</button>
+        <div id="error-msg"></div>
+
+        <div class="footer-link">
+            အကောင့်ရှိပြီးသားလား? <a href="customer-login.html">Login ဝင်မည်</a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // သင့်ရဲ့ Supabase URL နဲ့ Key ကို ဒီမှာ အစားထိုးပါ
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+        const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function handleRegister() {
+            const email = document.getElementById('regEmail').value;
+            const pass = document.getElementById('regPass').value;
+            const confirm = document.getElementById('confirmPass').value;
+            const errorDiv = document.getElementById('error-msg');
+
+            if (!email || !pass) {
+                showError("အချက်အလက်များ ပြည့်စုံအောင် ဖြည့်ပါ။");
+                return;
+            }
+
+            if (pass !== confirm) {
+                showError("Password များ တူညီမှု မရှိပါ။");
+                return;
+            }
+
+            const { data, error } = await _supabase.auth.signUp({
+                email: email,
+                password: pass
+            });
+
+            if (error) {
+                showError(error.message);
+            } else {
+                alert("အကောင့်ဖွင့်ခြင်း အောင်မြင်ပါသည်။ Login ပြန်ဝင်ပေးပါ။");
+                window.location.href = "customer-login.html";
+            }
+        }
+
+        function showError(msg) {
+            const errorDiv = document.getElementById('error-msg');
+            errorDiv.innerText = msg;
+            errorDiv.style.display = "block";
+        }
+    </script>
+</body>
+</html>
