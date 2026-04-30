@@ -4,262 +4,309 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shop Settings - Spider.io</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --primary: #4f46e5; --bg: #0f172a; --card: #ffffff; --text-main: #1e293b; --text-muted: #64748b; }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; display: flex; color: var(--text-main); }
-        
-        /* Sidebar Styles */
-        .sidebar { width: 260px; background: var(--bg); color: white; min-height: 100vh; padding: 1.5rem 1rem; position: fixed; z-index: 1000; transition: 0.3s; }
-        .sidebar h2 { padding-left: 1rem; margin-bottom: 2.5rem; color: #fff; font-weight: 800; display: flex; align-items: center; gap: 12px; font-size: 1.4rem; }
-        .nav-item { padding: 0.8rem 1rem; border-radius: 12px; color: #94a3b8; text-decoration: none; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 12px; transition: 0.3s; font-weight: 600; }
-        .nav-item:hover { color: white; background: rgba(255,255,255,0.1); }
-        .nav-item.active { background: var(--primary); color: white; }
-        
-        /* Main Layout */
-        .main-content { margin-left: 260px; padding: 3rem; width: calc(100% - 260px); min-height: 100vh; }
-        .header-section { margin-bottom: 2.5rem; }
-        .header-section h1 { font-size: 2rem; font-weight: 800; color: var(--bg); margin-bottom: 8px; }
-        
-        .settings-card { background: var(--card); padding: 2.5rem; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.04); border: 1px solid #e2e8f0; max-width: 800px; }
-        
-        /* Form Design */
-        .form-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
-        .form-group label { display: block; margin-bottom: 10px; font-weight: 700; font-size: 0.9rem; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.5px; }
-        .form-group input { width: 100%; padding: 15px; border: 1.5px solid #e2e8f0; border-radius: 14px; outline: none; transition: 0.3s; font-family: inherit; font-size: 1rem; background: #fcfdfe; }
-        .form-group input:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.08); }
-        
-        /* Custom File Upload */
-        .upload-container { display: flex; align-items: center; gap: 25px; background: #f1f5f9; padding: 1.5rem; border-radius: 20px; border: 2px dashed #cbd5e1; margin-bottom: 0.5rem; transition: 0.3s; }
-        .upload-container:hover { border-color: var(--primary); background: #eef2ff; }
-        .preview-circle { width: 110px; height: 110px; background: white; border-radius: 20px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1px solid #e2e8f0; flex-shrink: 0; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .preview-circle img { width: 100%; height: 100%; object-fit: cover; }
-        
-        .file-input-wrapper { position: relative; overflow: hidden; display: inline-block; }
-        .file-input-wrapper input[type=file] { font-size: 100px; position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; }
-        .btn-upload { background: white; border: 1.5px solid #e2e8f0; padding: 10px 18px; border-radius: 10px; font-weight: 700; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; }
-        .btn-upload:hover { border-color: var(--primary); color: var(--primary); }
+        :root { 
+            --primary: #4f46e5; 
+            --primary-light: #eef2ff;
+            --bg: #0f172a; 
+            --main-bg: #f8fafc; 
+            --text-main: #1e293b;
+            --text-slate: #64748b; 
+            --danger: #ef4444;
+        }
 
-        .save-btn { background: var(--primary); color: white; border: none; padding: 18px; border-radius: 16px; cursor: pointer; font-weight: 700; width: 100%; font-size: 1.1rem; margin-top: 2rem; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 12px; box-shadow: 0 10px 20px rgba(79, 70, 229, 0.2); }
-        .save-btn:hover { background: #4338ca; transform: translateY(-3px); box-shadow: 0 15px 25px rgba(79, 70, 229, 0.3); }
-        .save-btn:active { transform: translateY(-1px); }
-        .save-btn:disabled { background: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: var(--main-bg); 
+            margin: 0; 
+            display: flex; 
+            color: var(--text-main);
+        }
+        
+        /* Sidebar */
+        .sidebar { 
+            width: 260px; 
+            background: var(--bg); 
+            color: white; 
+            min-height: 100vh; 
+            padding: 2rem 1rem; 
+            position: fixed; 
+            z-index: 1000; 
+            box-sizing: border-box;
+        }
+        .sidebar h2 { 
+            padding-left: 1rem; 
+            margin-bottom: 3rem; 
+            font-weight: 800; 
+            display: flex; 
+            align-items: center; 
+            gap: 12px;
+        }
+        .nav-item { 
+            padding: 1rem 1.2rem; 
+            border-radius: 14px; 
+            color: #94a3b8; 
+            text-decoration: none; 
+            margin-bottom: 0.6rem; 
+            display: flex; 
+            align-items: center; 
+            font-weight: 600;
+        }
+        .nav-item:hover { color: #fff; background: rgba(255,255,255,0.05); }
+        .nav-item.active { background: var(--primary); color: white; box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3); }
+        .nav-item i { width: 28px; font-size: 1.2rem; }
 
-        /* Toast Message */
-        #toast { visibility: hidden; min-width: 280px; background-color: #1e293b; color: #fff; text-align: center; border-radius: 16px; padding: 18px; position: fixed; z-index: 10000; left: 50%; bottom: 40px; transform: translateX(-50%); font-weight: 600; box-shadow: 0 15px 40px rgba(0,0,0,0.2); }
-        #toast.show { visibility: visible; animation: slideUp 0.4s ease-out, fadeOut 0.4s 2.6s forwards; }
+        /* Main Content */
+        .main-content { margin-left: 260px; padding: 2.5rem; width: calc(100% - 260px); box-sizing: border-box; }
+        
+        .header-section { margin-bottom: 2rem; }
+        .header-section h1 { margin: 0; font-size: 2rem; font-weight: 800; }
 
-        @keyframes slideUp { from { bottom: 0; opacity: 0; } to { bottom: 40px; opacity: 1; } }
-        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+        .settings-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 2rem;
+            align-items: start;
+        }
 
-        @media (max-width: 900px) {
-            .sidebar { width: 85px; padding: 1.5rem 0.5rem; }
-            .sidebar h2 span, .nav-item span { display: none; }
-            .main-content { margin-left: 85px; width: calc(100% - 85px); padding: 2rem 1.5rem; }
-            .upload-container { flex-direction: column; text-align: center; }
+        .card {
+            background: white;
+            border-radius: 28px;
+            padding: 2rem;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--bg);
+        }
+
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-slate);
+        }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: 0.2s;
+            box-sizing: border-box;
+        }
+        .form-group input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 4px var(--primary-light); }
+
+        /* Shop Profile Preview */
+        .profile-preview {
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(to bottom, var(--primary-light), #fff);
+            border-radius: 24px;
+            margin-bottom: 1.5rem;
+        }
+        .preview-avatar {
+            width: 100px;
+            height: 100px;
+            background: var(--primary);
+            color: white;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 15px 30px -5px rgba(79, 70, 229, 0.4);
+        }
+
+        .btn-save {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 16px;
+            font-weight: 800;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .btn-save:hover { transform: translateY(-2px); box-shadow: 0 10px 20px -5px rgba(79, 70, 229, 0.4); }
+
+        @media (max-width: 1100px) {
+            .settings-grid { grid-template-columns: 1fr; }
+            .sidebar { width: 85px; padding: 2rem 0.5rem; }
+            .sidebar span { display: none; }
+            .main-content { margin-left: 85px; width: calc(100% - 85px); }
         }
     </style>
 </head>
 <body>
-    <div id="toast">Settings Saved!</div>
 
-    <div class="sidebar">
-        <h2><i class="fas fa-spider"></i> <span>Spider.io</span></h2>
-        <a id="navDash" class="nav-item"><i class="fas fa-th-large"></i> <span>Dashboard</span></a>
-        <a id="navInv" class="nav-item"><i class="fas fa-box"></i> <span>Inventory</span></a>
-        <a id="navCust" class="nav-item"><i class="fas fa-users"></i> <span>Customers</span></a>
-        <a id="navSettings" class="nav-item active"><i class="fas fa-store"></i> <span>Shop Settings</span></a>
-        <a href="#" onclick="handleLogout()" class="nav-item" style="margin-top: auto; color: #fb7185;"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
-    </div>
+    <aside class="sidebar">
+        <h2><i class="fas fa-spider" style="color: var(--primary);"></i> <span>Spider.io</span></h2>
+        <nav>
+            <a id="navDash" class="nav-item"><i class="fas fa-grid-2"></i> <span>Dashboard</span></a>
+            <a id="navInv" class="nav-item"><i class="fas fa-box-archive"></i> <span>Inventory</span></a>
+            <a id="navCust" class="nav-item"><i class="fas fa-user-group"></i> <span>Customers</span></a>
+            <a id="navSettings" class="nav-item active"><i class="fas fa-sliders"></i> <span>Settings</span></a>
+        </nav>
+    </aside>
 
-    <div class="main-content">
+    <main class="main-content">
         <div class="header-section">
-            <h1>Shop Customization</h1>
-            <p style="color: var(--text-muted);">သင့်ဆိုင်ရဲ့ အမှတ်တံဆိပ်နဲ့ အချက်အလက်များကို ဒီမှာ စိတ်ကြိုက်ပြင်ဆင်နိုင်ပါတယ်။</p>
+            <h1>Shop Settings</h1>
+            <p style="color: var(--text-slate);">ဆိုင်ရဲ့ အချက်အလက်များကို ဤနေရာတွင် စိတ်ကြိုက်ပြင်ဆင်ပါ</p>
         </div>
 
-        <div class="settings-card">
-            <div class="form-grid">
-                <!-- Logo Section -->
-                <div class="form-group">
-                    <label>Store Brand Identity</label>
-                    <div class="upload-container">
-                        <div class="preview-box" id="logoPreviewWrapper">
-                            <div class="preview-circle" id="logoPreview">
-                                <i class="fas fa-store" style="color: #cbd5e1; font-size: 2.5rem;"></i>
-                            </div>
-                        </div>
-                        <div style="flex-grow: 1;">
-                            <div class="file-input-wrapper">
-                                <button class="btn-upload"><i class="fas fa-cloud-upload-alt"></i> Upload New Logo</button>
-                                <input type="file" id="logoFile" accept="image/*" onchange="handlePreview(event)">
-                            </div>
-                            <p style="font-size: 13px; color: var(--text-muted); margin-top: 10px; line-height: 1.5;">
-                                <i class="fas fa-info-circle"></i> PNG သို့မဟုတ် JPG သုံးပါ။ အချိုးအစား 1:1 (စတုရန်းပုံ) က အကောင်းဆုံးဖြစ်ပါတယ်။
-                            </p>
-                        </div>
+        <div class="settings-grid">
+            <!-- Left: Preview -->
+            <div class="card">
+                <div class="profile-preview">
+                    <div class="preview-avatar" id="avatarPreview">S</div>
+                    <h2 id="previewName" style="margin: 0; font-size: 1.5rem;">Shop Name</h2>
+                    <p id="previewAgent" style="color: var(--primary); font-weight: 700; margin: 5px 0;">@agent_id</p>
+                    <div style="margin-top: 15px; display: flex; justify-content: center; gap: 10px;">
+                        <span class="badge" style="background: #ecfdf5; color: #10b981; padding: 5px 12px; border-radius: 10px; font-size: 0.75rem; font-weight: 800;">ACTIVE SHOP</span>
                     </div>
                 </div>
-
-                <!-- Shop Name -->
+                
                 <div class="form-group">
-                    <label><i class="fas fa-quote-left" style="font-size: 0.8rem; margin-right: 5px;"></i> Shop Display Name</label>
-                    <input type="text" id="shopName" placeholder="ဆိုင်နာမည်ရိုက်ထည့်ပါ (ဥပမာ- Spider Store)">
+                    <label>Quick Status</label>
+                    <div style="display: flex; gap: 10px;">
+                        <button style="flex: 1; padding: 10px; border-radius: 10px; border: 1px solid #e2e8f0; background: white; font-weight: 700; cursor: pointer;"><i class="fas fa-eye"></i> Online</button>
+                        <button style="flex: 1; padding: 10px; border-radius: 10px; border: 1px solid #e2e8f0; background: white; font-weight: 700; cursor: pointer; color: var(--danger);"><i class="fas fa-eye-slash"></i> Offline</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Forms -->
+            <div class="card">
+                <div class="section-title"><i class="fas fa-id-card"></i> General Information</div>
+                
+                <div class="form-group">
+                    <label>Shop Name (ဆိုင်နာမည်)</label>
+                    <input type="text" id="shopName" placeholder="ဥပမာ - Spider Gadget Store" oninput="updatePreview()">
                 </div>
 
-                <!-- Viber -->
                 <div class="form-group">
-                    <label><i class="fab fa-viber"></i> Viber Support Number</label>
-                    <input type="text" id="viberPhone" placeholder="09xxxxxxxxx">
+                    <label>Phone Number (ဖုန်းနံပါတ်)</label>
+                    <input type="tel" id="shopPhone" placeholder="09xxxxxxxxx">
                 </div>
 
-                <!-- Telegram -->
                 <div class="form-group">
-                    <label><i class="fab fa-telegram-plane"></i> Telegram Contact Link</label>
-                    <input type="text" id="telegramLink" placeholder="t.me/yourid သို့မဟုတ် @username">
+                    <label>Address (ဆိုင်လိပ်စာ)</label>
+                    <textarea id="shopAddress" rows="3" placeholder="ဆိုင်တည်နေရာ အသေးစိတ်ရေးရန်"></textarea>
                 </div>
 
-                <button class="save-btn" id="saveBtn" onclick="saveToMongoDB()">
-                    <i class="fas fa-check-circle"></i> Update All Settings
-                </button>
+                <div class="section-title" style="margin-top: 3rem;"><i class="fas fa-share-nodes"></i> Social & Payment</div>
+                
+                <div class="form-group">
+                    <label>Viber Link / Number</label>
+                    <input type="text" id="viberContact" placeholder="Viber အချက်အလက်">
+                </div>
+
+                <div class="form-group">
+                    <label>KBZ Pay / Wave Pay (Payment Details)</label>
+                    <input type="text" id="paymentDetails" placeholder="ငွေပေးချေမှု အချက်အလက်">
+                </div>
+
+                <div style="margin-top: 3rem;">
+                    <button class="btn-save" onclick="saveSettings()">
+                        <i class="fas fa-cloud-arrow-up"></i> Save Settings
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
+    </main>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
     <script>
-        const API_BASE_URL = "https://shopping-sable-sigma.vercel.app/api";
-        let currentAgentName = "";
-        let existingLogoUrl = "";
+        const firebaseConfig = {
+            apiKey: "AIzaSyCt1SMVSMqdX3u2viQ-n_BVwp6KgQwDLOM",
+            authDomain: "my-shop-admin-cedb1.firebaseapp.com",
+            projectId: "my-shop-admin-cedb1",
+            storageBucket: "my-shop-admin-cedb1.firebasestorage.app",
+            appId: "1:1073972515996:web:28049f5e5977e3a8e74959"
+        };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
 
-        window.onload = function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const agentFromUrl = urlParams.get('agent');
-            const agentData = JSON.parse(localStorage.getItem('currentAgent'));
-            
-            currentAgentName = agentFromUrl || (agentData ? agentData.name : null);
+        const urlParams = new URLSearchParams(window.location.search);
+        const agentName = urlParams.get('agent') || "spider";
 
-            if (!currentAgentName) {
-                window.location.href = "login.html";
-                return;
-            }
-
-            // Update Links
-            const param = `?agent=${encodeURIComponent(currentAgentName)}`;
+        window.onload = () => {
+            const param = `?agent=${agentName}`;
             document.getElementById('navDash').href = `agent-dashboard.html${param}`;
             document.getElementById('navInv').href = `inventory.html${param}`;
             document.getElementById('navCust').href = `user_list.html${param}`;
             document.getElementById('navSettings').href = `shop-settings.html${param}`;
-
+            
+            document.getElementById('previewAgent').innerText = `@${agentName}`;
             loadSettings();
         };
 
-        async function loadSettings() {
-            try {
-                const response = await fetch(`${API_BASE_URL}/agents/list`);
-                const agents = await response.json();
-                const data = agents.find(a => a.name === currentAgentName);
-
-                if (data) {
+        function loadSettings() {
+            db.collection("shop_settings").doc(agentName).get().then((doc) => {
+                if (doc.exists) {
+                    const data = doc.data();
                     document.getElementById('shopName').value = data.shopName || "";
-                    document.getElementById('viberPhone').value = data.viber || "";
-                    document.getElementById('telegramLink').value = data.telegram || "";
-                    
-                    if(data.logoUrl) {
-                        existingLogoUrl = data.logoUrl;
-                        document.getElementById('logoPreview').innerHTML = `<img src="${data.logoUrl}">`;
-                    }
+                    document.getElementById('shopPhone').value = data.phone || "";
+                    document.getElementById('shopAddress').value = data.address || "";
+                    document.getElementById('viberContact').value = data.viber || "";
+                    document.getElementById('paymentDetails').value = data.payment || "";
+                    updatePreview();
                 }
-            } catch (err) {
-                console.error("Error loading settings:", err);
-            }
+            });
         }
 
-        function handlePreview(event) {
-            const file = event.target.files[0];
-            if (file) {
-                if (file.size > 1.5 * 1024 * 1024) {
-                    alert("ပုံ Size ၁.၅ MB ထက်နည်းရပါမည်။");
-                    event.target.value = "";
-                    return;
-                }
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    document.getElementById('logoPreview').innerHTML = `<img src="${e.target.result}">`;
-                };
-                reader.readAsDataURL(file);
-            }
+        function updatePreview() {
+            const name = document.getElementById('shopName').value || "Your Shop";
+            document.getElementById('previewName').innerText = name;
+            document.getElementById('avatarPreview').innerText = name.charAt(0).toUpperCase();
         }
 
-        async function saveToMongoDB() {
-            const btn = document.getElementById('saveBtn');
-            const name = document.getElementById('shopName').value;
-            const viber = document.getElementById('viberPhone').value;
-            const telegram = document.getElementById('telegramLink').value;
-            const fileInput = document.getElementById('logoFile');
-            const file = fileInput.files[0];
+        function saveSettings() {
+            const btn = document.querySelector('.btn-save');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            
+            const settings = {
+                shopName: document.getElementById('shopName').value,
+                phone: document.getElementById('shopPhone').value,
+                address: document.getElementById('shopAddress').value,
+                viber: document.getElementById('viberContact').value,
+                payment: document.getElementById('paymentDetails').value,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
 
-            if(!name || !viber) {
-                alert("ဆိုင်နာမည်နှင့် Viber နံပါတ်ကို မဖြစ်မနေ ထည့်ပေးပါ။");
-                return;
-            }
-
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Processing...';
-
-            try {
-                let logoBase64 = existingLogoUrl;
-
-                if (file) {
-                    logoBase64 = await new Promise((resolve) => {
-                        const reader = new FileReader();
-                        reader.onload = (e) => resolve(e.target.result);
-                        reader.readAsDataURL(file);
-                    });
-                }
-
-                const payload = {
-                    name: currentAgentName,
-                    shopName: name,
-                    viber: viber,
-                    telegram: telegram,
-                    logoUrl: logoBase64
-                };
-
-                const response = await fetch(`${API_BASE_URL}/agents/update`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (response.ok) {
-                    showToast("အချက်အလက်များ သိမ်းဆည်းပြီးပါပြီ။");
-                    setTimeout(() => window.location.reload(), 1200);
-                } else {
-                    throw new Error("Failed to save");
-                }
-
-            } catch (err) {
-                alert("စနစ်အတွင်း အမှားအယွင်းရှိနေပါသည်။ နောက်မှ ထပ်မံကြိုးစားပါ။");
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-check-circle"></i> Update All Settings';
-            }
-        }
-
-        function showToast(msg) {
-            const t = document.getElementById("toast");
-            t.innerText = msg;
-            t.className = "show";
-            setTimeout(() => { t.className = t.className.replace("show", ""); }, 3000);
-        }
-
-        function handleLogout() {
-            if(confirm("အကောင့်မှ ထွက်မှာ သေချာပါသလား?")) {
-                localStorage.removeItem('currentAgent');
-                window.location.href = "login.html";
-            }
+            db.collection("shop_settings").doc(agentName).set(settings, { merge: true })
+            .then(() => {
+                alert("Settings အားလုံးကို သိမ်းဆည်းပြီးပါပြီ!");
+                btn.innerHTML = '<i class="fas fa-cloud-arrow-up"></i> Save Settings';
+            })
+            .catch((error) => {
+                alert("အမှားအယွင်းရှိနေပါသည် - " + error.message);
+                btn.innerHTML = '<i class="fas fa-cloud-arrow-up"></i> Save Settings';
+            });
         }
     </script>
 </body>
