@@ -10,7 +10,6 @@
         :root { --primary: #4f46e5; --bg: #f8fafc; --sidebar: #1e293b; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); margin: 0; display: flex; }
         
-        /* Sidebar Style */
         .sidebar { 
             width: 260px; 
             background: var(--sidebar); 
@@ -26,7 +25,6 @@
         .nav-item:hover, .nav-item.active { background: var(--primary); color: white; }
         .nav-item i { width: 20px; margin-right: 10px; }
         
-        /* Main Content */
         .main-content { margin-left: 260px; padding: 2.5rem; width: calc(100% - 260px); box-sizing: border-box; }
         .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
         
@@ -63,10 +61,10 @@
 
     <div class="sidebar">
         <h2>Spider.io</h2>
-        <a id="navDash" href="agent-dashboard.html" class="nav-item"><i class="fas fa-home"></i> <span>Dashboard</span></a>
-        <a href="inventory.html" class="nav-item active"><i class="fas fa-box-open"></i> <span>My Products</span></a>
-        <a id="navUsers" href="user_list.html" class="nav-item"><i class="fas fa-users"></i> <span>Customer List</span></a>
-        <a id="navSettings" href="shop-settings.html" class="nav-item"><i class="fas fa-store"></i> <span>Shop Settings</span></a>
+        <a id="navDash" class="nav-item"><i class="fas fa-home"></i> <span>Dashboard</span></a>
+        <a id="navInv" class="nav-item active"><i class="fas fa-box-open"></i> <span>My Products</span></a>
+        <a id="navUsers" class="nav-item"><i class="fas fa-users"></i> <span>Customer List</span></a>
+        <a id="navSettings" class="nav-item"><i class="fas fa-store"></i> <span>Shop Settings</span></a>
         <button class="nav-item" onclick="handleLogout()" style="margin-top: 20px; color: #f87171; background: none; border: none; width: 100%; text-align: left; cursor: pointer;">
             <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
         </button>
@@ -166,20 +164,21 @@
                 return;
             }
 
-            // Super Admin က ကြည့်နေတာဆိုရင် Add Product section ကို ဖျောက်ထားမယ်
-            if (agentFromUrl && loggedInAgent && loggedInAgent.role === "super_admin") {
-                document.getElementById('addProductSection').style.display = "none";
-                document.querySelector('.grid-container').style.gridTemplateColumns = "1fr";
-            }
-
             // Navigation Links Update
             const suffix = `?agent=${encodeURIComponent(currentAgentName)}`;
             document.getElementById('navDash').href = `agent-dashboard.html${suffix}`;
+            document.getElementById('navInv').href = `inventory.html${suffix}`;
             document.getElementById('navUsers').href = `user_list.html${suffix}`;
             document.getElementById('navSettings').href = `shop-settings.html${suffix}`;
             
             document.getElementById('pageTitle').innerText = `${currentAgentName}'s Products`;
             document.getElementById('inventoryTitle').innerText = `${currentAgentName}'s Inventory`;
+
+            // Admin Role Check for UI
+            if (agentFromUrl && loggedInAgent && loggedInAgent.role === "super_admin") {
+                document.getElementById('addProductSection').style.display = "none";
+                document.querySelector('.grid-container').style.gridTemplateColumns = "1fr";
+            }
 
             fetchMyProducts(currentAgentName);
         };
@@ -223,7 +222,7 @@
                 }).join('');
             }, err => {
                 console.error("Fetch Error:", err);
-                document.getElementById('productTableBody').innerHTML = '<tr><td colspan="4" style="text-align:center; color:red;">ဒေတာဆွဲယူ၍မရပါ။</td></tr>';
+                document.getElementById('productTableBody').innerHTML = '<tr><td colspan="4" style="text-align:center; color:red;">ဒေတာဆွဲယူ၍မရပါ။ Rules ပြန်စစ်ပါ။</td></tr>';
             });
         }
 
@@ -238,6 +237,7 @@
             btn.innerText = "Uploading Image...";
 
             try {
+                // Upload to Firebase Storage
                 const fileName = `products/${currentAgentName}_${Date.now()}`;
                 const storageRef = storage.ref().child(fileName);
                 const snapshot = await storageRef.put(file);
@@ -245,6 +245,7 @@
 
                 btn.innerText = "Saving Data...";
 
+                // Save to Firestore
                 await db.collection("products").add({
                     name: document.getElementById('pName').value,
                     original_price: parseInt(document.getElementById('originalPrice').value),
