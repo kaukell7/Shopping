@@ -38,7 +38,6 @@
     </div>
 
     <div class="input-wrapper">
-        <!-- နေရာမှာ ဖုန်းနံပါတ် သို့မဟုတ် Email ရိုက်ထည့်နိုင်သည် -->
         <input type="text" id="custIdentifier" placeholder="ဖုန်းနံပါတ် သို့မဟုတ် Email">
     </div>
 
@@ -70,7 +69,11 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    let isLogin = false; // စဖွင့်ချင်းမှာ Register Form အရင်ပြမယ်
+    // URL ကနေ agent name ကို ယူခြင်း
+    const urlParams = new URLSearchParams(window.location.search);
+    const agentName = urlParams.get('agent') || "spider"; 
+
+    let isLogin = false; 
 
     function toggleForm() {
         isLogin = !isLogin;
@@ -96,11 +99,9 @@
             return;
         }
 
-        // ဖုန်းနံပါတ်လား Email လား စစ်ဆေးခြင်း
-        // အကယ်၍ ဖုန်းနံပါတ်သက်သက်ပဲဆိုရင် Firebase အတွက် @spider.io ဆိုတဲ့ domain တစ်ခုနဲ့ dummy email ပုံစံမျိုး ပြောင်းသုံးပါမယ်
         let emailToUse = identifier;
         if (!identifier.includes('@')) {
-            emailToUse = identifier + "@spider.io"; // Phone format -> phone@spider.io
+            emailToUse = identifier + "@spider.io"; 
         }
 
         btn.disabled = true;
@@ -112,9 +113,11 @@
                 await auth.signInWithEmailAndPassword(emailToUse, password);
             } else {
                 const res = await auth.createUserWithEmailAndPassword(emailToUse, password);
+                // အကောင့်ဖွင့်တဲ့အခါ agent_name ကိုပါ တစ်ခါတည်း သိမ်းပေးလိုက်ပါသည်
                 await db.collection("customers").doc(res.user.uid).set({
                     name: name,
                     phoneOrEmail: identifier,
+                    agent_name: agentName.toLowerCase(), // Agent Dashboard အတွက် အရေးကြီးသည်
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
             }
@@ -127,8 +130,9 @@
         }
     }
 
-    // စဖွင့်ချင်း form setup လုပ်ရန်
-    toggleForm(); // ပထမဆုံးမှာ Login ဖြစ်နေအောင် (ဒါမှမဟုတ် Register ဖြစ်ချင်ရင် isLogin true ထားပါ)
+    // Default အနေနဲ့ register form ပြထားရန်
+    isLogin = true; 
+    toggleForm(); 
 </script>
 
 </body>
