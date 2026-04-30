@@ -10,6 +10,7 @@
         :root { --primary: #4f46e5; --bg: #0f172a; --main-bg: #f1f5f9; --text-slate: #64748b; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--main-bg); margin: 0; display: flex; }
         
+        /* Sidebar Styles */
         .sidebar { width: 260px; background: var(--bg); color: white; min-height: 100vh; padding: 1.5rem 1rem; position: fixed; z-index: 1000; transition: 0.3s; box-sizing: border-box; }
         .sidebar h2 { padding-left: 1rem; margin-bottom: 2.5rem; color: #fff; font-weight: 800; display: flex; align-items: center; gap: 12px; font-size: 1.4rem; }
         .nav-item { padding: 0.9rem 1.1rem; border-radius: 14px; color: #94a3b8; text-decoration: none; margin-bottom: 0.6rem; display: flex; align-items: center; transition: 0.3s; font-weight: 600; cursor: pointer; }
@@ -17,29 +18,35 @@
         .nav-item.active { background: var(--primary); color: white; box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3); }
         .nav-item i { width: 24px; font-size: 1.1rem; }
 
+        /* Main Content */
         .main-content { margin-left: 260px; padding: 2.5rem; width: calc(100% - 260px); box-sizing: border-box; min-height: 100vh; }
         .header-section { margin-bottom: 2.5rem; display: flex; justify-content: space-between; align-items: flex-end; }
         .header-section h1 { margin: 0 0 5px 0; font-size: 1.9rem; color: #0f172a; font-weight: 800; letter-spacing: -0.5px; }
         
+        /* Table Card */
         .table-card { background: white; border-radius: 24px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); }
-        table { width: 100%; border-collapse: collapse; }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
         th { text-align: left; background: #f8fafc; padding: 18px 20px; color: var(--text-slate); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; border-bottom: 1px solid #e2e8f0; font-weight: 700; }
         td { padding: 20px; border-bottom: 1px solid #f1f5f9; font-size: 0.95rem; color: #1e293b; vertical-align: middle; }
         
+        /* User Profile UI */
         .user-info { display: flex; align-items: center; gap: 14px; }
         .user-avatar { width: 44px; height: 44px; background: linear-gradient(135deg, #4f46e5, #818cf8); border-radius: 14px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.1rem; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2); }
         
-        .badge { padding: 6px 14px; border-radius: 10px; font-size: 0.75rem; font-weight: 700; background: #dcfce7; color: #166534; display: inline-flex; align-items: center; gap: 5px; }
+        .badge { padding: 6px 14px; border-radius: 10px; font-size: 0.75rem; font-weight: 700; background: #dcfce7; color: #166534; display: inline-flex; align-items: center; gap: 6px; }
         .badge::before { content: ''; width: 6px; height: 6px; background: currentColor; border-radius: 50%; }
 
-        .search-wrapper { position: relative; width: 300px; }
+        .search-wrapper { position: relative; width: 320px; }
         .search-wrapper i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-slate); }
-        .search-wrapper input { width: 100%; padding: 12px 15px 12px 42px; border-radius: 14px; border: 1px solid #e2e8f0; outline: none; transition: 0.3s; }
+        .search-wrapper input { width: 100%; padding: 12px 15px 12px 42px; border-radius: 14px; border: 1px solid #e2e8f0; outline: none; transition: 0.3s; font-family: inherit; }
+        .search-wrapper input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); }
 
         @media (max-width: 900px) {
             .sidebar { width: 85px; padding: 2rem 0.8rem; }
             .sidebar h2 span, .nav-item span { display: none; }
             .main-content { margin-left: 85px; width: calc(100% - 85px); padding: 1.5rem; }
+            .header-section { flex-direction: column; align-items: flex-start; gap: 1rem; }
+            .search-wrapper { width: 100%; }
         }
     </style>
 </head>
@@ -47,10 +54,10 @@
 
     <div class="sidebar">
         <h2><i class="fas fa-spider"></i> <span>Spider.io</span></h2>
-        <a id="navDash" href="#" class="nav-item"><i class="fas fa-th-large"></i> <span>Dashboard</span></a>
-        <a id="navInv" href="#" class="nav-item"><i class="fas fa-box"></i> <span>Inventory</span></a>
-        <a id="navCust" href="#" class="nav-item active"><i class="fas fa-users"></i> <span>Customers</span></a>
-        <a id="navSettings" href="#" class="nav-item"><i class="fas fa-cog"></i> <span>Shop Settings</span></a>
+        <a id="navDash" class="nav-item"><i class="fas fa-th-large"></i> <span>Dashboard</span></a>
+        <a id="navInv" class="nav-item"><i class="fas fa-box"></i> <span>Inventory</span></a>
+        <a id="navCust" class="nav-item active"><i class="fas fa-users"></i> <span>Customers</span></a>
+        <a id="navSettings" class="nav-item"><i class="fas fa-cog"></i> <span>Shop Settings</span></a>
         <a href="#" onclick="handleLogout()" class="nav-item" style="margin-top: 5rem; color: #fb7185;"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
     </div>
 
@@ -66,18 +73,24 @@
             </div>
         </div>
 
-        <div class="table-card">
+        <div class="table-card" style="overflow-x: auto;">
             <table>
                 <thead>
                     <tr>
                         <th>Customer / Client</th>
                         <th>Contact Detail</th>
                         <th>Joined Date</th>
+                        <th>Total Orders</th>
                         <th>Status</th>
                     </tr>
                 </thead>
                 <tbody id="userTableBody">
-                    <tr><td colspan="4" style="text-align:center; padding: 60px; color: #94a3b8;"><i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 15px; display: block;"></i>Loading data...</td></tr>
+                    <tr>
+                        <td colspan="5" style="text-align:center; padding: 80px; color: #94a3b8;">
+                            <i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 15px; display: block; margin-left: auto; margin-right: auto;"></i>
+                            Loading Database...
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -99,7 +112,7 @@
                 return;
             }
 
-            // Update Navigation Links
+            // Navigation Setup
             const param = `?agent=${encodeURIComponent(currentAgentName)}`;
             document.getElementById('navDash').href = `agent-dashboard.html${param}`;
             document.getElementById('navInv').href = `inventory.html${param}`;
@@ -113,20 +126,31 @@
 
         async function fetchUsers() {
             try {
-                // MongoDB API ကနေ agent_name နဲ့ filter လုပ်ပြီး ဝယ်သူစာရင်းခေါ်မယ်
+                // MongoDB API မှတဆင့် အေးဂျင့်အမည်ဖြင့် ဝယ်သူများကို fetch လုပ်ခြင်း
                 const response = await fetch(`${API_BASE_URL}/users?agent=${encodeURIComponent(currentAgentName)}`);
                 const users = await response.json();
                 
                 const tbody = document.getElementById('userTableBody');
                 
                 if (!users || users.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 60px;"><i class="fas fa-user-slash" style="font-size: 2.5rem; color: #e2e8f0; display: block; margin-bottom: 15px;"></i>ဤအေးဂျင့်အောက်တွင် ဝယ်ယူသူ မရှိသေးပါ။</td></tr>';
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="5" style="text-align:center; padding: 80px;">
+                                <i class="fas fa-user-friends" style="font-size: 3rem; color: #e2e8f0; display: block; margin-bottom: 20px; margin-left: auto; margin-right: auto;"></i>
+                                <span style="color: #94a3b8; font-weight: 500;">ဝယ်ယူသူ မရှိသေးပါ။</span>
+                            </td>
+                        </tr>`;
                     return;
                 }
 
                 tbody.innerHTML = users.map(user => {
-                    const joinedDate = user.createdAt ? new Date(user.createdAt).toLocaleDateString('en-GB') : 'Just now';
-                    const initial = user.name ? user.name.charAt(0).toUpperCase() : '?';
+                    const date = user.createdAt ? new Date(user.createdAt).toLocaleDateString('en-GB', {
+                        day: '2-digit', month: 'short', year: 'numeric'
+                    }) : 'New Member';
+                    
+                    const name = user.name || 'Unknown User';
+                    const initial = name.charAt(0).toUpperCase();
+                    const orderCount = user.orderCount || 0; // Backend မှ order အရေအတွက်ပို့ပေးလျှင် သုံးရန်
                     
                     return `
                         <tr>
@@ -134,22 +158,35 @@
                                 <div class="user-info">
                                     <div class="user-avatar">${initial}</div>
                                     <div>
-                                        <div style="font-weight: 700; color: #0f172a;">${user.name || 'Client User'}</div>
-                                        <div style="font-size: 0.8rem; color: var(--text-slate);">ID: ${user._id ? user._id.substring(user._id.length - 8) : 'N/A'}</div>
+                                        <div style="font-weight: 700; color: #0f172a;">${name}</div>
+                                        <div style="font-size: 0.75rem; color: var(--text-slate);">UID: ${user._id.slice(-6).toUpperCase()}</div>
                                     </div>
                                 </div>
                             </td>
-                            <td style="color: #475569; font-weight: 500;">
-                                <i class="far fa-envelope" style="margin-right: 5px; color: #94a3b8;"></i> ${user.email || user.phone || 'No Contact'}
+                            <td>
+                                <div style="display: flex; flex-direction: column; gap: 4px;">
+                                    <span style="font-weight: 600; font-size: 0.9rem;"><i class="fas fa-phone-alt" style="width: 18px; color: #94a3b8;"></i> ${user.phone || 'N/A'}</span>
+                                    <span style="font-size: 0.8rem; color: var(--text-slate);"><i class="fas fa-map-marker-alt" style="width: 18px; color: #94a3b8;"></i> ${user.address || 'No Address'}</span>
+                                </div>
                             </td>
-                            <td style="color: #64748b;">${joinedDate}</td>
-                            <td><span class="badge">Active</span></td>
+                            <td style="color: #64748b; font-weight: 500;">${date}</td>
+                            <td style="text-align: center;">
+                                <span style="background: #f1f5f9; padding: 4px 12px; border-radius: 8px; font-weight: 700;">${orderCount}</span>
+                            </td>
+                            <td><span class="badge">Verified</span></td>
                         </tr>
                     `;
                 }).join('');
+
             } catch (err) {
-                console.error("Fetch Error:", err);
-                document.getElementById('userTableBody').innerHTML = '<tr><td colspan="4" style="text-align:center; color:#ef4444; padding: 40px;">ဒေတာဆွဲယူ၍မရပါ။ API Server ကို စစ်ဆေးပါ။</td></tr>';
+                console.error("Database Error:", err);
+                document.getElementById('userTableBody').innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align:center; padding: 40px; color:#ef4444;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 1.5rem; margin-bottom: 10px;"></i><br>
+                            Database ချိတ်ဆက်မှု အဆင်မပြေပါ။ ခဏနေမှ ပြန်ကြိုးစားပါ။
+                        </td>
+                    </tr>`;
             }
         }
 
@@ -159,17 +196,19 @@
             const tr = document.getElementById("userTableBody").getElementsByTagName("tr");
 
             for (let i = 0; i < tr.length; i++) {
-                let td = tr[i].getElementsByTagName("td")[0];
-                if (td) {
-                    let textValue = td.textContent || td.innerText;
+                let tdName = tr[i].getElementsByTagName("td")[0];
+                if (tdName) {
+                    let textValue = tdName.textContent || tdName.innerText;
                     tr[i].style.display = textValue.toUpperCase().indexOf(filter) > -1 ? "" : "none";
                 }
             }
         }
 
         function handleLogout() {
-            localStorage.removeItem('currentAgent');
-            window.location.href = "login.html";
+            if(confirm("အကောင့်ထဲမှ ထွက်မှာ သေချာပါသလား?")) {
+                localStorage.removeItem('currentAgent');
+                window.location.href = "login.html";
+            }
         }
     </script>
 </body>
