@@ -22,7 +22,18 @@
         .toggle-text { text-align: center; margin-top: 1.5rem; font-size: 0.9rem; color: #64748b; }
         .toggle-text span { color: var(--primary); cursor: pointer; font-weight: 600; }
         
-        .error-msg { color: #ef4444; font-size: 0.8rem; margin-top: 5px; display: none; text-align: center; }
+        .error-msg { 
+            color: #ef4444; 
+            font-size: 0.8rem; 
+            margin-top: 15px; 
+            display: none; 
+            text-align: left; 
+            background: #fef2f2; 
+            padding: 10px; 
+            border-radius: 8px;
+            border: 1px solid #fee2e2;
+            word-break: break-word;
+        }
     </style>
 </head>
 <body>
@@ -45,31 +56,36 @@
         <input type="password" id="custPassword" placeholder="စကားဝှက် (အနည်းဆုံး ၆ လုံး)">
     </div>
     
-    <div id="errorBox" class="error-msg"></div>
-    
     <button id="mainBtn" onclick="handleAuth()">အကောင့်ဖွင့်မည်</button>
+    
+    <div id="errorBox" class="error-msg"></div>
     
     <p class="toggle-text" id="toggleMsg">အကောင့်ရှိပြီးသားလား? <span onclick="toggleForm()">Login ပြန်ဝင်မည်</span></p>
 </div>
 
-<!-- Firebase -->
+<!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
 <script>
+    // မှတ်ချက် - Firebase Console > Project Settings > General အောက်က config နဲ့ ပြန်တိုက်စစ်ပေးပါ
     const firebaseConfig = {
-        apiKey: "AIzaSyCt1SMVSMqdX3u2viQ-n_BVwp6KgQwDLOM",
+        apiKey: "AIzaSyCt1SMVSMqdX3u2viQ-n_BVwp6KgQwDLOM", 
         authDomain: "my-shop-admin-cedb1.firebaseapp.com",
         projectId: "my-shop-admin-cedb1",
         storageBucket: "my-shop-admin-cedb1.firebasestorage.app",
         appId: "1:1073972515996:web:28049f5e5977e3a8e74959"
     };
-    firebase.initializeApp(firebaseConfig);
+
+    // Firebase Initialize လုပ်ခြင်း
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // URL ကနေ agent name ကို ယူခြင်း
     const urlParams = new URLSearchParams(window.location.search);
     const agentName = urlParams.get('agent') || "spider"; 
 
@@ -94,8 +110,7 @@
         const errorBox = document.getElementById('errorBox');
 
         if(!identifier || !password || (!isLogin && !name)) {
-            errorBox.innerText = "အချက်အလက်များ ပြည့်စုံစွာ ဖြည့်ပါ။";
-            errorBox.style.display = 'block';
+            showError("အချက်အလက်များ ပြည့်စုံစွာ ဖြည့်ပါ။");
             return;
         }
 
@@ -113,24 +128,36 @@
                 await auth.signInWithEmailAndPassword(emailToUse, password);
             } else {
                 const res = await auth.createUserWithEmailAndPassword(emailToUse, password);
-                // အကောင့်ဖွင့်တဲ့အခါ agent_name ကိုပါ တစ်ခါတည်း သိမ်းပေးလိုက်ပါသည်
                 await db.collection("customers").doc(res.user.uid).set({
                     name: name,
                     phoneOrEmail: identifier,
-                    agent_name: agentName.toLowerCase(), // Agent Dashboard အတွက် အရေးကြီးသည်
+                    agent_name: agentName.toLowerCase(),
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
             }
+            // အောင်မြင်ရင် index.html ကို သွားမယ်
             window.location.href = "index.html" + window.location.search;
         } catch (error) {
-            errorBox.innerText = "မှားယွင်းနေပါသည်။ " + error.message;
-            errorBox.style.display = 'block';
+            console.error(error);
+            let msg = "မှားယွင်းနေပါသည်။ ";
+            if (error.code === 'auth/api-key-not-valid') {
+                msg = "Firebase API Key မမှန်ပါ။ Firebase Console တွင် Authentication (Email/Password) ကို Enable လုပ်ထားလား စစ်ဆေးပါ။";
+            } else {
+                msg += error.message;
+            }
+            showError(msg);
             btn.disabled = false;
             btn.innerText = isLogin ? "Login ဝင်မည်" : "အကောင့်ဖွင့်မည်";
         }
     }
 
-    // Default အနေနဲ့ register form ပြထားရန်
+    function showError(text) {
+        const errorBox = document.getElementById('errorBox');
+        errorBox.innerText = text;
+        errorBox.style.display = 'block';
+    }
+
+    // Default Register Form
     isLogin = true; 
     toggleForm(); 
 </script>
