@@ -25,7 +25,8 @@
         .btn-main:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
         .toggle-text { margin-top: 1.5rem; font-size: 0.9rem; color: #64748b; }
-        .toggle-text span { color: var(--primary); font-weight: 700; cursor: pointer; text-decoration: underline; }
+        /* ဒီနေရာမှာ Span ကိုနှိပ်လို့ရအောင် style ပြင်ထားပါတယ် */
+        .toggle-btn { color: var(--primary); font-weight: 700; cursor: pointer; text-decoration: underline; margin-left: 5px; }
 
         .error-msg { 
             color: #ef4444; 
@@ -48,6 +49,7 @@
     <h2 id="formTitle">မင်္ဂလာပါ</h2>
     <p class="desc" id="formDesc">ဆက်လက်လုပ်ဆောင်ရန် အကောင့်ဝင်ပေးပါ။</p>
 
+    <!-- အကောင့်ဖွင့်မှသာ ပေါ်မည့် နာမည်ဖြည့်သွင်းရန် နေရာ -->
     <div id="registerFields" style="display: none;">
         <div class="input-group">
             <label>နာမည်အပြည့်အစုံ</label>
@@ -69,14 +71,14 @@
 
     <div id="errorBox" class="error-msg"></div>
 
-    <div class="toggle-text">
-        <span id="toggleMsg">အကောင့်မရှိသေးဘူးလား? <span onclick="toggleForm()">အသစ်ဖွင့်မည်</span></span>
+    <div class="toggle-text" id="toggleArea">
+        အကောင့်မရှိသေးဘူးလား? <span class="toggle-btn" onclick="toggleForm()">အသစ်ဖွင့်မည်</span>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-    // Supabase Credentials (သင့် Project အချက်အလက်များဖြင့် အစားထိုးပါ)
+    // Supabase အချက်အလက်များ (သင့် Project Key များ ထည့်ရန်)
     const SUPABASE_URL = 'သင့်ရဲ့_SUPABASE_URL_ဒီမှာထည့်ပါ'; 
     const SUPABASE_KEY = 'သင့်ရဲ့_SUPABASE_ANON_KEY_ဒီမှာထည့်ပါ';
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -86,6 +88,7 @@
 
     let isLogin = true; 
 
+    // Login နဲ့ Register ပုံစံ ပြောင်းလဲပေးသည့် Function
     function toggleForm() {
         isLogin = !isLogin;
         const errorBox = document.getElementById('errorBox');
@@ -96,9 +99,12 @@
         document.getElementById('registerFields').style.display = isLogin ? "none" : "block";
         document.getElementById('mainBtn').innerText = isLogin ? "Login ဝင်မည်" : "အကောင့်ဖွင့်မည်";
         
-        document.getElementById('toggleMsg').innerHTML = isLogin ? 
-            'အကောင့်မရှိသေးဘူးလား? <span onclick="toggleForm()">အသစ်ဖွင့်မည်</span>' : 
-            'အကောင့်ရှိပြီးသားလား? <span onclick="toggleForm()">Login ပြန်ဝင်မည်</span>';
+        const toggleArea = document.getElementById('toggleArea');
+        if (isLogin) {
+            toggleArea.innerHTML = 'အကောင့်မရှိသေးဘူးလား? <span class="toggle-btn" onclick="toggleForm()">အသစ်ဖွင့်မည်</span>';
+        } else {
+            toggleArea.innerHTML = 'အကောင့်ရှိပြီးသားလား? <span class="toggle-btn" onclick="toggleForm()">Login ပြန်ဝင်မည်</span>';
+        }
     }
 
     async function handleAuth() {
@@ -108,12 +114,11 @@
         const btn = document.getElementById('mainBtn');
         const errorBox = document.getElementById('errorBox');
 
-        // Validation
         if(!identifier || !password) return showError("Email/ဖုန်း နှင့် Password ဖြည့်ပါ။");
         if(!isLogin && !name) return showError("သင့်နာမည်ကို ဖြည့်ပေးပါ။");
         if(password.length < 6) return showError("Password သည် အနည်းဆုံး ၆ လုံးရှိရပါမည်။");
 
-        // ဖုန်းနံပါတ်သက်သက်ဖြစ်နေလျှင် Supabase အတွက် virtual email ပြောင်းလဲခြင်း
+        // ဖုန်းနံပါတ် သီးသန့်သုံးသူများအတွက် Virtual Email ဖန်တီးခြင်း
         let emailToUse = identifier.includes('@') ? identifier : identifier + "@spider.io";
 
         btn.disabled = true;
@@ -122,14 +127,12 @@
 
         try {
             if (isLogin) {
-                // Supabase Login လုပ်ခြင်း
                 const { data, error: loginError } = await _supabase.auth.signInWithPassword({
                     email: emailToUse,
                     password: password,
                 });
                 if (loginError) throw loginError;
             } else {
-                // Supabase Register လုပ်ခြင်း
                 const { data, error: authError } = await _supabase.auth.signUp({
                     email: emailToUse,
                     password: password,
@@ -138,7 +141,7 @@
                 if (authError) throw authError;
                 if (!data.user) throw new Error("Registration failed.");
 
-                // Customer Profile ကို DB ထဲသိမ်းခြင်း
+                // Database ထဲသို့ Customer အချက်အလက် သိမ်းဆည်းခြင်း
                 const { error: dbError } = await _supabase
                     .from('customers')
                     .insert([{ 
@@ -152,7 +155,7 @@
                 alert("အကောင့်ဖွင့်ခြင်း အောင်မြင်ပါသည်။");
             }
 
-            // အောင်မြင်လျှင် မူလစာမျက်နှာ (index.html) သို့ ပြန်ပို့မည်
+            // အောင်မြင်ပါက index.html သို့ သွားမည်
             window.location.href = "index.html" + window.location.search;
 
         } catch (error) {
