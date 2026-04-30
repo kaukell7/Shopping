@@ -5,69 +5,78 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Spider.io</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --primary: #4f46e5; --bg: #f8fafc; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
-        .login-card { background: white; padding: 2.5rem; border-radius: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 400px; }
-        .logo { text-align: center; margin-bottom: 2rem; font-weight: 800; font-size: 1.5rem; color: var(--primary); }
-        h2 { text-align: center; margin-bottom: 1.5rem; font-size: 1.2rem; }
+        :root { --primary: #4f46e5; --bg: #f8fafc; --text: #1e293b; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; }
         
-        .input-wrapper { position: relative; margin-bottom: 1rem; }
-        input { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 12px; box-sizing: border-box; outline: none; transition: 0.3s; }
-        input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.05); }
-        
-        button { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; margin-top: 10px; }
-        button:disabled { opacity: 0.7; cursor: not-allowed; }
-        
-        .toggle-text { text-align: center; margin-top: 1.5rem; font-size: 0.9rem; color: #64748b; }
-        .toggle-text span { color: var(--primary); cursor: pointer; font-weight: 600; }
-        
+        .login-card { background: white; padding: 2.5rem; border-radius: 30px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; }
+        .logo { font-size: 2.5rem; color: var(--primary); font-weight: 800; margin-bottom: 1rem; display: block; }
+        h2 { margin-bottom: 0.5rem; color: #0f172a; font-size: 1.4rem; font-weight: 700; }
+        p.desc { color: #64748b; font-size: 0.9rem; margin-bottom: 2rem; }
+
+        .input-group { text-align: left; margin-bottom: 1.2rem; }
+        label { display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.5rem; color: #475569; }
+        input { width: 100%; padding: 14px 16px; border: 1px solid #e2e8f0; border-radius: 14px; outline: none; background: #f8fafc; transition: 0.3s; box-sizing: border-box; font-family: inherit; }
+        input:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); }
+
+        .btn-main { width: 100%; background: var(--primary); color: white; border: none; padding: 16px; border-radius: 14px; font-weight: 700; cursor: pointer; transition: 0.3s; font-size: 1rem; margin-top: 10px; }
+        .btn-main:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4); }
+        .btn-main:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        .toggle-text { margin-top: 1.5rem; font-size: 0.9rem; color: #64748b; }
+        .toggle-text span { color: var(--primary); font-weight: 700; cursor: pointer; text-decoration: underline; }
+
         .error-msg { 
             color: #ef4444; 
-            font-size: 0.8rem; 
+            font-size: 0.85rem; 
             margin-top: 15px; 
             display: none; 
             text-align: left; 
             background: #fef2f2; 
-            padding: 10px; 
-            border-radius: 8px;
+            padding: 12px; 
+            border-radius: 10px;
             border: 1px solid #fee2e2;
-            word-break: break-word;
+            line-height: 1.4;
         }
     </style>
 </head>
 <body>
 
 <div class="login-card">
-    <div class="logo">Spider.io</div>
-    <h2 id="formTitle">အကောင့်အသစ်ဖွင့်ရန်</h2>
-    
-    <div id="registerFields">
-        <div class="input-wrapper">
-            <input type="text" id="custName" placeholder="နာမည်အပြည့်အစုံ">
+    <div class="logo"><i class="fas fa-spider"></i></div>
+    <h2 id="formTitle">မင်္ဂလာပါ</h2>
+    <p class="desc" id="formDesc">ဆက်လက်လုပ်ဆောင်ရန် အကောင့်ဝင်ပေးပါ။</p>
+
+    <div id="registerFields" style="display: none;">
+        <div class="input-group">
+            <label>နာမည်အပြည့်အစုံ</label>
+            <input type="text" id="custName" placeholder="ဥပမာ - မောင်မောင်">
         </div>
     </div>
 
-    <div class="input-wrapper">
-        <input type="text" id="custIdentifier" placeholder="ဖုန်းနံပါတ် သို့မဟုတ် Email">
+    <div class="input-group">
+        <label>Email သို့မဟုတ် ဖုန်းနံပါတ်</label>
+        <input type="text" id="custIdentifier" placeholder="Email သို့မဟုတ် ဖုန်းနံပါတ် ထည့်ပါ">
     </div>
 
-    <div class="input-wrapper">
-        <input type="password" id="custPassword" placeholder="စကားဝှက် (အနည်းဆုံး ၆ လုံး)">
+    <div class="input-group">
+        <label>လျှို့ဝှက်နံပါတ်</label>
+        <input type="password" id="custPassword" placeholder="အနည်းဆုံး ၆ လုံး">
     </div>
-    
-    <button id="mainBtn" onclick="handleAuth()">အကောင့်ဖွင့်မည်</button>
-    
+
+    <button class="btn-main" id="mainBtn" onclick="handleAuth()">Login ဝင်မည်</button>
+
     <div id="errorBox" class="error-msg"></div>
-    
-    <p class="toggle-text" id="toggleMsg">အကောင့်ရှိပြီးသားလား? <span onclick="toggleForm()">Login ပြန်ဝင်မည်</span></p>
+
+    <div class="toggle-text">
+        <span id="toggleMsg">အကောင့်မရှိသေးဘူးလား? <span onclick="toggleForm()">အသစ်ဖွင့်မည်</span></span>
+    </div>
 </div>
 
-<!-- Supabase SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script>
-    // image_0c4b9d.png ထဲက Project URL နဲ့ Anon Key ကို ဒီနေရာမှာ အစားထိုးထည့်ပါ
+    // Supabase Credentials (သင့် Project အချက်အလက်များဖြင့် အစားထိုးပါ)
     const SUPABASE_URL = 'သင့်ရဲ့_SUPABASE_URL_ဒီမှာထည့်ပါ'; 
     const SUPABASE_KEY = 'သင့်ရဲ့_SUPABASE_ANON_KEY_ဒီမှာထည့်ပါ';
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -75,17 +84,21 @@
     const urlParams = new URLSearchParams(window.location.search);
     const agentName = urlParams.get('agent') || "spider"; 
 
-    let isLogin = false; 
+    let isLogin = true; 
 
     function toggleForm() {
         isLogin = !isLogin;
-        document.getElementById('formTitle').innerText = isLogin ? "Login ဝင်ရန်" : "အကောင့်အသစ်ဖွင့်ရန်";
-        document.getElementById('mainBtn').innerText = isLogin ? "Login ဝင်မည်" : "အကောင့်ဖွင့်မည်";
+        const errorBox = document.getElementById('errorBox');
+        errorBox.style.display = 'none';
+        
+        document.getElementById('formTitle').innerText = isLogin ? "မင်္ဂလာပါ" : "အကောင့်သစ်ဖွင့်မည်";
+        document.getElementById('formDesc').innerText = isLogin ? "ဆက်လက်လုပ်ဆောင်ရန် အကောင့်ဝင်ပေးပါ။" : "ဈေးဝယ်ရန်အတွက် အကောင့်အရင်ဖွင့်ပေးပါ။";
         document.getElementById('registerFields').style.display = isLogin ? "none" : "block";
+        document.getElementById('mainBtn').innerText = isLogin ? "Login ဝင်မည်" : "အကောင့်ဖွင့်မည်";
+        
         document.getElementById('toggleMsg').innerHTML = isLogin ? 
-            'အကောင့်မရှိသေးဘူးလား? <span onclick="toggleForm()">အကောင့်ဖွင့်မည်</span>' : 
+            'အကောင့်မရှိသေးဘူးလား? <span onclick="toggleForm()">အသစ်ဖွင့်မည်</span>' : 
             'အကောင့်ရှိပြီးသားလား? <span onclick="toggleForm()">Login ပြန်ဝင်မည်</span>';
-        document.getElementById('errorBox').style.display = 'none';
     }
 
     async function handleAuth() {
@@ -95,12 +108,12 @@
         const btn = document.getElementById('mainBtn');
         const errorBox = document.getElementById('errorBox');
 
-        if(!identifier || !password || (!isLogin && !name)) {
-            showError("အချက်အလက်များ ပြည့်စုံစွာ ဖြည့်ပါ။");
-            return;
-        }
+        // Validation
+        if(!identifier || !password) return showError("Email/ဖုန်း နှင့် Password ဖြည့်ပါ။");
+        if(!isLogin && !name) return showError("သင့်နာမည်ကို ဖြည့်ပေးပါ။");
+        if(password.length < 6) return showError("Password သည် အနည်းဆုံး ၆ လုံးရှိရပါမည်။");
 
-        // Email ပုံစံမဟုတ်ရင် @spider.io ပေါင်းထည့်ပေးခြင်း
+        // ဖုန်းနံပါတ်သက်သက်ဖြစ်နေလျှင် Supabase အတွက် virtual email ပြောင်းလဲခြင်း
         let emailToUse = identifier.includes('@') ? identifier : identifier + "@spider.io";
 
         btn.disabled = true;
@@ -109,22 +122,23 @@
 
         try {
             if (isLogin) {
-                // Supabase Login
-                const { error } = await _supabase.auth.signInWithPassword({
+                // Supabase Login လုပ်ခြင်း
+                const { data, error: loginError } = await _supabase.auth.signInWithPassword({
                     email: emailToUse,
                     password: password,
                 });
-                if (error) throw error;
+                if (loginError) throw loginError;
             } else {
-                // Supabase Register
+                // Supabase Register လုပ်ခြင်း
                 const { data, error: authError } = await _supabase.auth.signUp({
                     email: emailToUse,
                     password: password,
                 });
+                
                 if (authError) throw authError;
                 if (!data.user) throw new Error("Registration failed.");
 
-                // Customer အချက်အလက်ကို Table ထဲသိမ်းခြင်း
+                // Customer Profile ကို DB ထဲသိမ်းခြင်း
                 const { error: dbError } = await _supabase
                     .from('customers')
                     .insert([{ 
@@ -133,12 +147,18 @@
                         phone_or_email: identifier,
                         agent_name: agentName.toLowerCase() 
                     }]);
+                
                 if (dbError) throw dbError;
+                alert("အကောင့်ဖွင့်ခြင်း အောင်မြင်ပါသည်။");
             }
-            // အောင်မြင်ရင် index.html ကို ပြန်သွားမယ်
+
+            // အောင်မြင်လျှင် မူလစာမျက်နှာ (index.html) သို့ ပြန်ပို့မည်
             window.location.href = "index.html" + window.location.search;
+
         } catch (error) {
-            showError("မှားယွင်းနေပါသည်။ " + (error.description || error.message));
+            let msg = error.message;
+            if(msg === "Invalid login credentials") msg = "အီးမေးလ် သို့မဟုတ် လျှို့ဝှက်နံပါတ် မှားယွင်းနေပါသည်။";
+            showError(msg);
             btn.disabled = false;
             btn.innerText = isLogin ? "Login ဝင်မည်" : "အကောင့်ဖွင့်မည်";
         }
@@ -149,10 +169,6 @@
         errorBox.innerText = text;
         errorBox.style.display = 'block';
     }
-
-    // Default အနေနဲ့ Login ပြထားချင်ရင် အောက်က line ကို isLogin = true; ထားပါ
-    isLogin = true; 
-    toggleForm(); 
 </script>
 
 </body>
