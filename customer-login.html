@@ -63,28 +63,14 @@
     <p class="toggle-text" id="toggleMsg">အကောင့်ရှိပြီးသားလား? <span onclick="toggleForm()">Login ပြန်ဝင်မည်</span></p>
 </div>
 
-<!-- Firebase SDKs -->
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+<!-- Supabase SDK (Firebase နေရာမှာ ဒါကို သုံးပါသည်) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-    // မှတ်ချက် - Firebase Console > Project Settings > General အောက်က config နဲ့ ပြန်တိုက်စစ်ပေးပါ
-    const firebaseConfig = {
-        apiKey: "AIzaSyCt1SMVSMqdX3u2viQ-n_BVwp6KgQwDLOM", 
-        authDomain: "my-shop-admin-cedb1.firebaseapp.com",
-        projectId: "my-shop-admin-cedb1",
-        storageBucket: "my-shop-admin-cedb1.firebasestorage.app",
-        appId: "1:1073972515996:web:28049f5e5977e3a8e74959"
-    };
-
-    // Firebase Initialize လုပ်ခြင်း
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
-    
-    const auth = firebase.auth();
-    const db = firebase.firestore();
+    // image_0c4b9d.png ထဲက Project URL နဲ့ Anon Key ကို ဒီနေရာမှာ အစားထိုးထည့်ပါ
+    const SUPABASE_URL = 'သင့်ရဲ့_SUPABASE_URL_ဒီမှာထည့်ပါ'; 
+    const SUPABASE_KEY = 'သင့်ရဲ့_SUPABASE_ANON_KEY_ဒီမှာထည့်ပါ';
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     const urlParams = new URLSearchParams(window.location.search);
     const agentName = urlParams.get('agent') || "spider"; 
@@ -114,10 +100,8 @@
             return;
         }
 
-        let emailToUse = identifier;
-        if (!identifier.includes('@')) {
-            emailToUse = identifier + "@spider.io"; 
-        }
+        // Email မဟုတ်ရင် @spider.io ပေါင်းထည့်ပေးခြင်း
+        let emailToUse = identifier.includes('@') ? identifier : identifier + "@spider.io";
 
         btn.disabled = true;
         btn.innerText = "ခဏစောင့်ပါ...";
@@ -125,27 +109,35 @@
 
         try {
             if (isLogin) {
-                await auth.signInWithEmailAndPassword(emailToUse, password);
-            } else {
-                const res = await auth.createUserWithEmailAndPassword(emailToUse, password);
-                await db.collection("customers").doc(res.user.uid).set({
-                    name: name,
-                    phoneOrEmail: identifier,
-                    agent_name: agentName.toLowerCase(),
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                // Supabase Login
+                const { error } = await _supabase.auth.signInWithPassword({
+                    email: emailToUse,
+                    password: password,
                 });
+                if (error) throw error;
+            } else {
+                // Supabase Register
+                const { data, error: authError } = await _supabase.auth.signUp({
+                    email: emailToUse,
+                    password: password,
+                });
+                if (authError) throw authError;
+
+                // Customer အချက်အလက်ကို Table ထဲသိမ်းခြင်း (Table Editor ထဲမှာ customers table ဆောက်ထားရပါမယ်)
+                const { error: dbError } = await _supabase
+                    .from('customers')
+                    .insert([{ 
+                        id: data.user.id,
+                        name: name, 
+                        phone_or_email: identifier,
+                        agent_name: agentName.toLowerCase() 
+                    }]);
+                if (dbError) throw dbError;
             }
-            // အောင်မြင်ရင် index.html ကို သွားမယ်
+            // အောင်မြင်ရင် index.html ကိုသွားမယ်
             window.location.href = "index.html" + window.location.search;
         } catch (error) {
-            console.error(error);
-            let msg = "မှားယွင်းနေပါသည်။ ";
-            if (error.code === 'auth/api-key-not-valid') {
-                msg = "Firebase API Key မမှန်ပါ။ Firebase Console တွင် Authentication (Email/Password) ကို Enable လုပ်ထားလား စစ်ဆေးပါ။";
-            } else {
-                msg += error.message;
-            }
-            showError(msg);
+            showError("မှားယွင်းနေပါသည်။ " + error.message);
             btn.disabled = false;
             btn.innerText = isLogin ? "Login ဝင်မည်" : "အကောင့်ဖွင့်မည်";
         }
@@ -157,7 +149,7 @@
         errorBox.style.display = 'block';
     }
 
-    // Default Register Form
+    // Default အနေနဲ့ Register ပြထားရန်
     isLogin = true; 
     toggleForm(); 
 </script>
