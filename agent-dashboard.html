@@ -23,13 +23,13 @@
         .welcome-card h1 { margin: 0; font-size: 2rem; letter-spacing: -0.5px; }
         
         /* Shopping Link Box */
-        .link-box { margin-top: 1.5rem; background: rgba(255, 255, 255, 0.15); padding: 12px 18px; border-radius: 12px; display: inline-flex; align-items: center; gap: 12px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.1); }
+        .link-box { margin-top: 1.5rem; background: rgba(255, 255, 255, 0.15); padding: 12px 18px; border-radius: 12px; display: inline-flex; align-items: center; gap: 12px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.1); flex-wrap: wrap; }
         .link-text { font-size: 0.85rem; color: #e0e7ff; }
-        .link-value { font-family: monospace; background: rgba(0,0,0,0.2); padding: 4px 10px; border-radius: 6px; font-size: 0.9rem; color: #fff; overflow-x: auto; max-width: 250px; }
-        .btn-copy { background: white; color: var(--primary); border: none; padding: 6px 12px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 0.75rem; transition: 0.2s; white-space: nowrap; }
-        .btn-copy:hover { background: #e0e7ff; }
+        .link-value { font-family: monospace; background: rgba(0,0,0,0.2); padding: 4px 10px; border-radius: 6px; font-size: 0.9rem; color: #fff; overflow-x: auto; max-width: 250px; white-space: nowrap; }
+        .btn-copy { background: white; color: var(--primary); border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 0.75rem; transition: 0.2s; white-space: nowrap; }
+        .btn-copy:hover { background: #e0e7ff; transform: scale(1.05); }
 
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
         .card { background: white; padding: 1.8rem; border-radius: 22px; border: 1px solid #e2e8f0; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
         .card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px -10px rgba(0,0,0,0.1); }
         .card h3 { margin-top: 0; color: #1e293b; font-size: 1.15rem; display: flex; align-items: center; gap: 12px; margin-bottom: 1.8rem; font-weight: 700; }
@@ -46,9 +46,8 @@
         .table-container { width: 100%; overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; margin-top: 1.5rem; min-width: 600px; }
         th { text-align: left; background: #f8fafc; padding: 16px; color: #64748b; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; }
-        td { padding: 16px; border-bottom: 1px solid #f1f5f9; font-size: 0.95rem; color: #1e293b; }
-        tr:last-child td { border-bottom: none; }
-
+        td { padding: 16px; border-bottom: 1px solid #f1f5f9; font-size: 0.95rem; color: #1e293b; vertical-align: middle; }
+        
         .order-status { padding: 5px 12px; border-radius: 10px; font-size: 0.75rem; font-weight: 700; }
 
         @media (max-width: 1024px) {
@@ -62,10 +61,10 @@
 
     <div class="sidebar">
         <h2><i class="fas fa-spider"></i> <span>Spider.io</span></h2>
-        <a id="navDash" href="#" class="nav-item active"><i class="fas fa-th-large"></i> <span>Dashboard</span></a>
-        <a id="navInv" href="#" class="nav-item"><i class="fas fa-box"></i> <span>Inventory</span></a>
-        <a id="navCust" href="#" class="nav-item"><i class="fas fa-users"></i> <span>Customers</span></a>
-        <a id="navSettings" href="#" class="nav-item"><i class="fas fa-store"></i> <span>Shop Settings</span></a>
+        <a id="navDash" class="nav-item active"><i class="fas fa-th-large"></i> <span>Dashboard</span></a>
+        <a id="navInv" class="nav-item"><i class="fas fa-box"></i> <span>Inventory</span></a>
+        <a id="navCust" class="nav-item"><i class="fas fa-users"></i> <span>Customers</span></a>
+        <a id="navSettings" class="nav-item"><i class="fas fa-store"></i> <span>Shop Settings</span></a>
         <a href="#" onclick="handleLogout()" class="nav-item" style="margin-top: 5rem; color: #fb7185;"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
     </div>
 
@@ -114,7 +113,11 @@
                         </tr>
                     </thead>
                     <tbody id="orderTableBody">
-                        <tr><td colspan="5" style="text-align:center; padding: 50px; color: #94a3b8;"><i class="fas fa-spinner fa-spin" style="margin-right: 8px;"></i> Loading orders...</td></tr>
+                        <tr>
+                            <td colspan="5" style="text-align:center; padding: 50px; color: #94a3b8;">
+                                <i class="fas fa-spinner fa-spin" style="margin-right: 8px;"></i> Loading orders...
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -138,7 +141,7 @@
                 return; 
             }
 
-            // Update Sidebar/Navigation Links
+            // Sidebar/Navigation Links update
             const param = `?agent=${encodeURIComponent(currentAgentName)}`;
             document.getElementById('navDash').href = `agent-dashboard.html${param}`;
             document.getElementById('navInv').href = `inventory.html${param}`;
@@ -160,7 +163,6 @@
 
         async function fetchAgentProfile() {
             try {
-                // Find agent details from the list
                 const response = await fetch(`${API_BASE_URL}/agents/list`);
                 const agents = await response.json();
                 const agent = agents.find(a => a.name === currentAgentName || a.shopName === currentAgentName);
@@ -178,7 +180,6 @@
                 }
             } catch (err) {
                 console.error("Profile Load Error:", err);
-                document.getElementById('shopNameDisplay').innerText = "Load Failed";
             }
         }
 
@@ -186,12 +187,12 @@
             const tbody = document.getElementById('orderTableBody');
             
             try {
-                // 1. Get Products Count for this agent
+                // 1. Get Products Count
                 const prodRes = await fetch(`${API_BASE_URL}/products?agent=${encodeURIComponent(currentAgentName)}`);
                 const products = await prodRes.json();
                 document.getElementById('totalProducts').innerText = products.length || 0;
 
-                // 2. Get Orders for this agent
+                // 2. Get Orders
                 const orderRes = await fetch(`${API_BASE_URL}/orders?agent=${encodeURIComponent(currentAgentName)}`);
                 const orders = await orderRes.json();
                 
@@ -203,18 +204,22 @@
                     return;
                 }
 
-                // Show last 5 orders
+                // Show only last 5 orders
                 const recent = orders.slice(-5).reverse(); 
                 tbody.innerHTML = recent.map(order => {
-                    const date = order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-GB') : '-';
-                    const statusColor = order.status === 'Completed' ? 'background:#dcfce7; color:#15803d;' : 'background:#fef3c7; color:#92400e;';
+                    const date = order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-GB') : 'Just now';
+                    
+                    // Status Badge Styling
+                    let statusStyle = "background:#fef3c7; color:#92400e;"; // Pending
+                    if (order.status === 'Completed') statusStyle = "background:#dcfce7; color:#15803d;";
+                    if (order.status === 'Cancelled') statusStyle = "background:#fee2e2; color:#ef4444;";
                     
                     return `
                         <tr>
-                            <td style="font-weight:700;">${order.productName || 'Unknown Item'}</td>
-                            <td>${order.customerName || 'Guest'}</td>
-                            <td>${order.customerPhone || '-'}</td>
-                            <td><span class="order-status" style="${statusColor}">${order.status || 'Pending'}</span></td>
+                            <td style="font-weight:700; color: #4f46e5;">${order.productName || 'Unknown Item'}</td>
+                            <td>${order.customerName || 'Guest User'}</td>
+                            <td style="font-weight:600;">${order.customerPhone || '-'}</td>
+                            <td><span class="order-status" style="${statusStyle}">${order.status || 'Pending'}</span></td>
                             <td style="color:#64748b; font-size: 0.85rem;">${date}</td>
                         </tr>
                     `;
@@ -222,7 +227,7 @@
 
             } catch (err) {
                 console.error("Stats Load Error:", err);
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#ef4444; padding:20px;">Connection Error with MongoDB API.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#ef4444; padding:20px;">Database ချိတ်ဆက်မှု အဆင်မပြေပါ။</td></tr>';
             }
         }
 
@@ -230,16 +235,25 @@
             if (generatedShopLink) {
                 navigator.clipboard.writeText(generatedShopLink).then(() => {
                     const btn = document.querySelector('.btn-copy');
-                    const original = btn.innerHTML;
+                    const originalText = btn.innerHTML;
                     btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
-                    setTimeout(() => btn.innerHTML = original, 2000);
+                    btn.style.background = "#dcfce7";
+                    btn.style.color = "#15803d";
+                    
+                    setTimeout(() => {
+                        btn.innerHTML = originalText;
+                        btn.style.background = "white";
+                        btn.style.color = "var(--primary)";
+                    }, 2000);
                 });
             }
         }
 
         function handleLogout() {
-            localStorage.removeItem('currentAgent');
-            window.location.href = "login.html";
+            if(confirm("Logout လုပ်ရန် သေချာပါသလား?")) {
+                localStorage.removeItem('currentAgent');
+                window.location.href = "login.html";
+            }
         }
     </script>
 </body>
