@@ -63,7 +63,7 @@
     <p class="toggle-text" id="toggleMsg">အကောင့်ရှိပြီးသားလား? <span onclick="toggleForm()">Login ပြန်ဝင်မည်</span></p>
 </div>
 
-<!-- Supabase SDK (Firebase နေရာမှာ ဒါကို သုံးပါသည်) -->
+<!-- Supabase SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
@@ -100,7 +100,7 @@
             return;
         }
 
-        // Email မဟုတ်ရင် @spider.io ပေါင်းထည့်ပေးခြင်း
+        // Email ပုံစံမဟုတ်ရင် @spider.io ပေါင်းထည့်ပေးခြင်း
         let emailToUse = identifier.includes('@') ? identifier : identifier + "@spider.io";
 
         btn.disabled = true;
@@ -122,8 +122,9 @@
                     password: password,
                 });
                 if (authError) throw authError;
+                if (!data.user) throw new Error("Registration failed.");
 
-                // Customer အချက်အလက်ကို Table ထဲသိမ်းခြင်း (Table Editor ထဲမှာ customers table ဆောက်ထားရပါမယ်)
+                // Customer အချက်အလက်ကို Table ထဲသိမ်းခြင်း
                 const { error: dbError } = await _supabase
                     .from('customers')
                     .insert([{ 
@@ -134,10 +135,10 @@
                     }]);
                 if (dbError) throw dbError;
             }
-            // အောင်မြင်ရင် index.html ကိုသွားမယ်
+            // အောင်မြင်ရင် index.html ကို ပြန်သွားမယ်
             window.location.href = "index.html" + window.location.search;
         } catch (error) {
-            showError("မှားယွင်းနေပါသည်။ " + error.message);
+            showError("မှားယွင်းနေပါသည်။ " + (error.description || error.message));
             btn.disabled = false;
             btn.innerText = isLogin ? "Login ဝင်မည်" : "အကောင့်ဖွင့်မည်";
         }
@@ -149,7 +150,7 @@
         errorBox.style.display = 'block';
     }
 
-    // Default အနေနဲ့ Register ပြထားရန်
+    // Default အနေနဲ့ Login ပြထားချင်ရင် အောက်က line ကို isLogin = true; ထားပါ
     isLogin = true; 
     toggleForm(); 
 </script>
