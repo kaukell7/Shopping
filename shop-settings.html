@@ -78,10 +78,7 @@
     </div>
 
     <script>
-        // သင့်ရဲ့ Vercel Backend URL ကို ဒီမှာ ထည့်ပါ
         const BACKEND_URL = "https://shopping-sable-sigma.vercel.app";
-        // ImgBB API Key (ပုံတင်ဖို့အတွက်)
-        const IMGBB_API_KEY = "696041a9657731940986422f29302633"; // ဒါက နမူနာ key ပါ၊ ကိုယ်ပိုင် key သုံးတာ ပိုကောင်းပါတယ်
 
         let currentAgentName = "";
         let existingLogoUrl = "";
@@ -107,7 +104,6 @@
             loadOldSettings();
         };
 
-        // လက်ရှိ Settings တွေကို MongoDB ကနေ ပြန်ခေါ်မယ်
         async function loadOldSettings() {
             try {
                 const response = await fetch(`${BACKEND_URL}/api/settings/${currentAgentName}`);
@@ -154,23 +150,16 @@
             try {
                 let logoUrl = existingLogoUrl;
 
-                // ၁။ ပုံအသစ်ပါရင် ImgBB ကို အရင်တင်မယ်
+                // ပုံအသစ်ပါလာရင် Base64 ပြောင်းမယ်
                 if (file) {
-                    const formData = new FormData();
-                    formData.append("image", file);
-                    const imgRes = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
-                        method: "POST",
-                        body: formData
+                    logoUrl = await new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onload = () => resolve(reader.result);
+                        reader.onerror = error => reject(error);
+                        reader.readAsDataURL(file);
                     });
-                    const imgData = await imgRes.json();
-                    if (imgData.success) {
-                        logoUrl = imgData.data.url;
-                    } else {
-                        throw new Error("Logo upload failed!");
-                    }
                 }
 
-                // ၂။ Data အားလုံးကို Vercel Backend ဆီ ပို့မယ်
                 const payload = {
                     agentName: currentAgentName,
                     shopName: name,
@@ -186,15 +175,16 @@
                 });
 
                 if (response.ok) {
-                    alert("Settings updated successfully in MongoDB!");
+                    alert("အောင်မြင်စွာ သိမ်းဆည်းပြီးပါပြီ။");
                     window.location.reload();
                 } else {
-                    alert("Backend error occurred.");
+                    const errorText = await response.text();
+                    alert("Backend error: " + errorText);
                 }
 
             } catch (err) {
                 console.error("Save Error:", err);
-                alert("Error: " + err.message);
+                alert("ချိတ်ဆက်မှု အမှားအယွင်းရှိနေပါသည်- " + err.message);
             } finally {
                 btn.disabled = false;
                 btn.innerText = "Save Changes";
