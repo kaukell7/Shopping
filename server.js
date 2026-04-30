@@ -5,21 +5,34 @@ require('dotenv').config();
 
 const app = express();
 
-// Middleware
-// JSON data တွေကို လက်ခံနိုင်ဖို့နဲ့ တခြား domain တွေကနေ ခေါ်သုံးနိုင်ဖို့ standard limit ကို တိုးထားပေးပါတယ်
-app.use(cors());
-app.use(express.json({ limit: '10mb' })); 
-app.use(express.urlencoded({ limit: '10mb', extended: true }));
+// --- Middleware ---
+// CORS ကို အစုံဖွင့်ပေးပြီး configuration ပိုသေချာအောင် လုပ်ထားပါတယ်
+app.use(cors({
+    origin: '*', // Production ရောက်ရင် သင့် GitHub Pages link ကို ပြောင်းပေးနိုင်ပါတယ်
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
-// MongoDB Connection
+// Payload size ကို Vercel maximum ဖြစ်တဲ့ 4.5MB ပတ်ဝန်းကျင်ပဲ ထားတာ ပိုစိတ်ချရပါတယ်
+app.use(express.json({ limit: '5mb' }));
+app.use(express.urlencoded({ limit: '5mb', extended: true }));
+
+// --- MongoDB Connection ---
 const mongoURI = process.env.MONGODB_URI;
 
-mongoose.connect(mongoURI)
-    .then(() => console.log('✅ MongoDB Connected...'))
-    .catch(err => console.log('❌ Connection Error:', err));
+// Connection ထပ်ခါထပ်ခါ မဆောက်အောင် စစ်ဆေးတဲ့ logic
+if (!mongoURI) {
+    console.error("❌ MONGODB_URI is missing in environment variables!");
+}
+
+mongoose.connect(mongoURI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
+.then(() => console.log('✅ MongoDB Connected Successfully'))
+.catch(err => console.log('❌ MongoDB Connection Error:', err));
 
 // --- Database Schema & Model ---
-// MongoDB မှာ data သိမ်းမယ့် ပုံစံကို သတ်မှတ်ခြင်း
 const settingsSchema = new mongoose.Schema({
     agentName: { type: String, required: true, unique: true },
     shopName: String,
@@ -29,21 +42,25 @@ const settingsSchema = new mongoose.Schema({
     updatedAt: { type: Date, default: Date.now }
 });
 
-const Settings = mongoose.model('Settings', settingsSchema);
+// Model ရှိပြီးသားဆိုရင် ပြန်သုံး၊ မရှိရင် အသစ်ဆောက်
+const Settings = mongoose.models.Settings || mongoose.model('Settings', settingsSchema);
 
 // --- API Routes ---
 
-// ၁။ အခြေခံ Route (Server အလုပ်လုပ်မလုပ် စစ်ရန်)
+// ၁။ အခြေခံ Route
 app.get('/', (req, res) => {
-    res.send('Server is running and ready for Spider.io!');
+    res.send('Spider.io Backend is running perfectly!');
 });
 
-// ၂။ Settings သိမ်းဆည်းရန် Route (POST)
+// ၂။ Settings သိမ်းဆည်းရန် (POST)
 app.post('/api/settings/save', async (req, res) => {
     try {
         const { agentName, shopName, viber, telegram, logoUrl } = req.body;
         
-        // အရင်ရှိပြီးသားဆိုရင် Update လုပ်မယ်၊ မရှိသေးရင် အသစ်ဆောက်မယ် (upsert: true)
+        if (!agentName) {
+            return res.status(400).json({ error: "Agent Name is required" });
+        }
+
         const updatedSettings = await Settings.findOneAndUpdate(
             { agentName: agentName },
             { 
@@ -56,28 +73,38 @@ app.post('/api/settings/save', async (req, res) => {
             { upsert: true, new: true }
         );
         
-        res.status(200).json({ message: "Settings saved successfully!", data: updatedSettings });
+        res.status(200).json({ 
+            success: true, 
+            message: "Settings saved successfully!", 
+            data: updatedSettings 
+        });
     } catch (error) {
         console.error("Save Error:", error);
-        res.status(500).json({ error: "Internal Server Error", details: error.message });
+        res.status(500).json({ 
+            success: false, 
+            error: "Internal Server Error", 
+            details: error.message 
+        });
     }
 });
 
-// ၃။ Settings ပြန်ခေါ်ထုတ်ရန် Route (GET)
+// ၃။ Settings ပြန်ခေါ်ထုတ်ရန် (GET)
 app.get('/api/settings/:agentName', async (req, res) => {
     try {
         const settings = await Settings.findOne({ agentName: req.params.agentName });
         if (!settings) {
             return res.status(404).json({ message: "No settings found for this agent" });
         }
-        res.json(settings);
+        res.status(200).json(settings);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
-// Server အထိုင်ချခြင်း
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-    console.log(`🚀 Server started on port ${PORT}`);
-});
+// Vercel အတွက် Export လုပ်ပေးခြင်း (ဒါမှမဟုတ် server အဖြစ် run ခြင်း)
+if (process.env.NODE_ENV !== 'production') {
+    const PORT = process.env.PORT || 5000;
+    app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+}
+
+module.exports = app;
