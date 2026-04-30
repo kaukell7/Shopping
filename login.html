@@ -146,23 +146,9 @@
         </div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyCt1SMVSMqdX3u2viQ-n_BVwp6KgQwDLOM",
-            authDomain: "my-shop-admin-cedb1.firebaseapp.com",
-            projectId: "my-shop-admin-cedb1",
-            storageBucket: "my-shop-admin-cedb1.firebasestorage.app",
-            messagingSenderId: "1073972515996",
-            appId: "1:1073972515996:web:28049f5e5977e3a8e74959"
-        };
-        
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-        const db = firebase.firestore();
+        // Vercel Backend API URL
+        const API_URL = "https://shopping-sable-sigma.vercel.app/api/agents/list";
 
         // Already logged in check
         if (localStorage.getItem('currentAgent')) {
@@ -185,30 +171,31 @@
             loginBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Checking account...';
 
             try {
-                const snapshot = await db.collection("agents")
-                    .where("gmail_phone", "==", id)
-                    .where("password", "==", pass)
-                    .get();
+                // Backend မှ Agent အားလုံးကို fetch လုပ်မယ်
+                const response = await fetch(API_URL);
+                const agents = await response.json();
 
-                if (!snapshot.empty) {
-                    const doc = snapshot.docs[0];
-                    const agentData = doc.data();
-                    
-                    if (agentData.status === "Disabled") {
+                // User ကို list ထဲမှာ ရှာမယ်
+                const user = agents.find(a => (a.contact === id || a.gmail_phone === id) && a.password === pass);
+
+                if (user) {
+                    if (user.status === "Disabled") {
                         showError("ဤအကောင့်မှာ အသုံးပြုခွင့် ပိတ်ထားခြင်းခံရပါသည်။");
                         resetBtn();
                         return;
                     }
 
+                    // User Data ကို LocalStorage မှာ သိမ်းမယ်
                     const userData = {
-                        uid: doc.id,
-                        name: agentData.name || "Agent", 
-                        gmail_phone: agentData.gmail_phone,
-                        status: agentData.status || "Active"
+                        uid: user._id,
+                        name: user.shopName || user.name || "Agent", 
+                        gmail_phone: user.contact || user.gmail_phone,
+                        status: user.status || "Active"
                     };
 
                     localStorage.setItem('currentAgent', JSON.stringify(userData));
-                    window.location.href = "agent-dashboard.html";
+                    // Login အောင်မြင်ရင် Dashboard ဆီလွှတ်မယ်
+                    window.location.href = `agent-dashboard.html?agent=${encodeURIComponent(userData.name)}`;
                 } else {
                     showError("အိုင်ဒီ (သို့မဟုတ်) စကားဝှက် မှားယွင်းနေပါသည်။");
                     resetBtn();
