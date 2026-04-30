@@ -10,7 +10,6 @@
         :root { --primary: #4f46e5; --bg: #0f172a; --main-bg: #f1f5f9; --text-slate: #64748b; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--main-bg); margin: 0; display: flex; }
         
-        /* Sidebar Style */
         .sidebar { width: 260px; background: var(--bg); color: white; min-height: 100vh; padding: 1.5rem 1rem; position: fixed; z-index: 1000; transition: 0.3s; box-sizing: border-box; }
         .sidebar h2 { padding-left: 1rem; margin-bottom: 2.5rem; color: #fff; font-weight: 800; display: flex; align-items: center; gap: 12px; font-size: 1.4rem; }
         .nav-item { padding: 0.9rem 1.1rem; border-radius: 14px; color: #94a3b8; text-decoration: none; margin-bottom: 0.6rem; display: flex; align-items: center; transition: 0.3s; font-weight: 600; cursor: pointer; }
@@ -18,17 +17,14 @@
         .nav-item.active { background: var(--primary); color: white; box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3); }
         .nav-item i { width: 24px; font-size: 1.1rem; }
 
-        /* Main Content */
         .main-content { margin-left: 260px; padding: 2.5rem; width: calc(100% - 260px); box-sizing: border-box; min-height: 100vh; }
         .header-section { margin-bottom: 2.5rem; display: flex; justify-content: space-between; align-items: flex-end; }
         .header-section h1 { margin: 0 0 5px 0; font-size: 1.9rem; color: #0f172a; font-weight: 800; letter-spacing: -0.5px; }
         
-        /* Table Card */
         .table-card { background: white; border-radius: 24px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); }
         table { width: 100%; border-collapse: collapse; }
         th { text-align: left; background: #f8fafc; padding: 18px 20px; color: var(--text-slate); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; border-bottom: 1px solid #e2e8f0; font-weight: 700; }
         td { padding: 20px; border-bottom: 1px solid #f1f5f9; font-size: 0.95rem; color: #1e293b; vertical-align: middle; }
-        tr:last-child td { border-bottom: none; }
         
         .user-info { display: flex; align-items: center; gap: 14px; }
         .user-avatar { width: 44px; height: 44px; background: linear-gradient(135deg, #4f46e5, #818cf8); border-radius: 14px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.1rem; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2); }
@@ -38,8 +34,7 @@
 
         .search-wrapper { position: relative; width: 300px; }
         .search-wrapper i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-slate); }
-        .search-wrapper input { width: 100%; padding: 12px 15px 12px 42px; border-radius: 14px; border: 1px solid #e2e8f0; outline: none; transition: 0.3s; font-family: inherit; }
-        .search-wrapper input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); }
+        .search-wrapper input { width: 100%; padding: 12px 15px 12px 42px; border-radius: 14px; border: 1px solid #e2e8f0; outline: none; transition: 0.3s; }
 
         @media (max-width: 900px) {
             .sidebar { width: 85px; padding: 2rem 0.8rem; }
@@ -88,60 +83,49 @@
         </div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyCt1SMVSMqdX3u2viQ-n_BVwp6KgQwDLOM",
-            authDomain: "my-shop-admin-cedb1.firebaseapp.com",
-            projectId: "my-shop-admin-cedb1",
-            storageBucket: "my-shop-admin-cedb1.firebasestorage.app",
-            appId: "1:1073972515996:web:28049f5e5977e3a8e74959"
-        };
-        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+        const API_BASE_URL = "https://shopping-sable-sigma.vercel.app/api";
+        let currentAgentName = "";
 
         window.onload = function() {
             const urlParams = new URLSearchParams(window.location.search);
             const agentFromUrl = urlParams.get('agent');
             const loggedInAgent = JSON.parse(localStorage.getItem('currentAgent'));
             
-            const agentName = agentFromUrl || (loggedInAgent ? loggedInAgent.name : null);
+            currentAgentName = agentFromUrl || (loggedInAgent ? loggedInAgent.name : null);
 
-            if (!agentName) {
+            if (!currentAgentName) {
                 window.location.href = "login.html";
                 return;
             }
 
-            // Sidebar Links Update (Parameter ထိန်းသိမ်းရန်)
-            const param = `?agent=${encodeURIComponent(agentName)}`;
+            // Update Navigation Links
+            const param = `?agent=${encodeURIComponent(currentAgentName)}`;
             document.getElementById('navDash').href = `agent-dashboard.html${param}`;
             document.getElementById('navInv').href = `inventory.html${param}`;
             document.getElementById('navCust').href = `user_list.html${param}`;
             document.getElementById('navSettings').href = `shop-settings.html${param}`;
 
-            document.getElementById('pageTitle').innerText = `${agentName}'s Customers`;
+            document.getElementById('pageTitle').innerText = `${currentAgentName}'s Customers`;
 
-            fetchUsers(agentName);
+            fetchUsers();
         };
 
-        function fetchUsers(agentName) {
-            // "users" collection ထဲမှာ agent_name နဲ့ Filter လုပ်ပြီး ဆွဲထုတ်မယ်
-            db.collection("users")
-              .where("agent_name", "==", agentName)
-              .orderBy("createdAt", "desc")
-              .onSnapshot(snapshot => {
+        async function fetchUsers() {
+            try {
+                // MongoDB API ကနေ agent_name နဲ့ filter လုပ်ပြီး ဝယ်သူစာရင်းခေါ်မယ်
+                const response = await fetch(`${API_BASE_URL}/users?agent=${encodeURIComponent(currentAgentName)}`);
+                const users = await response.json();
+                
                 const tbody = document.getElementById('userTableBody');
                 
-                if (snapshot.empty) {
+                if (!users || users.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 60px;"><i class="fas fa-user-slash" style="font-size: 2.5rem; color: #e2e8f0; display: block; margin-bottom: 15px;"></i>ဤအေးဂျင့်အောက်တွင် ဝယ်ယူသူ မရှိသေးပါ။</td></tr>';
                     return;
                 }
 
-                tbody.innerHTML = snapshot.docs.map(doc => {
-                    const user = doc.data();
-                    const joinedDate = user.createdAt ? new Date(user.createdAt.seconds * 1000).toLocaleDateString('en-GB') : 'Just now';
+                tbody.innerHTML = users.map(user => {
+                    const joinedDate = user.createdAt ? new Date(user.createdAt).toLocaleDateString('en-GB') : 'Just now';
                     const initial = user.name ? user.name.charAt(0).toUpperCase() : '?';
                     
                     return `
@@ -151,7 +135,7 @@
                                     <div class="user-avatar">${initial}</div>
                                     <div>
                                         <div style="font-weight: 700; color: #0f172a;">${user.name || 'Client User'}</div>
-                                        <div style="font-size: 0.8rem; color: var(--text-slate);">ID: ${doc.id.substring(0, 8)}</div>
+                                        <div style="font-size: 0.8rem; color: var(--text-slate);">ID: ${user._id ? user._id.substring(user._id.length - 8) : 'N/A'}</div>
                                     </div>
                                 </div>
                             </td>
@@ -163,11 +147,10 @@
                         </tr>
                     `;
                 }).join('');
-            }, err => {
-                console.error("Error:", err);
-                // Error ဖြစ်ရင် (ဥပမာ- Index မရှိရင်) User အားလုံးကို Filter မပါဘဲ ပြပေးဖို့ ကြိုးစားကြည့်မယ် (သို့မဟုတ်) Error message ပြမယ်
-                document.getElementById('userTableBody').innerHTML = '<tr><td colspan="4" style="text-align:center; color:#ef4444; padding: 40px;">ဒေတာကြည့်ရှုရန် ခွင့်ပြုချက်မရှိပါ သို့မဟုတ် Index လိုအပ်နေပါသည်။</td></tr>';
-            });
+            } catch (err) {
+                console.error("Fetch Error:", err);
+                document.getElementById('userTableBody').innerHTML = '<tr><td colspan="4" style="text-align:center; color:#ef4444; padding: 40px;">ဒေတာဆွဲယူ၍မရပါ။ API Server ကို စစ်ဆေးပါ။</td></tr>';
+            }
         }
 
         function filterTable() {
