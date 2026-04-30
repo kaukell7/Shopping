@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer List - Spider.io</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --primary: #4f46e5; --bg: #f8fafc; --text-main: #1e293b; }
+        body { background-color: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; padding: 20px; }
+        
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .page-title { font-size: 1.5rem; font-weight: 800; color: #0f172a; }
+        
+        .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: white; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); border: 1px solid #e2e8f0; }
+        .stat-label { color: #64748b; font-size: 0.85rem; font-weight: 600; }
+        .stat-value { font-size: 1.8rem; font-weight: 800; color: var(--primary); margin-top: 5px; }
+
+        .table-container { background: white; border-radius: 20px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        thead { background: #f1f5f9; }
+        th { padding: 15px 20px; font-size: 0.85rem; font-weight: 700; color: #475569; text-transform: uppercase; }
+        td { padding: 18px 20px; border-bottom: 1px solid #f1f5f9; color: #1e293b; font-size: 0.95rem; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover { background: #f8fafc; }
+
+        .user-info { display: flex; align-items: center; gap: 12px; }
+        .user-avatar { width: 35px; height: 35px; background: #e0e7ff; color: var(--primary); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+        
+        .badge { padding: 5px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; }
+        .badge-email { background: #dcfce7; color: #15803d; }
+        .badge-phone { background: #fef9c3; color: #854d0e; }
+        
+        .empty-state { padding: 60px; text-align: center; color: #94a3b8; }
+        .empty-state i { font-size: 3rem; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+
+    <div class="page-header">
+        <h1 class="page-title">Customers (ဝယ်ယူသူများ)</h1>
+        <div id="agentNameDisplay" style="font-weight: 600; color: #64748b;"></div>
+    </div>
+
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="stat-label">Total Registered Users</div>
+            <div class="stat-value" id="totalUsers">0</div>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table id="customerTable">
+            <thead>
+                <tr>
+                    <th>User Name</th>
+                    <th>Identifier (Phone/Email)</th>
+                    <th>Joined Date</th>
+                    <th>Type</th>
+                </tr>
+            </thead>
+            <tbody id="userListBody">
+                <!-- Data will appear here -->
+            </tbody>
+        </table>
+        <div id="loading" class="empty-state">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Loading data...</p>
+        </div>
+    </div>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCt1SMVSMqdX3u2viQ-n_BVwp6KgQwDLOM",
+            authDomain: "my-shop-admin-cedb1.firebaseapp.com",
+            projectId: "my-shop-admin-cedb1",
+            storageBucket: "my-shop-admin-cedb1.firebasestorage.app",
+            appId: "1:1073972515996:web:28049f5e5977e3a8e74959"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Dashboard ကနေ login ဝင်ထားတဲ့ agent နာမည်ကို ယူမယ်
+        // (ဥပမာ: HEIN HTET)
+        const currentAgent = "HEIN HTET"; // ဒါကို localStorage ကနေဖြစ်ဖြစ် ပြန်ယူပေးရပါမယ်
+        document.getElementById('agentNameDisplay').innerText = "Agent: " + currentAgent;
+
+        function loadCustomers() {
+            // customers collection ထဲမှာ agent_name နဲ့ စစ်ထုတ်ပြီး ရှာမယ်
+            // Register လုပ်တုန်းက agent_name ပါအောင် သိမ်းခဲ့ရပါမယ်
+            db.collection("customers")
+              .where("agent_name", "==", currentAgent.toLowerCase()) 
+              .onSnapshot(snapshot => {
+                const listBody = document.getElementById('userListBody');
+                const loading = document.getElementById('loading');
+                const totalDisplay = document.getElementById('totalUsers');
+
+                if (snapshot.empty) {
+                    listBody.innerHTML = '';
+                    loading.innerHTML = '<i class="fas fa-users-slash"></i><p>အကောင့်ဖွင့်ထားသူ မရှိသေးပါ။</p>';
+                    totalDisplay.innerText = "0";
+                    return;
+                }
+
+                loading.style.display = 'none';
+                totalDisplay.innerText = snapshot.size;
+
+                listBody.innerHTML = snapshot.docs.map(doc => {
+                    const data = doc.data();
+                    const date = data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString() : 'N/A';
+                    const isEmail = data.phoneOrEmail.includes('@');
+                    const badgeClass = isEmail ? 'badge-email' : 'badge-phone';
+                    const type = isEmail ? 'Email' : 'Phone';
+
+                    return `
+                        <tr>
+                            <td>
+                                <div class="user-info">
+                                    <div class="user-avatar">${data.name.charAt(0).toUpperCase()}</div>
+                                    <span style="font-weight:600">${data.name}</span>
+                                </div>
+                            </td>
+                            <td><code style="background:#f1f5f9; padding:4px 8px; border-radius:6px">${data.phoneOrEmail}</code></td>
+                            <td>${date}</td>
+                            <td><span class="badge ${badgeClass}">${type}</span></td>
+                        </tr>
+                    `;
+                }).join('');
+            });
+        }
+
+        window.onload = loadCustomers;
+    </script>
+</body>
+</html>
