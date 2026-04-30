@@ -6,7 +6,6 @@
     <title>Agent Dashboard - Spider.io</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { 
@@ -32,7 +31,6 @@
             min-height: 100vh;
         }
         
-        /* Sidebar Styles */
         .sidebar { 
             width: 260px; 
             background: var(--sidebar); 
@@ -73,7 +71,6 @@
         }
         .nav-item i { width: 24px; font-size: 1.1rem; margin-right: 10px; }
 
-        /* Main Content Area */
         .main-content { 
             margin-left: 260px; 
             padding: 2rem 3rem; 
@@ -81,7 +78,6 @@
             box-sizing: border-box;
         }
 
-        /* Hero Welcome Section */
         .welcome-banner {
             background: linear-gradient(135deg, var(--primary-dark) 0%, #818cf8 100%);
             border-radius: 24px;
@@ -114,7 +110,6 @@
         }
         .btn-copy:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
 
-        /* Stats Grid */
         .stats-grid { 
             display: grid; 
             grid-template-columns: repeat(4, 1fr); 
@@ -138,7 +133,6 @@
         .stat-val { font-size: 1.6rem; font-weight: 800; margin: 0; }
         .stat-label { color: var(--text-muted); font-size: 0.85rem; font-weight: 600; }
 
-        /* Dashboard Layout Grid */
         .dash-layout {
             display: grid;
             grid-template-columns: 1.5fr 1fr;
@@ -149,7 +143,6 @@
             border: 1px solid #eef2ff;
         }
 
-        /* Table Design */
         table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
         th { text-align: left; color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; padding: 12px; border-bottom: 1px solid #f1f5f9; }
         td { padding: 14px 12px; font-size: 0.9rem; border-bottom: 1px solid #f8fafc; }
@@ -158,23 +151,14 @@
         .status-pending { background: #fff7ed; color: #c2410c; }
         .status-done { background: #f0fdf4; color: #166534; }
 
-        /* Responsive */
         @media (max-width: 1200px) {
             .stats-grid { grid-template-columns: repeat(2, 1fr); }
             .dash-layout { grid-template-columns: 1fr; }
-        }
-        @media (max-width: 768px) {
-            .sidebar { width: 80px; padding: 2rem 0.5rem; }
-            .sidebar span, .sidebar h2 span { display: none; }
-            .main-content { margin-left: 80px; width: calc(100% - 80px); padding: 1.5rem; }
-            .welcome-banner { flex-direction: column; align-items: flex-start; gap: 20px; }
-            .stats-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Sidebar -->
     <aside class="sidebar">
         <h2><i class="fas fa-spider" style="color: var(--primary);"></i> <span>Spider.io</span></h2>
         <nav>
@@ -189,7 +173,6 @@
         </nav>
     </aside>
 
-    <!-- Content -->
     <main class="main-content">
         <header class="welcome-banner">
             <div class="welcome-text">
@@ -203,7 +186,6 @@
             </div>
         </header>
 
-        <!-- Stats Section -->
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-icon" style="background: #eef2ff; color: var(--primary);"><i class="fas fa-shopping-cart"></i></div>
@@ -228,7 +210,6 @@
         </div>
 
         <div class="dash-layout">
-            <!-- Sales Chart -->
             <div class="chart-card">
                 <h3 style="margin-top: 0;"><i class="fas fa-chart-line"></i> Sales Analytics</h3>
                 <div style="height: 300px;">
@@ -236,11 +217,10 @@
                 </div>
             </div>
 
-            <!-- Recent Activity -->
             <div class="orders-card">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                     <h3 style="margin: 0;"><i class="fas fa-history"></i> Recent Orders</h3>
-                    <a href="user_list.html" style="color: var(--primary); font-size: 0.8rem; font-weight: 700; text-decoration: none;">See All</a>
+                    <a id="seeAllOrders" href="#" style="color: var(--primary); font-size: 0.8rem; font-weight: 700; text-decoration: none;">See All</a>
                 </div>
                 <table>
                     <thead>
@@ -257,27 +237,21 @@
         </div>
     </main>
 
-    <!-- Scripts -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyCt1SMVSMqdX3u2viQ-n_BVwp6KgQwDLOM",
-            authDomain: "my-shop-admin-cedb1.firebaseapp.com",
-            projectId: "my-shop-admin-cedb1",
-            storageBucket: "my-shop-admin-cedb1.firebasestorage.app",
-            appId: "1:1073972515996:web:28049f5e5977e3a8e74959"
-        };
-        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+        // Config Supabase
+        const SUPABASE_URL = 'သင့်ရဲ့_SUPABASE_URL_ဒီမှာထည့်ပါ'; 
+        const SUPABASE_KEY = 'သင့်ရဲ့_SUPABASE_ANON_KEY_ဒီမှာထည့်ပါ';
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         const urlParams = new URLSearchParams(window.location.search);
         const agentName = urlParams.get('agent') || "spider";
 
         window.onload = () => {
             setupNavigation();
-            loadStats();
+            loadDashboardData();
             initSalesChart();
         };
 
@@ -287,44 +261,59 @@
             document.getElementById('navInv').href = `inventory.html${query}`;
             document.getElementById('navCust').href = `user_list.html${query}`;
             document.getElementById('navSettings').href = `shop-settings.html${query}`;
+            document.getElementById('seeAllOrders').href = `user_list.html${query}`;
 
+            // Shop Link URL (Customer View)
             const publicUrl = window.location.origin + "/index.html" + query;
             document.getElementById('shopLinkDisplay').innerText = publicUrl;
         }
 
-        function loadStats() {
-            // Shop Name
-            db.collection("shop_settings").doc(agentName).onSnapshot(doc => {
-                if(doc.exists) document.getElementById('welcomeAgent').innerText = `မင်္ဂလာပါ ${doc.data().shopName || agentName}!`;
-            });
-
-            // Products
-            db.collection("products").where("agent_name", "==", agentName).onSnapshot(snap => {
-                document.getElementById('totalProducts').innerText = snap.size;
-            });
-
-            // Orders
-            db.collection("orders").where("agent_name", "==", agentName).onSnapshot(snap => {
-                let total = snap.size;
-                let pending = 0;
-                let revenue = 0;
+        async function loadDashboardData() {
+            try {
+                // 1. Get Shop Info (Settings Table)
+                const { data: shop } = await _supabase
+                    .from('shop_settings')
+                    .select('shopName')
+                    .eq('agent_name', agentName.toLowerCase())
+                    .single();
                 
-                const docs = snap.docs.map(d => d.data());
-                docs.forEach(d => {
-                    if(d.status === "Pending") pending++;
-                    if(d.status === "Completed") revenue += (d.price || 0);
-                });
+                if (shop) document.getElementById('welcomeAgent').innerText = `မင်္ဂလာပါ ${shop.shopName}!`;
 
-                document.getElementById('totalOrders').innerText = total;
-                document.getElementById('pendingOrders').innerText = pending;
-                document.getElementById('totalRevenue').innerText = revenue.toLocaleString();
+                // 2. Count Total Products
+                const { count: pCount } = await _supabase
+                    .from('products')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('agent_name', agentName.toLowerCase());
+                
+                document.getElementById('totalProducts').innerText = pCount || 0;
 
-                renderRecentOrders(docs);
-            });
+                // 3. Get Orders and Stats
+                const { data: orders } = await _supabase
+                    .from('orders')
+                    .select('*')
+                    .eq('agent_name', agentName.toLowerCase())
+                    .order('created_at', { ascending: false });
+
+                if (orders) {
+                    let total = orders.length;
+                    let pending = orders.filter(o => o.status === 'Pending').length;
+                    let revenue = orders
+                        .filter(o => o.status === 'Completed')
+                        .reduce((sum, o) => sum + (o.price || 0), 0);
+
+                    document.getElementById('totalOrders').innerText = total;
+                    document.getElementById('pendingOrders').innerText = pending;
+                    document.getElementById('totalRevenue').innerText = revenue.toLocaleString();
+
+                    renderRecentOrders(orders.slice(0, 6));
+                }
+
+            } catch (err) {
+                console.error("Error loading dashboard:", err);
+            }
         }
 
-        function renderRecentOrders(orders) {
-            const list = orders.slice(0, 6);
+        function renderRecentOrders(list) {
             const body = document.getElementById('recentOrdersBody');
             if(list.length === 0) {
                 body.innerHTML = '<tr><td colspan="2" style="text-align:center;">No orders found</td></tr>';
@@ -354,7 +343,6 @@
                         borderWidth: 3,
                         pointBackgroundColor: '#fff',
                         pointBorderColor: '#6366f1',
-                        pointBorderWidth: 2
                     }]
                 },
                 options: {
@@ -379,7 +367,10 @@
         }
 
         function handleLogout() {
-            if(confirm("Logout လုပ်မှာ သေချာပါသလား?")) window.location.href = "login.html";
+            if(confirm("Logout လုပ်မှာ သေချာပါသလား?")) {
+                localStorage.removeItem('currentAgent');
+                window.location.href = "customer-login.html";
+            }
         }
     </script>
 </body>
