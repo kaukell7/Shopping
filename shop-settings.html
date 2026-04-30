@@ -9,22 +9,40 @@
     <style>
         :root { --primary: #4f46e5; --bg: #0f172a; --card: #ffffff; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f1f5f9; margin: 0; display: flex; }
+        
+        /* Sidebar Styles */
         .sidebar { width: 260px; background: var(--bg); color: white; min-height: 100vh; padding: 1.5rem 1rem; position: fixed; z-index: 9999; box-sizing: border-box; }
         .sidebar h2 { padding-left: 1rem; margin-bottom: 2.5rem; color: #fff; font-weight: 800; display: flex; align-items: center; gap: 12px; font-size: 1.4rem; }
         .nav-item { padding: 0.8rem 1rem; border-radius: 12px; color: #94a3b8; text-decoration: none; margin-bottom: 0.5rem; display: flex; align-items: center; transition: 0.3s; font-weight: 600; cursor: pointer; }
         .nav-item:hover { color: white; background: rgba(255,255,255,0.1); }
         .nav-item.active { background: var(--primary); color: white; }
+        
+        /* Layout */
         .main-content { margin-left: 260px; padding: 2.5rem; width: calc(100% - 260px); position: relative; box-sizing: border-box; }
-        .settings-container { max-width: 700px; background: var(--card); padding: 2rem; border-radius: 24px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .settings-container { max-width: 700px; background: var(--card); padding: 2.5rem; border-radius: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        
+        /* Form Components */
         .form-group { margin-bottom: 1.5rem; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: 700; color: #1e293b; }
-        .form-group input { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 12px; outline: none; transition: 0.3s; font-family: inherit; box-sizing: border-box; }
-        .form-group input:focus { border-color: var(--primary); }
-        .logo-upload-section { display: flex; align-items: center; gap: 20px; background: #f8fafc; padding: 1.5rem; border-radius: 16px; border: 2px dashed #e2e8f0; }
-        .preview-box { width: 100px; height: 100px; background: white; border-radius: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1px solid #e2e8f0; }
-        .preview-box img { width: 100%; height: 100%; object-fit: contain; }
-        .save-btn { background: var(--primary); color: white; border: none; padding: 14px 28px; border-radius: 12px; cursor: pointer; font-weight: 700; width: 100%; font-size: 1rem; margin-top: 1rem; transition: 0.3s; }
-        .save-btn:disabled { background: #94a3b8; cursor: not-allowed; opacity: 0.7; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 700; color: #1e293b; font-size: 0.95rem; }
+        .form-group input { width: 100%; padding: 14px; border: 1px solid #e2e8f0; border-radius: 12px; outline: none; transition: 0.3s; font-family: inherit; box-sizing: border-box; font-size: 1rem; }
+        .form-group input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); }
+        
+        /* Image Upload */
+        .logo-upload-section { display: flex; align-items: center; gap: 20px; background: #f8fafc; padding: 1.5rem; border-radius: 16px; border: 2px dashed #cbd5e1; margin-bottom: 1rem; }
+        .preview-box { width: 100px; height: 100px; background: white; border-radius: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1px solid #e2e8f0; flex-shrink: 0; }
+        .preview-box img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .save-btn { background: var(--primary); color: white; border: none; padding: 16px; border-radius: 14px; cursor: pointer; font-weight: 700; width: 100%; font-size: 1rem; margin-top: 1.5rem; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .save-btn:hover { background: #4338ca; transform: translateY(-2px); }
+        .save-btn:disabled { background: #94a3b8; cursor: not-allowed; transform: none; }
+
+        /* Notification */
+        #toast { visibility: hidden; min-width: 250px; background-color: #1e293b; color: #fff; text-align: center; border-radius: 12px; padding: 16px; position: fixed; z-index: 10000; left: 50%; bottom: 30px; transform: translateX(-50%); font-weight: 600; }
+        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+
         @media (max-width: 900px) {
             .sidebar { width: 85px; padding: 1.5rem 0.5rem; }
             .sidebar h2 span, .nav-item span { display: none; }
@@ -33,18 +51,20 @@
     </style>
 </head>
 <body>
+    <div id="toast">Settings Updated!</div>
+
     <div class="sidebar">
         <h2><i class="fas fa-spider"></i> <span>Spider.io</span></h2>
-        <a id="navDash" class="nav-item"><i class="fas fa-th-large"></i> &nbsp;<span>Dashboard</span></a>
-        <a id="navInv" class="nav-item"><i class="fas fa-box"></i> &nbsp;<span>Inventory</span></a>
-        <a id="navCust" class="nav-item"><i class="fas fa-users"></i> &nbsp;<span>Customers</span></a>
-        <a id="navSettings" class="nav-item active"><i class="fas fa-store"></i> &nbsp;<span>Shop Settings</span></a>
-        <a href="#" onclick="handleLogout()" class="nav-item" style="margin-top: 5rem; color: #fb7185;"><i class="fas fa-sign-out-alt"></i> &nbsp;<span>Logout</span></a>
+        <a id="navDash" class="nav-item"><i class="fas fa-th-large"></i> <span>Dashboard</span></a>
+        <a id="navInv" class="nav-item"><i class="fas fa-box"></i> <span>Inventory</span></a>
+        <a id="navCust" class="nav-item"><i class="fas fa-users"></i> <span>Customers</span></a>
+        <a id="navSettings" class="nav-item active"><i class="fas fa-store"></i> <span>Shop Settings</span></a>
+        <a href="#" onclick="handleLogout()" class="nav-item" style="margin-top: 5rem; color: #fb7185;"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
     </div>
 
     <div class="main-content">
-        <h1 style="color: #0f172a;">Shop Customization</h1>
-        <p style="color: #64748b; margin-bottom: 2rem;">သင့်ဆိုင်ရဲ့ Logo နဲ့ အချက်အလက်တွေကို ဒီမှာပြင်ဆင်နိုင်ပါတယ်</p>
+        <h1 style="color: #0f172a; margin-bottom: 8px;">Shop Customization</h1>
+        <p style="color: #64748b; margin-bottom: 2rem;">သင့်ဆိုင်ရဲ့ Logo နဲ့ ဆက်သွယ်ရန် အချက်အလက်များကို စိတ်ကြိုက်ပြင်ဆင်ပါ။</p>
 
         <div class="settings-container">
             <div class="form-group">
@@ -55,25 +75,29 @@
                     </div>
                     <div>
                         <input type="file" id="logoFile" accept="image/*" onchange="handlePreview(event)">
-                        <p style="font-size: 12px; color: #94a3b8; margin-top: 8px;">ပုံ Size အရမ်းမကြီးပါစေနှင့် (Max: 2MB)</p>
+                        <p style="font-size: 12px; color: #94a3b8; margin-top: 8px; line-height: 1.4;">Square size (1:1) ပုံများကို အကြံပြုပါသည်။<br>Max Size: 1MB</p>
                     </div>
                 </div>
             </div>
 
             <div class="form-group">
-                <label>Shop Name (ဆိုင်နာမည်)</label>
+                <label><i class="fas fa-tag"></i> Shop Name (ဆိုင်နာမည်)</label>
                 <input type="text" id="shopName" placeholder="ဥပမာ - Spider Fashion House">
             </div>
 
             <div class="form-group">
-                <label>Viber Number (ဆက်သွယ်ရန်ဖုန်း)</label>
+                <label><i class="fab fa-viber"></i> Viber Number (ဆက်သွယ်ရန်ဖုန်း)</label>
                 <input type="text" id="viberPhone" placeholder="09xxxxxxxxx">
             </div>
+
             <div class="form-group">
-                <label>Telegram Link (တယ်လီဂရမ် လင့်ခ်)</label>
-                <input type="text" id="telegramLink" placeholder="t.me/yourusername">
+                <label><i class="fab fa-telegram"></i> Telegram Username/Link</label>
+                <input type="text" id="telegramLink" placeholder="@yourusername သို့မဟုတ် t.me/link">
             </div>
-            <button class="save-btn" id="saveBtn" onclick="saveToMongoDB()">Save Changes</button>
+
+            <button class="save-btn" id="saveBtn" onclick="saveToMongoDB()">
+                <i class="fas fa-save"></i> Save Changes
+            </button>
         </div>
     </div>
 
@@ -94,7 +118,7 @@
                 return;
             }
 
-            // Navigation links update
+            // Update Sidebar Links
             const param = `?agent=${encodeURIComponent(currentAgentName)}`;
             document.getElementById('navDash').href = `agent-dashboard.html${param}`;
             document.getElementById('navInv').href = `inventory.html${param}`;
@@ -106,7 +130,6 @@
 
         async function loadSettings() {
             try {
-                // Agents list ကနေ လက်ရှိ agent ရဲ့ data ကို ရှာဆွဲထုတ်ခြင်း
                 const response = await fetch(`${API_BASE_URL}/agents/list`);
                 const agents = await response.json();
                 const data = agents.find(a => a.name === currentAgentName || a.shopName === currentAgentName);
@@ -118,7 +141,7 @@
                     
                     if(data.logoUrl) {
                         existingLogoUrl = data.logoUrl;
-                        document.getElementById('logoPreview').innerHTML = `<img src="${data.logoUrl}" style="width:100%; height:100%; object-fit:contain;">`;
+                        document.getElementById('logoPreview').innerHTML = `<img src="${data.logoUrl}">`;
                     }
                 }
             } catch (err) {
@@ -129,14 +152,14 @@
         function handlePreview(event) {
             const file = event.target.files[0];
             if (file) {
-                if (file.size > 2 * 1024 * 1024) {
-                    alert("ပုံ Size အရမ်းကြီးနေပါသည်။ 2MB အောက်ပုံကို ရွေးပေးပါ။");
+                if (file.size > 1 * 1024 * 1024) {
+                    alert("ပုံ Size ၁ MB ထက်နည်းသော ပုံကို ရွေးပေးပါ။");
                     event.target.value = "";
                     return;
                 }
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                    document.getElementById('logoPreview').innerHTML = `<img src="${e.target.result}" style="width:100%; height:100%; object-fit:contain;">`;
+                    document.getElementById('logoPreview').innerHTML = `<img src="${e.target.result}">`;
                 };
                 reader.readAsDataURL(file);
             }
@@ -153,12 +176,11 @@
             if(!name || !viber) return alert("ဆိုင်နာမည်နှင့် Viber နံပါတ် ထည့်ပေးရန် လိုအပ်ပါသည်။");
 
             btn.disabled = true;
-            btn.innerText = "Saving...";
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
 
             try {
                 let logoBase64 = existingLogoUrl;
 
-                // ပုံအသစ်ရွေးထားရင် Base64 ပြောင်းမယ်
                 if (file) {
                     logoBase64 = await new Promise((resolve) => {
                         const reader = new FileReader();
@@ -168,7 +190,7 @@
                 }
 
                 const payload = {
-                    name: currentAgentName, // ID အနေနဲ့ သုံးဖို့
+                    name: currentAgentName, 
                     shopName: name,
                     viber: viber,
                     telegram: telegram,
@@ -176,7 +198,6 @@
                     lastUpdated: new Date().toISOString()
                 };
 
-                // Backend Update API ကို လှမ်းပို့ခြင်း
                 const response = await fetch(`${API_BASE_URL}/agents/update`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -184,19 +205,26 @@
                 });
 
                 if (response.ok) {
-                    alert("အောင်မြင်စွာ သိမ်းဆည်းပြီးပါပြီ။");
-                    window.location.reload();
+                    showToast("အောင်မြင်စွာ သိမ်းဆည်းပြီးပါပြီ။");
+                    setTimeout(() => window.location.reload(), 1500);
                 } else {
                     alert("သိမ်းဆည်းရာတွင် အမှားအယွင်းရှိပါသည်။");
                 }
 
             } catch (err) {
                 console.error("Save Error:", err);
-                alert("ချိတ်ဆက်မှု အမှားအယွင်းရှိနေပါသည်");
+                alert("Server နှင့် ချိတ်ဆက်၍ မရပါ။");
             } finally {
                 btn.disabled = false;
-                btn.innerText = "Save Changes";
+                btn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
             }
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById("toast");
+            t.innerText = msg;
+            t.className = "show";
+            setTimeout(() => { t.className = t.className.replace("show", ""); }, 3000);
         }
 
         function handleLogout() {
