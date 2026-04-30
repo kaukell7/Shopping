@@ -8,33 +8,41 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /* CSS များသည် သင့်မူရင်းအတိုင်းဖြစ်၍ ပြောင်းလဲမှုမရှိပါ */
         :root { --primary: #4f46e5; --secondary: #0f172a; --bg: #f8fafc; --text-main: #1e293b; --accent: #10b981; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background-color: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif; color: var(--text-main); overflow-x: hidden; }
+        
+        /* Auth Bar */
         .top-auth-bar { background: white; padding: 10px 20px; display: flex; justify-content: flex-end; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 1000; }
         .auth-user { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 0.9rem; }
         .login-link { color: var(--primary); text-decoration: none; font-weight: 700; cursor: pointer; }
         .logout-btn { background: #fee2e2; color: #ef4444; border: none; padding: 5px 12px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; }
+
         .main-layout { display: flex; max-width: 1400px; margin: 0 auto; padding: 0 15px; gap: 30px; }
         .sidebar-ad { width: 180px; flex-shrink: 0; padding-top: 100px; }
         .ad-box { width: 100%; height: 600px; background: #e2e8f0; border-radius: 24px; position: sticky; top: 70px; overflow: hidden; border: 2px dashed #cbd5e1; display: flex; align-items: center; justify-content: center; }
+        
         .content-wrapper { flex-grow: 1; max-width: 900px; }
         .header { text-align: center; padding: 50px 0 30px; }
         .shop-logo-container { width: 110px; height: 110px; margin: 0 auto 15px; border-radius: 30px; overflow: hidden; background: white; box-shadow: 0 12px 25px -5px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; border: 4px solid white; }
         .shop-logo-container img { width: 100%; height: 100%; object-fit: cover; }
         .shop-logo-container i { font-size: 3.5rem; color: var(--primary); }
         .shop-name { font-size: 2.2rem; font-weight: 800; color: var(--secondary); margin-bottom: 5px; letter-spacing: -0.5px; }
+
         .marquee-container { background: var(--secondary); color: white; padding: 12px 20px; overflow: hidden; margin: 20px auto; border-radius: 16px; width: fit-content; max-width: 90%; }
         .marquee-text { display: inline-block; white-space: nowrap; animation: marquee 15s linear infinite; font-weight: 600; font-size: 0.9rem; }
         @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+
         .controls-container { margin: 30px 0; display: flex; flex-direction: column; gap: 15px; background: white; padding: 20px; border-radius: 24px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); }
         .filter-group { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; }
         .filter-btn { white-space: nowrap; background: #f1f5f9; border: none; padding: 10px 22px; border-radius: 12px; cursor: pointer; font-weight: 700; transition: 0.2s; color: #64748b; font-size: 0.85rem; }
         .filter-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2); }
+
         .search-box { position: relative; width: 100%; }
         .search-box i { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
         .search-box input { padding: 14px 14px 14px 48px; border-radius: 14px; border: 1px solid #e2e8f0; width: 100%; outline: none; background: #f8fafc; font-size: 0.95rem; transition: 0.3s; }
+
+        /* Grid & Cards */
         .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 25px; margin-bottom: 60px; }
         .card { background: white; border-radius: 24px; overflow: hidden; border: 1px solid #e2e8f0; transition: 0.3s; position: relative; }
         .card:hover { transform: translateY(-8px); box-shadow: 0 20px 30px -10px rgba(0,0,0,0.08); }
@@ -44,14 +52,29 @@
         .p-cat { font-size: 0.7rem; font-weight: 700; color: var(--primary); text-transform: uppercase; margin-bottom: 4px; }
         .p-name { font-weight: 700; margin-bottom: 10px; font-size: 1rem; color: var(--secondary); height: 2.4em; overflow: hidden; }
         .p-price { font-size: 1.2rem; color: var(--primary); font-weight: 800; }
-        .buy-btn { width: 100%; background: var(--secondary); color: white; border: none; padding: 12px; border-radius: 12px; margin-top: 15px; cursor: pointer; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        
+        .discount-badge { position: absolute; top: 15px; left: 15px; background: #ef4444; color: white; padding: 5px 12px; border-radius: 10px; font-weight: 800; font-size: 0.75rem; z-index: 10; }
+
+        .buy-btn { width: 100%; background: var(--secondary); color: white; border: none; padding: 12px; border-radius: 12px; margin-top: 15px; cursor: pointer; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
+        .buy-btn:hover { background: var(--primary); }
+
+        /* Modal */
         .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); align-items: center; justify-content: center; padding: 15px; backdrop-filter: blur(4px); }
         .modal-content { background: white; padding: 25px; border-radius: 28px; width: 100%; max-width: 420px; position: relative; }
-        .modal-input { width: 100%; padding: 12px 15px; margin-top: 12px; border-radius: 12px; border: 1px solid #e2e8f0; background: #f8fafc; outline: none; }
-        .chat-btn { position: fixed; bottom: 25px; right: 25px; width: 60px; height: 60px; background: #2563eb; color: white; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 24px; border: none; cursor: pointer; z-index: 999; }
+        .modal-input { width: 100%; padding: 12px 15px; margin-top: 12px; border-radius: 12px; border: 1px solid #e2e8f0; background: #f8fafc; outline: none; font-family: inherit; }
+        .close-modal { position: absolute; top: 15px; right: 20px; font-size: 24px; color: #94a3b8; cursor: pointer; }
+
+        .chat-btn { position: fixed; bottom: 25px; right: 25px; width: 60px; height: 60px; background: #2563eb; color: white; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 24px; border: none; cursor: pointer; z-index: 999; box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3); }
+
         .skeleton { background: #e2e8f0; animation: pulse 1.5s infinite; border-radius: 12px; }
         @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
-        @media (max-width: 900px) { .sidebar-ad { display: none; } .product-grid { grid-template-columns: repeat(2, 1fr); gap: 15px; } .img-wrapper { height: 180px; } }
+
+        @media (max-width: 900px) { 
+            .sidebar-ad { display: none; } 
+            .product-grid { grid-template-columns: repeat(2, 1fr); gap: 15px; } 
+            .img-wrapper { height: 180px; } 
+            .shop-name { font-size: 1.6rem; }
+        }
     </style>
 </head>
 <body>
@@ -63,7 +86,7 @@
     </div>
 
     <div class="main-layout">
-        <aside class="sidebar-ad"><div class="ad-box"></div></aside>
+        <aside class="sidebar-ad"><div class="ad-box">AD</div></aside>
 
         <div class="content-wrapper">
             <div class="header">
@@ -90,12 +113,13 @@
             </div>
 
             <div class="product-grid" id="productGrid">
+                <!-- Skeletons -->
                 <div class="card"><div class="img-wrapper skeleton"></div><div class="p-info"><div class="skeleton" style="height:15px;width:40%;margin-bottom:10px"></div><div class="skeleton" style="height:20px;width:90%"></div></div></div>
                 <div class="card"><div class="img-wrapper skeleton"></div><div class="p-info"><div class="skeleton" style="height:15px;width:40%;margin-bottom:10px"></div><div class="skeleton" style="height:20px;width:90%"></div></div></div>
             </div>
         </div>
 
-        <aside class="sidebar-ad"><div class="ad-box"></div></aside>
+        <aside class="sidebar-ad"><div class="ad-box">AD</div></aside>
     </div>
 
     <button class="chat-btn" onclick="openContact()"><i class="fab fa-viber"></i></button>
@@ -120,11 +144,10 @@
         </div>
     </div>
 
-    <!-- Supabase SDK (Firebase နေရာတွင် အစားထိုးသည်) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
-        // image_0c4b9d.png မှ URL နှင့် Anon Key ကို ဤနေရာတွင် ထည့်ပါ
+        // Supabase Settings (သင့် URL နှင့် Key ပြောင်းရန်)
         const SUPABASE_URL = 'သင့်ရဲ့_SUPABASE_URL_ဒီမှာထည့်ပါ'; 
         const SUPABASE_KEY = 'သင့်ရဲ့_SUPABASE_ANON_KEY_ဒီမှာထည့်ပါ';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -146,7 +169,6 @@
             if (user) {
                 authDiv.innerHTML = `<span>👋 မင်္ဂလာပါ</span> <button class="logout-btn" onclick="handleLogout()">Logout</button>`;
                 
-                // Profile Data ယူခြင်း
                 const { data: profile } = await _supabase
                     .from('customers')
                     .select('name, phone_or_email')
@@ -154,8 +176,8 @@
                     .single();
 
                 if(profile) {
-                    document.getElementById('cusName').value = profile.name;
-                    if(!profile.phone_or_email.includes('@')) {
+                    document.getElementById('cusName').value = profile.name || "";
+                    if(profile.phone_or_email && !profile.phone_or_email.includes('@')) {
                         document.getElementById('cusPhone').value = profile.phone_or_email;
                     }
                 }
@@ -170,10 +192,9 @@
         }
 
         function goToLogin() {
-            window.location.href = "customer-login.html" + window.location.search;
+            window.location.href = "customer-login.html?agent=" + agentName;
         }
 
-        // Shop Settings Load လုပ်ခြင်း
         async function loadShopSettings() {
             const { data, error } = await _supabase
                 .from('shop_settings')
@@ -182,10 +203,12 @@
                 .single();
 
             const shopDisplay = document.getElementById('shopNameDisplay');
+            const taglineDisplay = document.getElementById('taglineDisplay');
             const logoArea = document.getElementById('logoArea');
 
             if(data) {
                 shopDisplay.innerText = data.shop_name || agentName.toUpperCase();
+                if(data.tagline) taglineDisplay.innerText = data.tagline;
                 if(data.logo_url) logoArea.innerHTML = `<img src="${data.logo_url}" alt="logo">`;
                 agentViber = data.viber || "";
             } else {
@@ -193,7 +216,6 @@
             }
         }
 
-        // Products Load လုပ်ခြင်း
         async function loadProducts() {
             const { data, error } = await _supabase
                 .from('products')
@@ -204,19 +226,21 @@
             if (data) {
                 allProducts = data;
                 renderGrid(allProducts);
+            } else {
+                renderGrid([]);
             }
         }
 
         function renderGrid(items) {
             const grid = document.getElementById('productGrid');
             if(items.length === 0) {
-                grid.innerHTML = '<p style="text-align:center; grid-column: 1/-1; padding: 50px; color: #64748b;">ဤ Agent တွင် ပစ္စည်းများ မရှိသေးပါ။</p>';
+                grid.innerHTML = '<p style="text-align:center; grid-column: 1/-1; padding: 50px; color: #64748b;">ပစ္စည်းများ မရှိသေးပါ။</p>';
                 return;
             }
             grid.innerHTML = items.map(p => `
                 <div class="card">
                     ${p.discount_percent > 0 ? `<div class="discount-badge">${p.discount_percent}% OFF</div>` : ''}
-                    <div class="img-wrapper"><img src="${p.image_url}" alt="${p.item_name}" loading="lazy"></div>
+                    <div class="img-wrapper"><img src="${p.image_url || 'https://via.placeholder.com/300'}" alt="${p.item_name}" loading="lazy"></div>
                     <div class="p-info">
                         <div class="p-cat">${p.category || 'General'}</div>
                         <div class="p-name">${p.item_name}</div>
@@ -260,7 +284,7 @@
             const address = document.getElementById('cusAddress').value.trim();
             const qty = document.getElementById('cusQty').value;
 
-            if(!name || !phone || !address) return alert("အချက်အလက်ပြည့်စုံအောင် ဖြည့်ပါ။");
+            if(!name || !phone || !address || qty < 1) return alert("အချက်အလက်ပြည့်စုံအောင် ဖြည့်ပါ။");
 
             const btn = document.getElementById('submitBtn');
             btn.disabled = true;
