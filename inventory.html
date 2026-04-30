@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventory - Spider.io</title>
-    <!-- Unicode မြန်မာစာအတွက် font ထည့်သွင်းထားသည် -->
+    <title>Inventory & Banners - Spider.io</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&family=Pyidaungsu:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -90,6 +89,38 @@
             border-radius: 20px; 
             border: 1px solid var(--border);
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
+
+        /* Banner Management Styles */
+        .banner-upload {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            margin-bottom: 1rem;
+        }
+        .banner-list {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+        .banner-item {
+            position: relative;
+            min-width: 150px;
+            height: 80px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .banner-item img { width: 100%; height: 100%; object-fit: cover; }
+        .banner-item .del-btn {
+            position: absolute; top: 2px; right: 2px;
+            background: rgba(239, 68, 68, 0.9);
+            color: white; border: none; border-radius: 4px;
+            padding: 2px 6px; cursor: pointer; font-size: 10px;
         }
 
         .form-group { margin-bottom: 1.2rem; }
@@ -196,7 +227,7 @@
         <div class="header-flex">
             <div>
                 <h1 id="storeTitle" style="margin:0; font-size: 1.5rem;">Inventory Management</h1>
-                <p style="color: var(--text-muted); margin: 5px 0 0 0;">ပစ္စည်းအသစ်ထည့်သွင်းခြင်းနှင့် စာရင်းစစ်ဆေးခြင်း</p>
+                <p style="color: var(--text-muted); margin: 5px 0 0 0;">ပစ္စည်းအသစ်ထည့်သွင်းခြင်းနှင့် Banner စီမံခြင်း</p>
             </div>
             <div id="productCount" style="background: white; padding: 10px 20px; border-radius: 12px; border: 1px solid var(--border); font-weight: 700;">
                 0 Products
@@ -204,52 +235,71 @@
         </div>
 
         <div class="grid-container">
-            <section class="card">
-                <h3 style="margin-top:0;"><i class="fas fa-plus-circle"></i> Add New Product</h3>
-                <form id="productForm">
-                    <div class="img-upload" id="imgPreview" onclick="document.getElementById('fileInput').click()">
-                        <i class="fas fa-image"></i>
-                        <span>Upload Product Image</span>
+            <!-- Sidebar Actions -->
+            <div>
+                <!-- Banner Management Card -->
+                <section class="card">
+                    <h3 style="margin-top:0;"><i class="fas fa-image"></i> Manage Banners</h3>
+                    <div class="banner-upload" onclick="document.getElementById('bannerInput').click()">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p style="font-size: 0.8rem; margin: 5px 0;">Upload Shop Banner (16:9)</p>
                     </div>
-                    <input type="file" id="fileInput" hidden accept="image/*" onchange="handleImagePreview(event)">
-
-                    <div class="form-group">
-                        <label>Product Name</label>
-                        <input type="text" id="pName" placeholder="Enter name" required>
+                    <input type="file" id="bannerInput" hidden accept="image/*" onchange="handleBannerUpload(event)">
+                    
+                    <div class="banner-list" id="bannerList">
+                        <!-- Banners will appear here -->
                     </div>
+                </section>
 
-                    <div class="form-group">
-                        <label>Category</label>
-                        <select id="pCat">
-                            <option value="Boy">Boy</option>
-                            <option value="Girl">Girl</option>
-                            <option value="Kid">Kid</option>
-                            <option value="Accessories">Accessories</option>
-                        </select>
-                    </div>
-
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                        <div class="form-group">
-                            <label>Price (Ks)</label>
-                            <input type="number" id="pPrice" placeholder="0" required oninput="calcFinal()">
+                <!-- Add Product Card -->
+                <section class="card">
+                    <h3 style="margin-top:0;"><i class="fas fa-plus-circle"></i> Add New Product</h3>
+                    <form id="productForm">
+                        <div class="img-upload" id="imgPreview" onclick="document.getElementById('fileInput').click()">
+                            <i class="fas fa-image"></i>
+                            <span>Upload Product Image</span>
                         </div>
+                        <input type="file" id="fileInput" hidden accept="image/*" onchange="handleImagePreview(event)">
+
                         <div class="form-group">
-                            <label>Discount %</label>
-                            <input type="number" id="pDiscount" value="0" min="0" max="100" oninput="calcFinal()">
+                            <label>Product Name</label>
+                            <input type="text" id="pName" placeholder="Enter name" required>
                         </div>
-                    </div>
 
-                    <div class="form-group">
-                        <label>Final Price</label>
-                        <input type="text" id="pFinal" style="background:#f1f5f9; font-weight:700;" readonly>
-                    </div>
+                        <div class="form-group">
+                            <label>Category</label>
+                            <select id="pCat">
+                                <option value="Boy">Boy</option>
+                                <option value="Girl">Girl</option>
+                                <option value="Kid">Kid</option>
+                                <option value="Accessories">Accessories</option>
+                            </select>
+                        </div>
 
-                    <button type="submit" class="btn-save" id="saveBtn">
-                        <i class="fas fa-save"></i> Save Product
-                    </button>
-                </form>
-            </section>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <div class="form-group">
+                                <label>Price (Ks)</label>
+                                <input type="number" id="pPrice" placeholder="0" required oninput="calcFinal()">
+                            </div>
+                            <div class="form-group">
+                                <label>Discount %</label>
+                                <input type="number" id="pDiscount" value="0" min="0" max="100" oninput="calcFinal()">
+                            </div>
+                        </div>
 
+                        <div class="form-group">
+                            <label>Final Price</label>
+                            <input type="text" id="pFinal" style="background:#f1f5f9; font-weight:700;" readonly>
+                        </div>
+
+                        <button type="submit" class="btn-save" id="saveBtn">
+                            <i class="fas fa-save"></i> Save Product
+                        </button>
+                    </form>
+                </section>
+            </div>
+
+            <!-- Product Table -->
             <section class="table-container">
                 <div class="table-header">
                     <h3 style="margin:0;">Product List</h3>
@@ -278,7 +328,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
-        // Supabase Configuration - ဒီနေရာမှာ သင့် Project ရဲ့ Keys တွေ အစားထိုးပါ
+        // Supabase Configuration
         const SUPABASE_URL = 'YOUR_SUPABASE_PROJECT_URL'; 
         const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -288,7 +338,6 @@
 
         window.onload = () => {
             const params = new URLSearchParams(window.location.search);
-            // agent name ကို lowercase ပြောင်းယူခြင်းက database မှာ query ရှာရ ပိုလွယ်စေပါတယ်
             agentName = params.get('agent') || "spider";
 
             const qs = `?agent=${encodeURIComponent(agentName)}`;
@@ -300,8 +349,51 @@
             document.getElementById('storeTitle').innerText = `${agentName.toUpperCase()}'s Inventory`;
             
             fetchProducts();
+            fetchBanners(); // Banner များယူရန်
         };
 
+        // --- Banner Functions ---
+        async function fetchBanners() {
+            const { data, error } = await _supabase.from('banners')
+                .select('*').eq('agent_name', agentName.toLowerCase());
+            if(!error) {
+                const list = document.getElementById('bannerList');
+                list.innerHTML = data.map(b => `
+                    <div class="banner-item">
+                        <img src="${b.image_url}">
+                        <button class="del-btn" onclick="deleteBanner('${b.id}')">X</button>
+                    </div>
+                `).join('');
+            }
+        }
+
+        async function handleBannerUpload(e) {
+            const file = e.target.files[0];
+            if(!file) return;
+
+            const fileName = `banner_${Date.now()}`;
+            const { data, error } = await _supabase.storage.from('banners').upload(fileName, file);
+            
+            if(!error) {
+                const { data: urlData } = _supabase.storage.from('banners').getPublicUrl(fileName);
+                await _supabase.from('banners').insert([{
+                    image_url: urlData.publicUrl,
+                    agent_name: agentName.toLowerCase()
+                }]);
+                fetchBanners();
+            } else {
+                alert("Upload failed!");
+            }
+        }
+
+        async function deleteBanner(id) {
+            if(confirm("Banner ဖျက်မှာ သေချာလား?")) {
+                await _supabase.from('banners').delete().eq('id', id);
+                fetchBanners();
+            }
+        }
+
+        // --- Product Functions ---
         function handleImagePreview(e) {
             const file = e.target.files[0];
             if (file) {
@@ -335,7 +427,6 @@
                 allProducts = data;
                 renderTable(allProducts);
             } catch (err) {
-                console.error(err);
                 body.innerHTML = '<tr><td colspan="4" style="text-align:center; color:red;">Error loading products.</td></tr>';
             }
         }
@@ -353,7 +444,7 @@
                 <tr>
                     <td>
                         <div class="prod-display">
-                            <img src="${p.image_url || 'https://via.placeholder.com/50'}" class="prod-img" onerror="this.src='https://via.placeholder.com/50'">
+                            <img src="${p.image_url || 'https://via.placeholder.com/50'}" class="prod-img">
                             <div>
                                 <div style="font-weight:700;">${p.name}</div>
                                 <div style="font-size:0.7rem; color:#94a3b8;">ID: ${p.id.toString().slice(-6).toUpperCase()}</div>
@@ -366,7 +457,7 @@
                         ${p.discount_percent > 0 ? `<div style="font-size:0.7rem; color:#ef4444;">-${p.discount_percent}% Off</div>` : ''}
                     </td>
                     <td style="text-align:right;">
-                        <button class="action-btn btn-del" onclick="deleteProd('${p.id}')" title="Delete"><i class="fas fa-trash"></i></button>
+                        <button class="action-btn btn-del" onclick="deleteProd('${p.id}')"><i class="fas fa-trash"></i></button>
                     </td>
                 </tr>
             `).join('');
@@ -383,63 +474,47 @@
             const btn = document.getElementById('saveBtn');
             const file = document.getElementById('fileInput').files[0];
             
-            if(!file) return alert("ကျေးဇူးပြု၍ ပုံတစ်ပုံအရင်တင်ပေးပါ။");
+            if(!file) return alert("ကျေးဇူးပြု၍ ပုံအရင်တင်ပါ။");
 
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Saving...';
 
             try {
-                // 1. Upload Image to Supabase Storage (Bucket name: product-images)
-                // Bucket ကို Supabase Dashboard မှာ 'Public' ပေးထားဖို့ မမေ့ပါနဲ့
-                const fileName = `${Date.now()}_${file.name.replace(/\s/g, '_')}`;
+                const fileName = `${Date.now()}_prod`;
                 const { data: uploadData, error: uploadError } = await _supabase.storage
-                    .from('product-images')
-                    .upload(fileName, file);
+                    .from('product-images').upload(fileName, file);
 
                 if (uploadError) throw uploadError;
 
-                // Get Public URL
                 const { data: urlData } = _supabase.storage.from('product-images').getPublicUrl(fileName);
-                const imageUrl = urlData.publicUrl;
 
-                // 2. Insert Product to Database
                 const payload = {
                     name: document.getElementById('pName').value,
                     original_price: parseInt(document.getElementById('pPrice').value),
                     discount_percent: parseInt(document.getElementById('pDiscount').value) || 0,
                     price: parseInt(document.getElementById('pFinal').value.replace(/,/g, '').replace(' Ks', '')),
                     category: document.getElementById('pCat').value,
-                    image_url: imageUrl,
+                    image_url: urlData.publicUrl,
                     agent_name: agentName.toLowerCase()
                 };
 
-                const { error: dbError } = await _supabase.from('products').insert([payload]);
-                if (dbError) throw dbError;
-
-                alert("Product successfully added!");
+                await _supabase.from('products').insert([payload]);
                 location.reload();
-
             } catch (err) { 
-                console.error(err);
                 alert("Error: " + err.message); 
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-save"></i> Save Product';
             }
         };
 
         async function deleteProd(id) {
-            if (confirm("ဤပစ္စည်းကို ဖျက်ရန် သေချာပါသလား?")) {
-                const { error } = await _supabase.from('products').delete().eq('id', id);
-                if(!error) fetchProducts();
-                else alert("ဖျက်လို့မရပါ (Error: " + error.message + ")");
+            if (confirm("ဖျက်မှာ သေချာလား?")) {
+                await _supabase.from('products').delete().eq('id', id);
+                fetchProducts();
             }
         }
 
         function handleLogout() {
-            if(confirm("Logout လုပ်ရန် သေချာပါသလား?")) {
-                localStorage.removeItem('currentAgent');
-                window.location.href = "customer-login.html";
-            }
+            if(confirm("Logout လုပ်မှာလား?")) window.location.href = "customer-login.html";
         }
     </script>
 </body>
