@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Spider.io</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #4f46e5; --bg: #f8fafc; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+        .login-card { background: white; padding: 2.5rem; border-radius: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 400px; }
+        .logo { text-align: center; margin-bottom: 2rem; font-weight: 800; font-size: 1.5rem; color: var(--primary); }
+        h2 { text-align: center; margin-bottom: 1.5rem; }
+        input { width: 100%; padding: 12px; margin-bottom: 1rem; border: 1px solid #e2e8f0; border-radius: 12px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; }
+        .toggle-text { text-align: center; margin-top: 1rem; font-size: 0.9rem; color: #64748b; }
+        .toggle-text span { color: var(--primary); cursor: pointer; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+<div class="login-card">
+    <div class="logo">Spider.io</div>
+    <h2 id="formTitle">Login ဝင်ရန်</h2>
+    
+    <div id="registerFields" style="display: none;">
+        <input type="text" id="custName" placeholder="နာမည်အပြည့်အစုံ">
+    </div>
+    <input type="email" id="custEmail" placeholder="Email လိပ်စာ">
+    <input type="password" id="custPassword" placeholder="စကားဝှက် (အနည်းဆုံး ၆ လုံး)">
+    
+    <button id="mainBtn" onclick="handleAuth()">Login ဝင်မည်</button>
+    
+    <p class="toggle-text" id="toggleMsg">အကောင့်မရှိသေးဘူးလား? <span onclick="toggleForm()">အကောင့်ဖွင့်မည်</span></p>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyCt1SMVSMqdX3u2viQ-n_BVwp6KgQwDLOM",
+        authDomain: "my-shop-admin-cedb1.firebaseapp.com",
+        projectId: "my-shop-admin-cedb1",
+        storageBucket: "my-shop-admin-cedb1.firebasestorage.app",
+        appId: "1:1073972515996:web:28049f5e5977e3a8e74959"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    let isLogin = true;
+
+    function toggleForm() {
+        isLogin = !isLogin;
+        document.getElementById('formTitle').innerText = isLogin ? "Login ဝင်ရန်" : "အကောင့်အသစ်ဖွင့်ရန်";
+        document.getElementById('mainBtn').innerText = isLogin ? "Login ဝင်မည်" : "အကောင့်ဖွင့်မည်";
+        document.getElementById('registerFields').style.display = isLogin ? "none" : "block";
+        document.getElementById('toggleMsg').innerHTML = isLogin ? 
+            'အကောင့်မရှိသေးဘူးလား? <span onclick="toggleForm()">အကောင့်ဖွင့်မည်</span>' : 
+            'အကောင့်ရှိပြီးသားလား? <span onclick="toggleForm()">Login ပြန်ဝင်မည်</span>';
+    }
+
+    async function handleAuth() {
+        const email = document.getElementById('custEmail').value;
+        const password = document.getElementById('custPassword').value;
+        const name = document.getElementById('custName').value;
+
+        if(!email || !password) return alert("အချက်အလက်ပြည့်စုံအောင် ဖြည့်ပါ။");
+
+        try {
+            if (isLogin) {
+                // Login
+                await auth.signInWithEmailAndPassword(email, password);
+                alert("Login အောင်မြင်ပါတယ်။");
+            } else {
+                // Register
+                const res = await auth.createUserWithEmailAndPassword(email, password);
+                await db.collection("customers").doc(res.user.uid).set({
+                    name: name,
+                    email: email,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                alert("အကောင့်ဖွင့်ခြင်း အောင်မြင်ပါတယ်။");
+            }
+            // Login ဝင်ပြီးရင် ပစ္စည်းဝယ်တဲ့ စာမျက်နှာကို သွားမယ်
+            window.location.href = "index.html" + window.location.search;
+        } catch (error) {
+            alert(error.message);
+        }
+    }
+</script>
+
+</body>
+</html>
