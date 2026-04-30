@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Products - Spider.io</title>
+    <title>Inventory - Spider.io</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -14,6 +14,8 @@
             --sidebar: #0f172a; 
             --text-main: #1e293b;
             --text-muted: #64748b;
+            --white: #ffffff;
+            --border: #e2e8f0;
         }
 
         body { 
@@ -22,9 +24,10 @@
             margin: 0; 
             display: flex; 
             color: var(--text-main);
+            overflow-x: hidden;
         }
         
-        /* Sidebar Styling */
+        /* Sidebar */
         .sidebar { 
             width: 260px; 
             background: var(--sidebar); 
@@ -32,7 +35,6 @@
             min-height: 100vh; 
             padding: 2rem 1rem; 
             position: fixed; 
-            transition: all 0.3s ease;
             z-index: 1000; 
         }
         .sidebar h2 { 
@@ -42,7 +44,6 @@
             display: flex; 
             align-items: center; 
             gap: 12px;
-            letter-spacing: -0.5px;
         }
         .nav-item { 
             padding: 0.8rem 1.2rem; 
@@ -53,236 +54,216 @@
             display: flex; 
             align-items: center; 
             transition: 0.2s; 
-            cursor: pointer;
             font-weight: 500;
         }
         .nav-item:hover, .nav-item.active { 
-            background: rgba(79, 70, 229, 0.1); 
+            background: rgba(255, 255, 255, 0.05); 
             color: #fff; 
         }
-        .nav-item.active {
-            background: var(--primary);
-        }
+        .nav-item.active { background: var(--primary); }
         .nav-item i { width: 24px; font-size: 1.1rem; }
-        
-        /* Layout */
+
+        /* Main Content */
         .main-content { 
             margin-left: 260px; 
             padding: 2.5rem; 
             width: calc(100% - 260px); 
-            min-height: 100vh;
         }
+
+        .header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        /* Layout Grid */
         .grid-container { 
             display: grid; 
-            grid-template-columns: 400px 1fr; 
+            grid-template-columns: 380px 1fr; 
             gap: 2rem; 
             align-items: start; 
         }
-        
-        /* Cards & Forms */
-        .card { 
-            background: white; 
-            padding: 2rem; 
-            border-radius: 24px; 
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02), 0 10px 15px -3px rgba(0,0,0,0.05);
-            border: 1px solid rgba(226, 232, 240, 0.8); 
-        }
-        .form-group { margin-bottom: 1.25rem; }
-        label { 
-            display: block; 
-            margin-bottom: 0.6rem; 
-            font-weight: 600; 
-            font-size: 0.85rem; 
-            color: var(--text-main);
-        }
-        input, select { 
-            width: 100%; 
-            padding: 0.8rem 1rem; 
-            border: 1px solid #e2e8f0; 
-            border-radius: 12px; 
-            font-family: inherit;
-            font-size: 0.95rem;
-            box-sizing: border-box;
-            transition: 0.2s;
-        }
-        input:focus { 
-            outline: none;
-            border-color: var(--primary); 
-            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); 
-        }
-        
-        /* Image Upload Preview */
-        .img-preview-box { 
-            width: 100%; 
-            height: 200px; 
-            border: 2px dashed #cbd5e1; 
-            border-radius: 16px; 
-            display: flex; 
-            flex-direction: column;
-            align-items: center; 
-            justify-content: center; 
-            margin-bottom: 1.5rem; 
-            overflow: hidden; 
-            background: #f1f5f9; 
-            cursor: pointer; 
-            transition: 0.3s;
-        }
-        .img-preview-box:hover { border-color: var(--primary); background: #eef2ff; }
-        .img-preview-box img { width: 100%; height: 100%; object-fit: cover; }
-        .img-preview-box i { font-size: 2rem; color: #94a3b8; margin-bottom: 8px; }
-        .img-preview-box span { font-size: 0.8rem; color: #64748b; }
 
-        /* Inventory Table */
-        .table-card { 
-            background: white; 
-            border-radius: 24px; 
-            border: 1px solid rgba(226, 232, 240, 0.8); 
-            overflow: hidden;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
+        /* Card Styles */
+        .card { 
+            background: var(--white); 
+            padding: 1.5rem; 
+            border-radius: 20px; 
+            border: 1px solid var(--border);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
+
+        .form-group { margin-bottom: 1.2rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.85rem; }
+        
+        input, select { 
+            width: 100%; padding: 0.75rem 1rem; 
+            border: 1px solid var(--border); 
+            border-radius: 12px; font-family: inherit;
+            box-sizing: border-box; transition: 0.2s;
+        }
+        input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); }
+
+        /* Image Upload Area */
+        .img-upload {
+            width: 100%; height: 180px;
+            border: 2px dashed var(--border);
+            border-radius: 16px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            cursor: pointer; background: #f8fafc; transition: 0.3s;
+            overflow: hidden; margin-bottom: 1rem;
+        }
+        .img-upload:hover { border-color: var(--primary); background: #f0f4ff; }
+        .img-upload img { width: 100%; height: 100%; object-fit: cover; }
+        .img-upload i { font-size: 2rem; color: #94a3b8; margin-bottom: 8px; }
+
+        /* Table Styling */
+        .table-container {
+            background: var(--white);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+        .table-header {
+            padding: 1.2rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+            background: #fff;
+        }
+        .search-box {
+            position: relative; width: 250px;
+        }
+        .search-box input {
+            padding-left: 2.5rem; font-size: 0.85rem; background: #f1f5f9; border: none;
+        }
+        .search-box i {
+            position: absolute; left: 1rem; top: 50%; transform: translateY(-50%);
+            color: #94a3b8;
+        }
+
         table { width: 100%; border-collapse: collapse; }
         th { 
-            background: #f8fafc; 
-            padding: 1rem; 
-            text-align: left; 
-            font-size: 0.75rem; 
-            text-transform: uppercase; 
-            letter-spacing: 0.05em; 
-            color: #64748b;
-            border-bottom: 1px solid #f1f5f9;
+            background: #f8fafc; padding: 1rem 1.5rem; 
+            text-align: left; font-size: 0.75rem; 
+            text-transform: uppercase; color: var(--text-muted);
         }
-        td { padding: 1.2rem 1rem; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
-        .product-info { display: flex; align-items: center; gap: 14px; }
-        .product-img { width: 56px; height: 56px; border-radius: 12px; object-fit: cover; background: #f1f5f9; }
+        td { padding: 1rem 1.5rem; border-bottom: 1px solid #f1f5f9; }
+
+        .prod-display { display: flex; align-items: center; gap: 12px; }
+        .prod-img { width: 48px; height: 48px; border-radius: 10px; object-fit: cover; background: #eee; }
         
-        .price-tag { font-weight: 700; color: #0f172a; font-size: 1rem; }
-        .discount-badge { 
-            background: #fff1f2; 
-            color: #e11d48; 
-            padding: 2px 8px; 
-            border-radius: 6px; 
-            font-size: 0.7rem; 
-            font-weight: 700; 
-            margin-left: 5px;
+        .badge {
+            padding: 4px 10px; border-radius: 8px; font-size: 0.75rem; font-weight: 600;
         }
-
-        .btn-create { 
-            background: var(--primary); 
-            color: white; 
-            padding: 1rem; 
-            border: none; 
-            border-radius: 14px; 
-            font-weight: 700; 
-            font-size: 1rem;
-            cursor: pointer; 
-            width: 100%; 
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            transition: 0.3s;
+        .badge-cat { background: #eef2ff; color: var(--primary); }
+        
+        .btn-save {
+            background: var(--primary); color: white; border: none;
+            width: 100%; padding: 0.8rem; border-radius: 12px;
+            font-weight: 700; cursor: pointer; transition: 0.3s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
         }
-        .btn-create:hover { background: var(--primary-hover); transform: translateY(-1px); }
-        .btn-create:disabled { background: #94a3b8; transform: none; }
+        .btn-save:hover { background: var(--primary-hover); transform: translateY(-1px); }
 
-        .btn-delete { 
-            color: #94a3b8; 
-            cursor: pointer; 
-            border: 1px solid #e2e8f0; 
-            background: white; 
-            padding: 8px; 
-            border-radius: 10px; 
-            transition: 0.2s;
+        .action-btn {
+            width: 35px; height: 35px; border-radius: 8px; border: 1px solid var(--border);
+            background: white; color: #64748b; cursor: pointer; transition: 0.2s;
         }
-        .btn-delete:hover { color: #ef4444; border-color: #fecaca; background: #fef2f2; }
+        .btn-del:hover { color: #ef4444; border-color: #fecaca; background: #fef2f2; }
 
-        /* Mobile Responsive */
-        @media (max-width: 1100px) {
-            .grid-container { grid-template-columns: 1fr; }
-            .sidebar { width: 80px; padding: 2rem 0.5rem; }
-            .sidebar h2 span, .sidebar .nav-item span { display: none; }
-            .sidebar .nav-item { justify-content: center; padding: 1rem; }
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar { width: 80px; }
+            .sidebar span, .sidebar h2 span { display: none; }
             .main-content { margin-left: 80px; width: calc(100% - 80px); }
+            .grid-container { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-    <div class="sidebar">
+    <aside class="sidebar">
         <h2><i class="fas fa-spider" style="color: var(--primary);"></i> <span>Spider.io</span></h2>
-        <a id="navDash" class="nav-item"><i class="fas fa-th-large"></i> <span>Dashboard</span></a>
-        <a id="navInv" class="nav-item active"><i class="fas fa-box"></i> <span>My Products</span></a>
-        <a id="navUsers" class="nav-item"><i class="fas fa-users"></i> <span>Customers</span></a>
-        <a id="navSettings" class="nav-item"><i class="fas fa-cog"></i> <span>Settings</span></a>
-        
-        <button class="nav-item" onclick="handleLogout()" style="margin-top: auto; border: none; background: transparent; width: 100%; color: #fb7185;">
-            <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
-        </button>
-    </div>
+        <nav>
+            <a id="navDash" class="nav-item"><i class="fas fa-th-large"></i> <span>Dashboard</span></a>
+            <a id="navInv" class="nav-item active"><i class="fas fa-box"></i> <span>My Products</span></a>
+            <a id="navUsers" class="nav-item"><i class="fas fa-users"></i> <span>Customers</span></a>
+            <a id="navSettings" class="nav-item"><i class="fas fa-cog"></i> <span>Settings</span></a>
+            
+            <a href="#" class="nav-item" onclick="handleLogout()" style="margin-top: 2rem; color: #fb7185;">
+                <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
+            </a>
+        </nav>
+    </aside>
 
-    <div class="main-content">
-        <header style="margin-bottom: 2.5rem;">
-            <h1 id="pageTitle" style="font-size: 1.8rem; margin: 0 0 0.5rem 0; letter-spacing: -0.5px;">Product Management</h1>
-            <p id="pageSub" style="color: var(--text-muted); margin: 0;">သင့်ဆိုင်ရှိ ကုန်ပစ္စည်းများကို အလွယ်တကူ စီမံခန့်ခွဲပါ</p>
-        </header>
-        
+    <main class="main-content">
+        <div class="header-flex">
+            <div>
+                <h1 id="storeTitle" style="margin:0; font-size: 1.5rem;">Inventory Management</h1>
+                <p style="color: var(--text-muted); margin: 5px 0 0 0;">ပစ္စည်းအသစ်ထည့်သွင်းခြင်းနှင့် စာရင်းစစ်ဆေးခြင်း</p>
+            </div>
+            <div id="productCount" style="background: white; padding: 10px 20px; border-radius: 12px; border: 1px solid var(--border); font-weight: 700;">
+                0 Products
+            </div>
+        </div>
+
         <div class="grid-container">
             <!-- Add Product Form -->
-            <div class="card">
-                <h3 style="margin: 0 0 1.5rem 0; font-size: 1.1rem; display: flex; align-items: center; gap: 10px;">
-                    <i class="fas fa-plus-circle" style="color: var(--primary);"></i> Add New Product
-                </h3>
-                
+            <section class="card">
+                <h3 style="margin-top:0;"><i class="fas fa-plus-circle"></i> Add New Product</h3>
                 <form id="productForm">
-                    <label>Product Image</label>
-                    <div class="img-preview-box" id="previewContainer" onclick="document.getElementById('pImageFile').click()">
-                        <i class="fas fa-cloud-upload-alt"></i>
-                        <span>Click to upload image</span>
+                    <div class="img-upload" id="imgPreview" onclick="document.getElementById('fileInput').click()">
+                        <i class="fas fa-image"></i>
+                        <span>Upload Product Image</span>
                     </div>
-                    <input type="file" id="pImageFile" accept="image/*" onchange="previewImage(event)" style="display: none;" required>
+                    <input type="file" id="fileInput" hidden accept="image/*" onchange="handleImagePreview(event)">
 
                     <div class="form-group">
                         <label>Product Name</label>
-                        <input type="text" id="pName" placeholder="ဥပမာ - နွေရာသီဝတ် ဂါဝန်" required>
+                        <input type="text" id="pName" placeholder="Enter name" required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label>Category</label>
-                        <select id="pCategory">
+                        <select id="pCat">
                             <option value="Boy">Boy</option>
                             <option value="Girl">Girl</option>
                             <option value="Kid">Kid</option>
                             <option value="Accessories">Accessories</option>
                         </select>
                     </div>
-                    
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                         <div class="form-group">
                             <label>Price (Ks)</label>
-                            <input type="number" id="originalPrice" placeholder="50000" min="0" required oninput="calculateDiscount()">
+                            <input type="number" id="pPrice" placeholder="0" required oninput="calcFinal()">
                         </div>
                         <div class="form-group">
-                            <label>Discount (%)</label>
-                            <input type="number" id="discountPercent" value="0" min="0" max="100" oninput="calculateDiscount()">
+                            <label>Discount %</label>
+                            <input type="number" id="pDiscount" value="0" min="0" max="100" oninput="calcFinal()">
                         </div>
                     </div>
-                    
+
                     <div class="form-group">
-                        <label>Final Selling Price (ရောင်းဈေး)</label>
-                        <input type="number" id="finalPrice" style="background:#f8fafc; font-weight:700; color: var(--primary);" readonly>
+                        <label>Final Price</label>
+                        <input type="text" id="pFinal" style="background:#f1f5f9; font-weight:700;" readonly>
                     </div>
-                    
-                    <button type="submit" class="btn-create" id="uploadBtn">
-                        <i class="fas fa-check-circle"></i> Save Product
+
+                    <button type="submit" class="btn-save" id="saveBtn">
+                        <i class="fas fa-save"></i> Save Product
                     </button>
                 </form>
-            </div>
+            </section>
 
-            <!-- Inventory List -->
-            <div class="table-card">
-                <div style="padding: 1.5rem; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center;">
-                    <h3 style="margin: 0; font-size: 1.1rem;">My Inventory</h3>
-                    <span id="productCount" style="background: #eef2ff; color: var(--primary); padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 700;">0 Items</span>
+            <!-- Product Table -->
+            <section class="table-container">
+                <div class="table-header">
+                    <h3 style="margin:0;">Product List</h3>
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Search products..." onkeyup="filterTable()">
+                    </div>
                 </div>
                 <div style="overflow-x: auto;">
                     <table>
@@ -291,186 +272,161 @@
                                 <th>Product Details</th>
                                 <th>Category</th>
                                 <th>Price</th>
-                                <th style="text-align: center;">Action</th>
+                                <th style="text-align:right;">Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="productTableBody">
-                            <tr>
-                                <td colspan="4" style="text-align:center; padding: 60px; color: #94a3b8;">
-                                    <i class="fas fa-circle-notch fa-spin" style="font-size: 2rem; margin-bottom: 15px; color: var(--primary);"></i><br>
-                                    Loading Products...
-                                </td>
-                            </tr>
+                        <tbody id="inventoryBody">
+                            <!-- Data will be loaded here -->
                         </tbody>
                     </table>
                 </div>
-            </div>
+            </section>
         </div>
-    </div>
+    </main>
 
     <script>
-        const API_BASE_URL = "https://shopping-sable-sigma.vercel.app/api";
-        let currentAgentName = "";
+        const API_URL = "https://shopping-sable-sigma.vercel.app/api";
+        let agentName = "";
+        let allProducts = [];
 
-        window.onload = function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const agentFromUrl = urlParams.get('agent');
-            const loggedInAgent = JSON.parse(localStorage.getItem('currentAgent'));
+        window.onload = () => {
+            const params = new URLSearchParams(window.location.search);
+            const loggedIn = JSON.parse(localStorage.getItem('currentAgent'));
+            agentName = params.get('agent') || (loggedIn ? loggedIn.name : "");
+
+            if (!agentName) return window.location.href = "login.html";
+
+            // Setup Navigation
+            const qs = `?agent=${encodeURIComponent(agentName)}`;
+            document.getElementById('navDash').href = `agent-dashboard.html${qs}`;
+            document.getElementById('navInv').href = `inventory.html${qs}`;
+            document.getElementById('navUsers').href = `user_list.html${qs}`;
+            document.getElementById('navSettings').href = `shop-settings.html${qs}`;
             
-            currentAgentName = agentFromUrl || (loggedInAgent ? loggedInAgent.name : null);
-
-            if (!currentAgentName) {
-                window.location.href = "login.html";
-                return;
-            }
-
-            // Update Navigation Links
-            const suffix = `?agent=${encodeURIComponent(currentAgentName)}`;
-            document.getElementById('navDash').href = `agent-dashboard.html${suffix}`;
-            document.getElementById('navInv').href = `inventory.html${suffix}`;
-            document.getElementById('navUsers').href = `user_list.html${suffix}`;
-            document.getElementById('navSettings').href = `shop-settings.html${suffix}`;
+            document.getElementById('storeTitle').innerText = `${agentName}'s Inventory`;
             
-            document.getElementById('pageTitle').innerText = `${currentAgentName}'s Store`;
-
-            fetchMyProducts();
+            fetchProducts();
         };
 
-        function previewImage(event) {
-            const file = event.target.files[0];
+        function handleImagePreview(e) {
+            const file = e.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = (e) => {
-                    document.getElementById('previewContainer').innerHTML = `<img src="${e.target.result}">`;
+                reader.onload = (event) => {
+                    document.getElementById('imgPreview').innerHTML = `<img src="${event.target.result}">`;
                 };
                 reader.readAsDataURL(file);
             }
         }
 
-        function calculateDiscount() {
-            const original = parseFloat(document.getElementById('originalPrice').value) || 0;
-            const percent = parseFloat(document.getElementById('discountPercent').value) || 0;
-            const discountAmount = (original * percent / 100);
-            document.getElementById('finalPrice').value = Math.max(0, Math.round(original - discountAmount));
+        function calcFinal() {
+            const price = parseFloat(document.getElementById('pPrice').value) || 0;
+            const disc = parseFloat(document.getElementById('pDiscount').value) || 0;
+            const final = price - (price * disc / 100);
+            document.getElementById('pFinal').value = Math.round(final).toLocaleString() + " Ks";
         }
 
-        async function fetchMyProducts() {
-            const tbody = document.getElementById('productTableBody');
+        async function fetchProducts() {
+            const body = document.getElementById('inventoryBody');
+            body.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:3rem;"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>';
+            
             try {
-                const response = await fetch(`${API_BASE_URL}/products?agent=${encodeURIComponent(currentAgentName)}`);
-                const products = await response.json();
-                
-                document.getElementById('productCount').innerText = `${products.length} Items`;
-
-                if (!products || products.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:60px; color:#94a3b8;">ပစ္စည်းစာရင်း မရှိသေးပါ။</td></tr>';
-                    return;
-                }
-
-                tbody.innerHTML = products.map(p => {
-                    const hasDiscount = p.discountPercent > 0;
-                    return `
-                        <tr>
-                            <td>
-                                <div class="product-info">
-                                    <img src="${p.imageUrl || 'https://via.placeholder.com/60'}" class="product-img" onerror="this.src='https://via.placeholder.com/60'">
-                                    <div>
-                                        <div style="font-weight:700; color:#0f172a;">${p.name}</div>
-                                        <div style="font-size:0.75rem; color:#94a3b8; margin-top:2px;">ID: ${p._id.slice(-6).toUpperCase()}</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td><span style="background:#f1f5f9; color:#475569; padding:5px 12px; border-radius:8px; font-size:0.8rem; font-weight:600;">${p.category}</span></td>
-                            <td>
-                                <div class="price-tag">${(p.price || 0).toLocaleString()} Ks</div>
-                                ${hasDiscount ? `<span class="discount-badge">-${p.discountPercent}%</span>` : ''}
-                            </td>
-                            <td style="text-align: center;">
-                                <button class="btn-delete" onclick="deleteProduct('${p._id}')" title="Delete">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                }).join('');
+                const res = await fetch(`${API_URL}/products?agent=${encodeURIComponent(agentName)}`);
+                allProducts = await res.json();
+                renderTable(allProducts);
             } catch (err) {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#ef4444; padding:40px;">Connection Error: Data ဆွဲယူ၍ မရပါ။</td></tr>';
+                body.innerHTML = '<tr><td colspan="4" style="text-align:center; color:red;">Error loading products.</td></tr>';
             }
         }
 
-        document.getElementById('productForm').addEventListener('submit', async (e) => {
+        function renderTable(data) {
+            const body = document.getElementById('inventoryBody');
+            document.getElementById('productCount').innerText = `${data.length} Products`;
+
+            if (data.length === 0) {
+                body.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:3rem; color:#94a3b8;">No products found.</td></tr>';
+                return;
+            }
+
+            body.innerHTML = data.map(p => `
+                <tr>
+                    <td>
+                        <div class="prod-display">
+                            <img src="${p.imageUrl || 'https://via.placeholder.com/50'}" class="prod-img">
+                            <div>
+                                <div style="font-weight:700;">${p.name}</div>
+                                <div style="font-size:0.7rem; color:#94a3b8;">ID: ${p._id.slice(-6).toUpperCase()}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td><span class="badge badge-cat">${p.category}</span></td>
+                    <td>
+                        <div style="font-weight:700;">${(p.price || 0).toLocaleString()} Ks</div>
+                        ${p.discountPercent > 0 ? `<div style="font-size:0.7rem; color:#ef4444;">-${p.discountPercent}% Off</div>` : ''}
+                    </td>
+                    <td style="text-align:right;">
+                        <button class="action-btn btn-del" onclick="deleteProd('${p._id}')"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function filterTable() {
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = allProducts.filter(p => p.name.toLowerCase().includes(term));
+            renderTable(filtered);
+        }
+
+        document.getElementById('productForm').onsubmit = async (e) => {
             e.preventDefault();
-            const btn = document.getElementById('uploadBtn');
-            const fileInput = document.getElementById('pImageFile');
-            
+            const btn = document.getElementById('saveBtn');
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Saving...';
 
+            const file = document.getElementById('fileInput').files[0];
+            let base64 = "";
+            if (file) {
+                base64 = await new Promise(r => {
+                    const rd = new FileReader();
+                    rd.onload = (ev) => r(ev.target.result);
+                    rd.readAsDataURL(file);
+                });
+            }
+
+            const payload = {
+                name: document.getElementById('pName').value,
+                originalPrice: parseInt(document.getElementById('pPrice').value),
+                discountPercent: parseInt(document.getElementById('pDiscount').value) || 0,
+                price: parseInt(document.getElementById('pFinal').value.replace(/,/g, '')),
+                category: document.getElementById('pCat').value,
+                imageUrl: base64,
+                agentName: agentName
+            };
+
             try {
-                const file = fileInput.files[0];
-                let base64Image = "";
-                
-                if(file) {
-                    base64Image = await new Promise((resolve) => {
-                        const reader = new FileReader();
-                        reader.onload = (e) => resolve(e.target.result);
-                        reader.readAsDataURL(file);
-                    });
-                }
-
-                const payload = {
-                    name: document.getElementById('pName').value,
-                    originalPrice: parseInt(document.getElementById('originalPrice').value),
-                    discountPercent: parseInt(document.getElementById('discountPercent').value) || 0,
-                    price: parseInt(document.getElementById('finalPrice').value),
-                    category: document.getElementById('pCategory').value,
-                    imageUrl: base64Image,
-                    agentName: currentAgentName,
-                    createdAt: new Date().toISOString()
-                };
-
-                const response = await fetch(`${API_BASE_URL}/products/add`, {
+                const res = await fetch(`${API_URL}/products/add`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
-
-                if (response.ok) {
-                    alert("အောင်မြင်ပါသည်! ကုန်ပစ္စည်းအသစ် ထည့်သွင်းပြီးပါပြီ။");
-                    document.getElementById('productForm').reset();
-                    document.getElementById('previewContainer').innerHTML = '<i class="fas fa-cloud-upload-alt"></i><span>Click to upload image</span>';
-                    fetchMyProducts();
-                } else {
-                    alert("အမှားတစ်ခုရှိနေပါသည် (API Error)");
+                if (res.ok) {
+                    alert("Product added successfully!");
+                    location.reload();
                 }
-            } catch (err) {
-                alert("Error: " + err.message);
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-check-circle"></i> Save Product';
-            }
-        });
+            } catch (err) { alert("Error adding product."); }
+            btn.disabled = false;
+        };
 
-        async function deleteProduct(id) {
-            if (confirm("ဤပစ္စည်းကို စာရင်းထဲမှ အပြီးဖျက်ရန် သေချာပါသလား?")) {
-                try {
-                    const response = await fetch(`${API_BASE_URL}/products/delete/${id}`, { method: 'DELETE' });
-                    if (response.ok) {
-                        fetchMyProducts();
-                    } else {
-                        alert("ဖျက်၍မရပါ။ Backend Error.");
-                    }
-                } catch (err) {
-                    alert("Error: " + err.message);
-                }
+        async function deleteProd(id) {
+            if (confirm("Are you sure?")) {
+                await fetch(`${API_URL}/products/delete/${id}`, { method: 'DELETE' });
+                fetchProducts();
             }
         }
 
         function handleLogout() {
-            if(confirm("Logout လုပ်မှာ သေချာပါသလား?")) {
-                localStorage.removeItem('currentAgent');
-                window.location.href = "login.html";
-            }
+            localStorage.removeItem('currentAgent');
+            window.location.href = "login.html";
         }
     </script>
 </body>
