@@ -6,17 +6,19 @@
     <title>Agent Dashboard - Spider.io</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js for Sales Graph -->
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { 
-            --primary: #4f46e5; 
-            --primary-light: #eef2ff;
-            --bg: #f8fafc; 
-            --sidebar: #0f172a; 
-            --accent: #10b981; 
+            --primary: #6366f1; 
+            --primary-dark: #4f46e5;
+            --secondary: #64748b;
+            --success: #10b981;
             --warning: #f59e0b;
             --danger: #ef4444;
+            --bg: #f8fafc; 
+            --sidebar: #0f172a; 
+            --card-bg: #ffffff;
             --text-main: #1e293b;
             --text-muted: #64748b;
         }
@@ -27,6 +29,7 @@
             margin: 0; 
             display: flex; 
             color: var(--text-main);
+            min-height: 100vh;
         }
         
         /* Sidebar Styles */
@@ -34,267 +37,231 @@
             width: 260px; 
             background: var(--sidebar); 
             color: white; 
-            min-height: 100vh; 
-            padding: 2rem 1rem; 
+            height: 100vh; 
+            padding: 2rem 1.2rem; 
             position: fixed; 
-            z-index: 1000; 
-            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            z-index: 1000;
+            box-sizing: border-box;
         }
         .sidebar h2 { 
-            padding-left: 1rem; 
-            margin-bottom: 3rem; 
+            font-size: 1.5rem;
+            margin-bottom: 2.5rem; 
             font-weight: 800; 
             display: flex; 
             align-items: center; 
             gap: 12px;
-            letter-spacing: -1px;
+            padding-left: 0.5rem;
         }
         .nav-item { 
-            padding: 1rem 1.2rem; 
-            border-radius: 14px; 
+            padding: 0.9rem 1.2rem; 
+            border-radius: 12px; 
             color: #94a3b8; 
             text-decoration: none; 
-            margin-bottom: 0.6rem; 
+            margin-bottom: 0.5rem; 
             display: flex; 
             align-items: center; 
-            transition: 0.2s; 
+            transition: all 0.3s ease; 
             font-weight: 600;
         }
         .nav-item:hover, .nav-item.active { 
-            background: rgba(255, 255, 255, 0.05); 
+            background: rgba(255, 255, 255, 0.08); 
             color: #fff; 
         }
         .nav-item.active { 
             background: var(--primary); 
-            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
         }
-        .nav-item i { width: 28px; font-size: 1.2rem; }
+        .nav-item i { width: 24px; font-size: 1.1rem; margin-right: 10px; }
 
-        /* Main Content */
+        /* Main Content Area */
         .main-content { 
             margin-left: 260px; 
-            padding: 2.5rem; 
+            padding: 2rem 3rem; 
             width: calc(100% - 260px); 
-            box-sizing: border-box; 
+            box-sizing: border-box;
         }
 
-        /* Header & Welcome */
-        .welcome-section {
-            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-            border-radius: 28px;
-            padding: 3rem;
+        /* Hero Welcome Section */
+        .welcome-banner {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, #818cf8 100%);
+            border-radius: 24px;
+            padding: 2.5rem;
             color: white;
-            position: relative;
-            overflow: hidden;
-            margin-bottom: 2.5rem;
-            box-shadow: 0 20px 25px -5px rgba(79, 70, 229, 0.2);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.2);
         }
-        .welcome-section::before {
-            content: '';
-            position: absolute;
-            top: -50px;
-            right: -50px;
-            width: 200px;
-            height: 200px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 50%;
-        }
-        .welcome-section h1 { margin: 0; font-size: 2.2rem; font-weight: 800; }
-        
-        .shop-link-card {
+        .welcome-text h1 { margin: 0; font-size: 2rem; font-weight: 800; }
+        .welcome-text p { margin: 8px 0 0; opacity: 0.9; font-size: 1rem; }
+
+        .shop-link-box {
             background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 16px;
             padding: 12px 20px;
-            display: inline-flex;
+            border-radius: 16px;
+            backdrop-filter: blur(8px);
+            display: flex;
             align-items: center;
             gap: 15px;
-            margin-top: 1.5rem;
-            max-width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
-        .link-url { font-family: monospace; font-size: 0.9rem; opacity: 0.9; }
-        .btn-copy-link {
-            background: white;
-            color: var(--primary);
-            border: none;
-            padding: 8px 16px;
-            border-radius: 10px;
-            font-weight: 800;
-            cursor: pointer;
-            transition: 0.2s;
+        .shop-link-box code { font-size: 0.85rem; }
+        .btn-copy {
+            background: white; color: var(--primary-dark);
+            border: none; padding: 6px 15px; border-radius: 8px;
+            font-weight: 700; cursor: pointer; transition: 0.2s;
         }
-        .btn-copy-link:hover { transform: scale(1.05); }
+        .btn-copy:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
 
         /* Stats Grid */
         .stats-grid { 
             display: grid; 
             grid-template-columns: repeat(4, 1fr); 
             gap: 1.5rem; 
-            margin-bottom: 2.5rem;
+            margin-bottom: 2rem;
         }
         .stat-card {
-            background: white;
-            padding: 1.8rem;
-            border-radius: 24px;
-            border: 1px solid #e2e8f0;
-            display: flex;
-            flex-direction: column;
-        }
-        .stat-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-            margin-bottom: 1.2rem;
-        }
-        .stat-value { font-size: 1.8rem; font-weight: 800; margin-bottom: 4px; }
-        .stat-label { color: var(--text-muted); font-size: 0.9rem; font-weight: 600; }
-
-        /* Layout Grid */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 1.6fr 1fr;
-            gap: 2rem;
-        }
-
-        .content-card {
-            background: white;
-            border-radius: 28px;
-            padding: 2rem;
-            border: 1px solid #e2e8f0;
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 20px;
+            border: 1px solid #eef2ff;
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
+            transition: 0.3s;
+        }
+        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
+        .stat-icon {
+            width: 45px; height: 45px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 1rem; font-size: 1.2rem;
+        }
+        .stat-val { font-size: 1.6rem; font-weight: 800; margin: 0; }
+        .stat-label { color: var(--text-muted); font-size: 0.85rem; font-weight: 600; }
+
+        /* Dashboard Layout Grid */
+        .dash-layout {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 1.5rem;
+        }
+        .chart-card, .orders-card {
+            background: white; border-radius: 24px; padding: 1.8rem;
+            border: 1px solid #eef2ff;
         }
 
-        /* Table Styles */
-        table { width: 100%; border-collapse: collapse; margin-top: 1.5rem; }
-        th { text-align: left; padding: 12px; color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; border-bottom: 1px solid #f1f5f9; }
-        td { padding: 16px 12px; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; }
+        /* Table Design */
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th { text-align: left; color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; padding: 12px; border-bottom: 1px solid #f1f5f9; }
+        td { padding: 14px 12px; font-size: 0.9rem; border-bottom: 1px solid #f8fafc; }
         
-        .status-pill {
-            padding: 6px 12px;
-            border-radius: 10px;
-            font-size: 0.75rem;
-            font-weight: 800;
-        }
+        .status { padding: 5px 10px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; }
         .status-pending { background: #fff7ed; color: #c2410c; }
-        .status-success { background: #f0fdf4; color: #166534; }
+        .status-done { background: #f0fdf4; color: #166534; }
 
-        /* Mobile Responsive */
+        /* Responsive */
         @media (max-width: 1200px) {
             .stats-grid { grid-template-columns: repeat(2, 1fr); }
-            .dashboard-grid { grid-template-columns: 1fr; }
+            .dash-layout { grid-template-columns: 1fr; }
         }
         @media (max-width: 768px) {
             .sidebar { width: 80px; padding: 2rem 0.5rem; }
-            .sidebar span { display: none; }
+            .sidebar span, .sidebar h2 span { display: none; }
             .main-content { margin-left: 80px; width: calc(100% - 80px); padding: 1.5rem; }
+            .welcome-banner { flex-direction: column; align-items: flex-start; gap: 20px; }
             .stats-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
+    <!-- Sidebar -->
     <aside class="sidebar">
         <h2><i class="fas fa-spider" style="color: var(--primary);"></i> <span>Spider.io</span></h2>
         <nav>
-            <a id="navDash" class="nav-item active"><i class="fas fa-grid-2"></i> <span>Dashboard</span></a>
-            <a id="navInv" class="nav-item"><i class="fas fa-box-archive"></i> <span>Inventory</span></a>
-            <a id="navCust" class="nav-item"><i class="fas fa-user-group"></i> <span>Customers</span></a>
-            <a id="navSettings" class="nav-item"><i class="fas fa-sliders"></i> <span>Settings</span></a>
-        </nav>
-        <div style="position: absolute; bottom: 2rem; width: calc(100% - 2rem);">
-            <a href="#" onclick="handleLogout()" class="nav-item" style="color: var(--danger);">
-                <i class="fas fa-arrow-right-from-bracket"></i> <span>Logout</span>
+            <a id="navDash" class="nav-item active"><i class="fas fa-chart-pie"></i> <span>Dashboard</span></a>
+            <a id="navInv" class="nav-item"><i class="fas fa-box-open"></i> <span>Inventory</span></a>
+            <a id="navCust" class="nav-item"><i class="fas fa-users"></i> <span>Customers</span></a>
+            <a id="navSettings" class="nav-item"><i class="fas fa-cog"></i> <span>Settings</span></a>
+            
+            <a href="#" onclick="handleLogout()" class="nav-item" style="margin-top: 3rem; color: var(--danger);">
+                <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
             </a>
-        </div>
+        </nav>
     </aside>
 
+    <!-- Content -->
     <main class="main-content">
-        <section class="welcome-section">
-            <h1 id="welcomeAgent">မင်္ဂလာပါ!</h1>
-            <p>သင့်ဆိုင်ရဲ့ ဒီနေ့ရောင်းအားနဲ့ စာရင်းများကို တစ်နေရာတည်းမှာ ကြည့်ရှုပါ။</p>
-            
-            <div class="shop-link-card">
-                <i class="fas fa-link"></i>
-                <span class="link-url" id="shopLinkDisplay">Loading shop link...</span>
-                <button class="btn-copy-link" onclick="copyShopLink()">Copy Link</button>
+        <header class="welcome-banner">
+            <div class="welcome-text">
+                <h1 id="welcomeAgent">မင်္ဂလာပါ!</h1>
+                <p>ဒီနေ့အတွက် သင့်ဆိုင်ရဲ့ အခြေအနေကို စစ်ဆေးကြည့်ပါ။</p>
             </div>
-        </section>
+            <div class="shop-link-box">
+                <i class="fas fa-globe"></i>
+                <code id="shopLinkDisplay">loading...</code>
+                <button class="btn-copy" onclick="copyShopLink()">Copy</button>
+            </div>
+        </header>
 
+        <!-- Stats Section -->
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-icon" style="background: var(--primary-light); color: var(--primary);">
-                    <i class="fas fa-shopping-bag"></i>
-                </div>
-                <div class="stat-value" id="totalOrders">0</div>
-                <div class="stat-label">Total Orders</div>
+                <div class="stat-icon" style="background: #eef2ff; color: var(--primary);"><i class="fas fa-shopping-cart"></i></div>
+                <p class="stat-val" id="totalOrders">0</p>
+                <p class="stat-label">Total Orders</p>
             </div>
             <div class="stat-card">
-                <div class="stat-icon" style="background: #ecfdf5; color: var(--accent);">
-                    <i class="fas fa-boxes-stacked"></i>
-                </div>
-                <div class="stat-value" id="totalProducts">0</div>
-                <div class="stat-label">Products Active</div>
+                <div class="stat-icon" style="background: #ecfdf5; color: var(--success);"><i class="fas fa-cubes"></i></div>
+                <p class="stat-val" id="totalProducts">0</p>
+                <p class="stat-label">Total Items</p>
             </div>
             <div class="stat-card">
-                <div class="stat-icon" style="background: #fffbeb; color: var(--warning);">
-                    <i class="fas fa-clock"></i>
-                </div>
-                <div class="stat-value" id="pendingOrders">0</div>
-                <div class="stat-label">Pending Orders</div>
+                <div class="stat-icon" style="background: #fffbeb; color: var(--warning);"><i class="fas fa-hourglass-half"></i></div>
+                <p class="stat-val" id="pendingOrders">0</p>
+                <p class="stat-label">Wait for Delivery</p>
             </div>
             <div class="stat-card">
-                <div class="stat-icon" style="background: #fef2f2; color: var(--danger);">
-                    <i class="fas fa-wallet"></i>
-                </div>
-                <div class="stat-value" id="totalRevenue">0</div>
-                <div class="stat-label">Revenue (Ks)</div>
+                <div class="stat-icon" style="background: #fef2f2; color: var(--danger);"><i class="fas fa-wallet"></i></div>
+                <p class="stat-val" id="totalRevenue">0</p>
+                <p class="stat-label">Earnings (Ks)</p>
             </div>
         </div>
 
-        <div class="dashboard-grid">
-            <!-- Left: Sales Chart -->
-            <div class="content-card">
-                <h3 style="margin-top: 0;"><i class="fas fa-chart-area" style="color: var(--primary);"></i> Sales Overview</h3>
-                <canvas id="salesChart" height="250"></canvas>
+        <div class="dash-layout">
+            <!-- Sales Chart -->
+            <div class="chart-card">
+                <h3 style="margin-top: 0;"><i class="fas fa-chart-line"></i> Sales Analytics</h3>
+                <div style="height: 300px;">
+                    <canvas id="salesChart"></canvas>
+                </div>
             </div>
 
-            <!-- Right: Recent Orders -->
-            <div class="content-card">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h3 style="margin: 0;"><i class="fas fa-bolt" style="color: var(--warning);"></i> Recent Orders</h3>
-                    <a href="user_list.html" style="color: var(--primary); font-size: 0.8rem; font-weight: 700; text-decoration: none;">View All</a>
+            <!-- Recent Activity -->
+            <div class="orders-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h3 style="margin: 0;"><i class="fas fa-history"></i> Recent Orders</h3>
+                    <a href="user_list.html" style="color: var(--primary); font-size: 0.8rem; font-weight: 700; text-decoration: none;">See All</a>
                 </div>
                 <table>
                     <thead>
                         <tr>
-                            <th>Item</th>
-                            <th>Customer</th>
+                            <th>Item Name</th>
                             <th>Status</th>
                         </tr>
                     </thead>
                     <tbody id="recentOrdersBody">
-                        <tr>
-                            <td colspan="3" style="text-align: center; padding: 40px; color: var(--text-muted);">
-                                <i class="fas fa-spinner fa-spin"></i>
-                            </td>
-                        </tr>
+                        <tr><td colspan="2" style="text-align: center; padding: 2rem; color: var(--text-muted);">Loading orders...</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </main>
 
-    <!-- Firebase -->
+    <!-- Scripts -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
     <script>
-        // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyCt1SMVSMqdX3u2viQ-n_BVwp6KgQwDLOM",
             authDomain: "my-shop-admin-cedb1.firebaseapp.com",
@@ -309,91 +276,85 @@
         const agentName = urlParams.get('agent') || "spider";
 
         window.onload = () => {
-            updateNavLinks();
-            loadDashboardStats();
-            initChart();
+            setupNavigation();
+            loadStats();
+            initSalesChart();
         };
 
-        function updateNavLinks() {
+        function setupNavigation() {
             const query = `?agent=${agentName}`;
             document.getElementById('navDash').href = `agent-dashboard.html${query}`;
             document.getElementById('navInv').href = `inventory.html${query}`;
             document.getElementById('navCust').href = `user_list.html${query}`;
             document.getElementById('navSettings').href = `shop-settings.html${query}`;
 
-            const fullShopUrl = window.location.origin + "/index.html" + query;
-            document.getElementById('shopLinkDisplay').innerText = fullShopUrl;
+            const publicUrl = window.location.origin + "/index.html" + query;
+            document.getElementById('shopLinkDisplay').innerText = publicUrl;
         }
 
-        function loadDashboardStats() {
-            // 1. Shop Info
+        function loadStats() {
+            // Shop Name
             db.collection("shop_settings").doc(agentName).onSnapshot(doc => {
-                if(doc.exists) {
-                    const data = doc.data();
-                    document.getElementById('welcomeAgent').innerText = `မင်္ဂလာပါ ${data.shopName || agentName}!`;
-                }
+                if(doc.exists) document.getElementById('welcomeAgent').innerText = `မင်္ဂလာပါ ${doc.data().shopName || agentName}!`;
             });
 
-            // 2. Product Count
+            // Products
             db.collection("products").where("agent_name", "==", agentName).onSnapshot(snap => {
                 document.getElementById('totalProducts').innerText = snap.size;
             });
 
-            // 3. Orders & Revenue
+            // Orders
             db.collection("orders").where("agent_name", "==", agentName).onSnapshot(snap => {
                 let total = snap.size;
                 let pending = 0;
                 let revenue = 0;
-                let recentHtml = "";
-
-                const sortedDocs = snap.docs.sort((a,b) => b.data().created_at - a.data().created_at);
                 
-                snap.forEach(doc => {
-                    const data = doc.data();
-                    if(data.status === "Pending") pending++;
-                    if(data.status === "Completed") revenue += (data.price || 0);
+                const docs = snap.docs.map(d => d.data());
+                docs.forEach(d => {
+                    if(d.status === "Pending") pending++;
+                    if(d.status === "Completed") revenue += (d.price || 0);
                 });
 
                 document.getElementById('totalOrders').innerText = total;
                 document.getElementById('pendingOrders').innerText = pending;
                 document.getElementById('totalRevenue').innerText = revenue.toLocaleString();
 
-                // Render Top 5 Recent
-                const recent = sortedDocs.slice(0, 5);
-                if(recent.length > 0) {
-                    recentHtml = recent.map(doc => {
-                        const d = doc.data();
-                        const statusClass = d.status === "Completed" ? "status-success" : "status-pending";
-                        return `
-                            <tr>
-                                <td style="font-weight:700;">${d.product_name}</td>
-                                <td style="color: var(--text-muted);">${d.customer_name}</td>
-                                <td><span class="status-pill ${statusClass}">${d.status}</span></td>
-                            </tr>
-                        `;
-                    }).join('');
-                } else {
-                    recentHtml = '<tr><td colspan="3" style="text-align:center; padding:20px;">No orders yet</td></tr>';
-                }
-                document.getElementById('recentOrdersBody').innerHTML = recentHtml;
+                renderRecentOrders(docs);
             });
         }
 
-        function initChart() {
+        function renderRecentOrders(orders) {
+            const list = orders.slice(0, 6);
+            const body = document.getElementById('recentOrdersBody');
+            if(list.length === 0) {
+                body.innerHTML = '<tr><td colspan="2" style="text-align:center;">No orders found</td></tr>';
+                return;
+            }
+            body.innerHTML = list.map(o => `
+                <tr>
+                    <td style="font-weight:600;">${o.product_name}</td>
+                    <td><span class="status ${o.status === 'Completed' ? 'status-done' : 'status-pending'}">${o.status}</span></td>
+                </tr>
+            `).join('');
+        }
+
+        function initSalesChart() {
             const ctx = document.getElementById('salesChart').getContext('2d');
             new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
                     datasets: [{
-                        label: 'Sales (Ks)',
-                        data: [12000, 19000, 15000, 25000, 22000, 30000, 45000],
-                        borderColor: '#4f46e5',
-                        backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                        label: 'Revenue (Ks)',
+                        data: [15000, 22000, 18000, 35000, 30000, 48000, 60000],
+                        borderColor: '#6366f1',
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
                         fill: true,
                         tension: 0.4,
                         borderWidth: 3,
-                        pointRadius: 4
+                        pointBackgroundColor: '#fff',
+                        pointBorderColor: '#6366f1',
+                        pointBorderWidth: 2
                     }]
                 },
                 options: {
@@ -401,7 +362,7 @@
                     maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        y: { beginAtZero: true, grid: { display: false } },
+                        y: { beginAtZero: true, grid: { borderDash: [5, 5] } },
                         x: { grid: { display: false } }
                     }
                 }
@@ -411,16 +372,14 @@
         function copyShopLink() {
             const link = document.getElementById('shopLinkDisplay').innerText;
             navigator.clipboard.writeText(link).then(() => {
-                const btn = document.querySelector('.btn-copy-link');
+                const btn = document.querySelector('.btn-copy');
                 btn.innerText = "Copied!";
-                setTimeout(() => btn.innerText = "Copy Link", 2000);
+                setTimeout(() => btn.innerText = "Copy", 2000);
             });
         }
 
         function handleLogout() {
-            if(confirm("Logout လုပ်မှာ သေချာပါသလား?")) {
-                window.location.href = "login.html";
-            }
+            if(confirm("Logout လုပ်မှာ သေချာပါသလား?")) window.location.href = "login.html";
         }
     </script>
 </body>
