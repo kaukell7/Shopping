@@ -60,6 +60,7 @@
             align-items: center; 
             transition: all 0.3s ease; 
             font-weight: 600;
+            cursor: pointer; /* လက်နဲ့ထောက်ရင် နှိပ်လို့ရမှန်းသိအောင် */
         }
         .nav-item:hover, .nav-item.active { 
             background: rgba(255, 255, 255, 0.08); 
@@ -162,10 +163,22 @@
     <aside class="sidebar">
         <h2><i class="fas fa-spider" style="color: var(--primary);"></i> <span>Spider.io</span></h2>
         <nav>
-            <a id="navDash" class="nav-item active"><i class="fas fa-chart-pie"></i> <span>Dashboard</span></a>
-            <a id="navInv" class="nav-item"><i class="fas fa-box-open"></i> <span>Inventory</span></a>
-            <a id="navCust" class="nav-item"><i class="fas fa-users"></i> <span>Customers</span></a>
-            <a id="navSettings" class="nav-item"><i class="fas fa-cog"></i> <span>Settings</span></a>
+            <!-- Dashboard (လက်ရှိဖိုင်) -->
+            <a href="agent-dashboard.html" id="navDash" class="nav-item active">
+                <i class="fas fa-chart-pie"></i> <span>Dashboard</span>
+            </a>
+            <!-- Inventory -->
+            <a href="inventory.html" id="navInv" class="nav-item">
+                <i class="fas fa-box-open"></i> <span>Inventory</span>
+            </a>
+            <!-- Customers (user_list.html ကို ချိတ်ပေးထားပါတယ်) -->
+            <a href="user_list.html" id="navCust" class="nav-item">
+                <i class="fas fa-users"></i> <span>Customers</span>
+            </a>
+            <!-- Settings -->
+            <a href="shop-settings.html" id="navSettings" class="nav-item">
+                <i class="fas fa-cog"></i> <span>Settings</span>
+            </a>
             
             <a href="#" onclick="handleLogout()" class="nav-item" style="margin-top: 3rem; color: var(--danger);">
                 <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
@@ -187,6 +200,7 @@
         </header>
 
         <div class="stats-grid">
+            <!-- Stats Cards အပိုင်း (မူလအတိုင်း) -->
             <div class="stat-card">
                 <div class="stat-icon" style="background: #eef2ff; color: var(--primary);"><i class="fas fa-shopping-cart"></i></div>
                 <p class="stat-val" id="totalOrders">0</p>
@@ -220,7 +234,7 @@
             <div class="orders-card">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                     <h3 style="margin: 0;"><i class="fas fa-history"></i> Recent Orders</h3>
-                    <a id="seeAllOrders" href="#" style="color: var(--primary); font-size: 0.8rem; font-weight: 700; text-decoration: none;">See All</a>
+                    <a id="seeAllOrders" href="user_list.html" style="color: var(--primary); font-size: 0.8rem; font-weight: 700; text-decoration: none;">See All</a>
                 </div>
                 <table>
                     <thead>
@@ -237,11 +251,10 @@
         </div>
     </main>
 
-    <!-- Supabase SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
-        // Config Supabase
+        // Supabase Credentials (သင့် Key များပြန်ထည့်ပါ)
         const SUPABASE_URL = 'သင့်ရဲ့_SUPABASE_URL_ဒီမှာထည့်ပါ'; 
         const SUPABASE_KEY = 'သင့်ရဲ့_SUPABASE_ANON_KEY_ဒီမှာထည့်ပါ';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -255,6 +268,7 @@
             initSalesChart();
         };
 
+        // Navigation Link များကို URL Param (?agent=...) နှင့်အတူ ပြင်ဆင်ခြင်း
         function setupNavigation() {
             const query = `?agent=${agentName}`;
             document.getElementById('navDash').href = `agent-dashboard.html${query}`;
@@ -263,14 +277,12 @@
             document.getElementById('navSettings').href = `shop-settings.html${query}`;
             document.getElementById('seeAllOrders').href = `user_list.html${query}`;
 
-            // Shop Link URL (Customer View)
             const publicUrl = window.location.origin + "/index.html" + query;
             document.getElementById('shopLinkDisplay').innerText = publicUrl;
         }
 
         async function loadDashboardData() {
             try {
-                // 1. Get Shop Info (Settings Table)
                 const { data: shop } = await _supabase
                     .from('shop_settings')
                     .select('shopName')
@@ -279,7 +291,6 @@
                 
                 if (shop) document.getElementById('welcomeAgent').innerText = `မင်္ဂလာပါ ${shop.shopName}!`;
 
-                // 2. Count Total Products
                 const { count: pCount } = await _supabase
                     .from('products')
                     .select('*', { count: 'exact', head: true })
@@ -287,7 +298,6 @@
                 
                 document.getElementById('totalProducts').innerText = pCount || 0;
 
-                // 3. Get Orders and Stats
                 const { data: orders } = await _supabase
                     .from('orders')
                     .select('*')
@@ -307,7 +317,6 @@
 
                     renderRecentOrders(orders.slice(0, 6));
                 }
-
             } catch (err) {
                 console.error("Error loading dashboard:", err);
             }
@@ -341,8 +350,6 @@
                         fill: true,
                         tension: 0.4,
                         borderWidth: 3,
-                        pointBackgroundColor: '#fff',
-                        pointBorderColor: '#6366f1',
                     }]
                 },
                 options: {
@@ -350,7 +357,7 @@
                     maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        y: { beginAtZero: true, grid: { borderDash: [5, 5] } },
+                        y: { beginAtZero: true },
                         x: { grid: { display: false } }
                     }
                 }
@@ -369,7 +376,7 @@
         function handleLogout() {
             if(confirm("Logout လုပ်မှာ သေချာပါသလား?")) {
                 localStorage.removeItem('currentAgent');
-                window.location.href = "customer-login.html";
+                window.location.href = "login.html";
             }
         }
     </script>
