@@ -10,28 +10,47 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
         .login-card { background: white; padding: 2.5rem; border-radius: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 400px; }
         .logo { text-align: center; margin-bottom: 2rem; font-weight: 800; font-size: 1.5rem; color: var(--primary); }
-        h2 { text-align: center; margin-bottom: 1.5rem; }
-        input { width: 100%; padding: 12px; margin-bottom: 1rem; border: 1px solid #e2e8f0; border-radius: 12px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; }
-        .toggle-text { text-align: center; margin-top: 1rem; font-size: 0.9rem; color: #64748b; }
+        h2 { text-align: center; margin-bottom: 1.5rem; font-size: 1.2rem; }
+        
+        .input-wrapper { position: relative; margin-bottom: 1rem; }
+        input { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 12px; box-sizing: border-box; outline: none; transition: 0.3s; }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.05); }
+        
+        button { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; margin-top: 10px; }
+        button:disabled { opacity: 0.7; cursor: not-allowed; }
+        
+        .toggle-text { text-align: center; margin-top: 1.5rem; font-size: 0.9rem; color: #64748b; }
         .toggle-text span { color: var(--primary); cursor: pointer; font-weight: 600; }
+        
+        .error-msg { color: #ef4444; font-size: 0.8rem; margin-top: 5px; display: none; text-align: center; }
     </style>
 </head>
 <body>
 
 <div class="login-card">
     <div class="logo">Spider.io</div>
-    <h2 id="formTitle">Login ဝင်ရန်</h2>
+    <h2 id="formTitle">အကောင့်အသစ်ဖွင့်ရန်</h2>
     
-    <div id="registerFields" style="display: none;">
-        <input type="text" id="custName" placeholder="နာမည်အပြည့်အစုံ">
+    <div id="registerFields">
+        <div class="input-wrapper">
+            <input type="text" id="custName" placeholder="နာမည်အပြည့်အစုံ">
+        </div>
     </div>
-    <input type="email" id="custEmail" placeholder="Email လိပ်စာ">
-    <input type="password" id="custPassword" placeholder="စကားဝှက် (အနည်းဆုံး ၆ လုံး)">
+
+    <div class="input-wrapper">
+        <!-- နေရာမှာ ဖုန်းနံပါတ် သို့မဟုတ် Email ရိုက်ထည့်နိုင်သည် -->
+        <input type="text" id="custIdentifier" placeholder="ဖုန်းနံပါတ် သို့မဟုတ် Email">
+    </div>
+
+    <div class="input-wrapper">
+        <input type="password" id="custPassword" placeholder="စကားဝှက် (အနည်းဆုံး ၆ လုံး)">
+    </div>
     
-    <button id="mainBtn" onclick="handleAuth()">Login ဝင်မည်</button>
+    <div id="errorBox" class="error-msg"></div>
     
-    <p class="toggle-text" id="toggleMsg">အကောင့်မရှိသေးဘူးလား? <span onclick="toggleForm()">အကောင့်ဖွင့်မည်</span></p>
+    <button id="mainBtn" onclick="handleAuth()">အကောင့်ဖွင့်မည်</button>
+    
+    <p class="toggle-text" id="toggleMsg">အကောင့်ရှိပြီးသားလား? <span onclick="toggleForm()">Login ပြန်ဝင်မည်</span></p>
 </div>
 
 <!-- Firebase -->
@@ -51,7 +70,7 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    let isLogin = true;
+    let isLogin = false; // စဖွင့်ချင်းမှာ Register Form အရင်ပြမယ်
 
     function toggleForm() {
         isLogin = !isLogin;
@@ -61,36 +80,55 @@
         document.getElementById('toggleMsg').innerHTML = isLogin ? 
             'အကောင့်မရှိသေးဘူးလား? <span onclick="toggleForm()">အကောင့်ဖွင့်မည်</span>' : 
             'အကောင့်ရှိပြီးသားလား? <span onclick="toggleForm()">Login ပြန်ဝင်မည်</span>';
+        document.getElementById('errorBox').style.display = 'none';
     }
 
     async function handleAuth() {
-        const email = document.getElementById('custEmail').value;
+        const identifier = document.getElementById('custIdentifier').value.trim();
         const password = document.getElementById('custPassword').value;
-        const name = document.getElementById('custName').value;
+        const name = document.getElementById('custName').value.trim();
+        const btn = document.getElementById('mainBtn');
+        const errorBox = document.getElementById('errorBox');
 
-        if(!email || !password) return alert("အချက်အလက်ပြည့်စုံအောင် ဖြည့်ပါ။");
+        if(!identifier || !password || (!isLogin && !name)) {
+            errorBox.innerText = "အချက်အလက်များ ပြည့်စုံစွာ ဖြည့်ပါ။";
+            errorBox.style.display = 'block';
+            return;
+        }
+
+        // ဖုန်းနံပါတ်လား Email လား စစ်ဆေးခြင်း
+        // အကယ်၍ ဖုန်းနံပါတ်သက်သက်ပဲဆိုရင် Firebase အတွက် @spider.io ဆိုတဲ့ domain တစ်ခုနဲ့ dummy email ပုံစံမျိုး ပြောင်းသုံးပါမယ်
+        let emailToUse = identifier;
+        if (!identifier.includes('@')) {
+            emailToUse = identifier + "@spider.io"; // Phone format -> phone@spider.io
+        }
+
+        btn.disabled = true;
+        btn.innerText = "ခဏစောင့်ပါ...";
+        errorBox.style.display = 'none';
 
         try {
             if (isLogin) {
-                // Login
-                await auth.signInWithEmailAndPassword(email, password);
-                alert("Login အောင်မြင်ပါတယ်။");
+                await auth.signInWithEmailAndPassword(emailToUse, password);
             } else {
-                // Register
-                const res = await auth.createUserWithEmailAndPassword(email, password);
+                const res = await auth.createUserWithEmailAndPassword(emailToUse, password);
                 await db.collection("customers").doc(res.user.uid).set({
                     name: name,
-                    email: email,
+                    phoneOrEmail: identifier,
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
-                alert("အကောင့်ဖွင့်ခြင်း အောင်မြင်ပါတယ်။");
             }
-            // Login ဝင်ပြီးရင် ပစ္စည်းဝယ်တဲ့ စာမျက်နှာကို သွားမယ်
             window.location.href = "index.html" + window.location.search;
         } catch (error) {
-            alert(error.message);
+            errorBox.innerText = "မှားယွင်းနေပါသည်။ " + error.message;
+            errorBox.style.display = 'block';
+            btn.disabled = false;
+            btn.innerText = isLogin ? "Login ဝင်မည်" : "အကောင့်ဖွင့်မည်";
         }
     }
+
+    // စဖွင့်ချင်း form setup လုပ်ရန်
+    toggleForm(); // ပထမဆုံးမှာ Login ဖြစ်နေအောင် (ဒါမှမဟုတ် Register ဖြစ်ချင်ရင် isLogin true ထားပါ)
 </script>
 
 </body>
